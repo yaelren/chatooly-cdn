@@ -25,13 +25,10 @@
                 return { type: 'canvas', element: largestCanvas };
             }
             
-            // 2. Look for export-specific containers first
-            const exportContainers = ['#gradient-display', '#preview', '.export-area'];
-            for (const selector of exportContainers) {
-                const element = document.querySelector(selector);
-                if (element) {
-                    return { type: 'dom', element: element };
-                }
+            // 2. Look for Chatooly export container first
+            const chatoolyCanvas = document.querySelector('#chatooly-canvas');
+            if (chatoolyCanvas) {
+                return { type: 'dom', element: chatoolyCanvas };
             }
             
             // 3. Look for common container IDs

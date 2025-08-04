@@ -204,30 +204,12 @@
                 <h3><span class="status-indicator status-pending" id="dom-status"></span>DOM Export Tests</h3>
                 
                 <div class="test-element">
-                    <h4>CSS Gradient</h4>
-                    <div id="gradient-display" class="gradient-test">Gradient Test</div>
+                    <h4>DOM Export Test</h4>
+                    <div id="chatooly-canvas" class="gradient-test">CSS Gradient + DOM Export</div>
                     <div>
-                        <button onclick="testDOMExport('gradient', 1)">1x</button>
-                        <button onclick="testDOMExport('gradient', 2)">2x</button>
-                        <button onclick="testDOMExport('gradient', 4)">4x</button>
-                    </div>
-                </div>
-                
-                <div class="test-element">
-                    <h4>Complex DOM Element</h4>
-                    <div id="complex-dom" style="width: 200px; height: 120px; background: white; border: 2px solid #007bff; border-radius: 8px; padding: 10px;">
-                        <h5 style="margin: 0; color: #007bff;">Complex Element</h5>
-                        <p style="margin: 5px 0; font-size: 12px;">With text, borders, and styling</p>
-                        <div style="display: flex; gap: 5px;">
-                            <div style="width: 20px; height: 20px; background: #ff6b6b; border-radius: 50%;"></div>
-                            <div style="width: 20px; height: 20px; background: #4ecdc4; border-radius: 50%;"></div>
-                            <div style="width: 20px; height: 20px; background: #45b7d1; border-radius: 50%;"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <button onclick="testDOMExport('complex', 1)">1x</button>
-                        <button onclick="testDOMExport('complex', 2)">2x</button>
-                        <button onclick="testDOMExport('complex', 4)">4x</button>
+                        <button onclick="testDOMExport('dom', 1)">1x</button>
+                        <button onclick="testDOMExport('dom', 2)">2x</button>
+                        <button onclick="testDOMExport('dom', 4)">4x</button>
                     </div>
                 </div>
             </div>
@@ -607,7 +589,7 @@
             
             try {
                 const startTime = performance.now();
-                const elementId = elementType === 'gradient' ? 'gradient-display' : 'complex-dom';
+                const elementId = 'chatooly-canvas';
                 const element = document.getElementById(elementId);
                 
                 if (!element) {
@@ -761,11 +743,11 @@
         
         function testTargetPriority() {
             try {
-                // Test that gradient-display is detected with priority
+                // Test that chatooly-canvas is detected with priority
                 const target = window.Chatooly.utils.detectExportTarget();
                 
-                if (target.element.id === 'gradient-display') {
-                    log('✅ Target priority test passed - gradient-display detected first', 'success');
+                if (target.element.id === 'chatooly-canvas') {
+                    log('✅ Target priority test passed - chatooly-canvas detected first', 'success');
                     testResults.libraryTests.targetPriority = { success: true, detectedId: target.element.id };
                 } else {
                     log(`⚠️ Target priority test - detected ${target.element.tagName}#${target.element.id}`, 'warn');
@@ -1010,14 +992,11 @@
         async function runDOMTests() {
             log('📄 Starting DOM tests...', 'info');
             
-            const elementTypes = ['gradient', 'complex'];
             const resolutions = [1, 2, 4];
             
-            for (const type of elementTypes) {
-                for (const resolution of resolutions) {
-                    await testDOMExport(type, resolution);
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                }
+            for (const resolution of resolutions) {
+                await testDOMExport('dom', resolution);
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
             
             log('📄 DOM tests completed', 'info');
