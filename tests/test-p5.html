@@ -25,6 +25,19 @@
     <h1>Chatooly CDN Test - p5.js Integration</h1>
     <p>This page tests the Chatooly export functionality with a p5.js sketch.</p>
     
+    <div style="background: #e9ecef; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <strong>CDN Version:</strong>
+        <label style="margin: 0 10px;">
+            <input type="radio" name="version" value="full" checked onchange="switchVersion(this.value)"> 
+            Full (18KB)
+        </label>
+        <label style="margin: 0 10px;">
+            <input type="radio" name="version" value="min" onchange="switchVersion(this.value)"> 
+            Minified (7.9KB)
+        </label>
+        <span id="current-version" style="margin-left: 20px; font-weight: bold; color: #007bff;">Using: Full</span>
+    </div>
+    
     <div id="canvas-container">
         <!-- p5.js canvas will be created here -->
     </div>
@@ -40,8 +53,35 @@
     <!-- p5.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
     
-    <!-- Chatooly CDN -->
-    <script src="../js/core.js"></script>
+    <!-- Chatooly CDN - Dynamic Loading -->
+    <script id="chatooly-script" src="../js/core.js"></script>
+    
+    <!-- Version Switching Logic -->
+    <script>
+        function switchVersion(version) {
+            const oldScript = document.getElementById('chatooly-script');
+            const newScript = document.createElement('script');
+            
+            newScript.id = 'chatooly-script';
+            newScript.src = version === 'min' ? '../js/core.min.js' : '../js/core.js';
+            
+            // Update status
+            document.getElementById('current-version').textContent = 
+                `Using: ${version === 'min' ? 'Minified (7.9KB)' : 'Full (18KB)'}`;
+            
+            // Replace script and reload
+            oldScript.parentNode.insertBefore(newScript, oldScript);
+            oldScript.remove();
+            
+            newScript.onload = () => {
+                // Reinitialize Chatooly
+                if (window.Chatooly) {
+                    window.Chatooly.init(window.ChatoolyConfig);
+                    console.log(`Switched to ${version === 'min' ? 'minified' : 'full'} version`);
+                }
+            };
+        }
+    </script>
     
     <!-- Tool Configuration -->
     <script>

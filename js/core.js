@@ -285,13 +285,61 @@ See template documentation for setup details.
         },
         
         _loadHtml2Canvas: function() {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
+            // Check if already loading to avoid duplicate requests
+            if (this._html2canvasPromise) {
+                return this._html2canvasPromise;
+            }
+            
+            this._html2canvasPromise = new Promise((resolve, reject) => {
+                // Try multiple CDN sources for reliability
+                const cdnSources = [
+                    'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+                    'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js',
+                    'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'
+                ];
+                
+                
+                const tryLoad = (sourceIndex) => {
+                    if (sourceIndex >= cdnSources.length) {
+                        reject(new Error('All CDN sources failed'));
+                        return;
+                    }
+                    
+                    const script = document.createElement('script');
+                    script.src = cdnSources[sourceIndex];
+                    script.async = true;
+                    script.crossOrigin = 'anonymous';
+                    
+                    const cleanup = () => {
+                        document.head.removeChild(script);
+                    };
+                    
+                    script.onload = () => {
+                        cleanup();
+                        resolve();
+                    };
+                    
+                    script.onerror = () => {
+                        cleanup();
+                        console.warn(`Chatooly: Failed to load html2canvas from ${cdnSources[sourceIndex]}`);
+                        tryLoad(sourceIndex + 1);
+                    };
+                    
+                    // Timeout after 10 seconds
+                    setTimeout(() => {
+                        if (!window.html2canvas) {
+                            cleanup();
+                            tryLoad(sourceIndex + 1);
+                        }
+                    }, 10000);
+                    
+                    document.head.appendChild(script);
+                };
+                
+                tryLoad(0);
             });
+            
+            return this._html2canvasPromise;
         },
         
         _downloadImage: function(dataURL, filename) {
