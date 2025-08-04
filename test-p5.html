@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatooly CDN Test - p5.js</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        #canvas-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chatooly CDN Test - p5.js Integration</h1>
+    <p>This page tests the Chatooly export functionality with a p5.js sketch.</p>
+    
+    <div id="canvas-container">
+        <!-- p5.js canvas will be created here -->
+    </div>
+    
+    <p>Instructions:</p>
+    <ul>
+        <li>You should see a colorful animated circle</li>
+        <li>A floating export button should appear in the bottom-right</li>
+        <li>Click the export button to see resolution options</li>
+        <li>Try exporting at different resolutions</li>
+    </ul>
+
+    <!-- p5.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    
+    <!-- Chatooly CDN -->
+    <script src="core.js"></script>
+    
+    <!-- Tool Configuration -->
+    <script>
+        window.ChatoolyConfig = {
+            name: "p5.js Test Tool",
+            resolution: 2
+        };
+    </script>
+    
+    <!-- p5.js Sketch -->
+    <script>
+        function setup() {
+            // Create canvas and parent it to the container
+            let canvas = createCanvas(400, 400);
+            canvas.parent('canvas-container');
+            colorMode(HSB, 360, 100, 100);
+        }
+        
+        function draw() {
+            // Animated background gradient
+            for (let i = 0; i <= height; i++) {
+                let inter = map(i, 0, height, 0, 1);
+                let c = lerpColor(color(200, 80, 100), color(280, 60, 80), inter);
+                stroke(c);
+                line(0, i, width, i);
+            }
+            
+            // Animated circle
+            let time = millis() * 0.001;
+            let x = width/2 + cos(time) * 100;
+            let y = height/2 + sin(time * 1.5) * 80;
+            let hue = (time * 50) % 360;
+            
+            // Circle with glow effect
+            for (let r = 50; r > 0; r -= 5) {
+                fill(hue, 80, 100, map(r, 0, 50, 100, 10));
+                noStroke();
+                ellipse(x, y, r);
+            }
+            
+            // Center dot
+            fill(0, 0, 100);
+            ellipse(x, y, 8);
+            
+            // Frame rate display
+            fill(0, 0, 100);
+            textAlign(LEFT);
+            text(`FPS: ${Math.round(frameRate())}`, 10, 20);
+            text('Canvas: ' + width + 'x' + height, 10, 40);
+        }
+    </script>
+</body>
+</html>

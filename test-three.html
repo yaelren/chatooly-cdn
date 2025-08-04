@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatooly CDN Test - Three.js</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        #canvas-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chatooly CDN Test - Three.js Integration</h1>
+    <p>This page tests the Chatooly export functionality with a Three.js scene.</p>
+    
+    <div id="canvas-container">
+        <!-- Three.js canvas will be created here -->
+    </div>
+    
+    <p>Instructions:</p>
+    <ul>
+        <li>You should see a rotating colorful cube</li>
+        <li>A floating export button should appear in the bottom-right</li>
+        <li>Click the export button to see resolution options</li>
+        <li>Try exporting at different resolutions</li>
+    </ul>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Chatooly CDN -->
+    <script src="core.js"></script>
+    
+    <!-- Tool Configuration -->
+    <script>
+        window.ChatoolyConfig = {
+            name: "Three.js Test Tool",
+            resolution: 2
+        };
+    </script>
+    
+    <!-- Three.js Scene -->
+    <script>
+        // Scene setup (expose globally for Chatooly export)
+        window.scene = new THREE.Scene();
+        window.camera = new THREE.PerspectiveCamera(75, 400 / 400, 0.1, 1000);
+        window.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+        
+        window.renderer.setSize(400, 400);
+        window.renderer.setClearColor(0x222222);
+        document.getElementById('canvas-container').appendChild(window.renderer.domElement);
+        
+        // Create a colorful cube
+        const geometry = new THREE.BoxGeometry(2, 2, 2);
+        
+        // Create materials for each face with different colors
+        const materials = [
+            new THREE.MeshBasicMaterial({ color: 0xff0000 }), // Red
+            new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // Green
+            new THREE.MeshBasicMaterial({ color: 0x0000ff }), // Blue
+            new THREE.MeshBasicMaterial({ color: 0xffff00 }), // Yellow
+            new THREE.MeshBasicMaterial({ color: 0xff00ff }), // Magenta
+            new THREE.MeshBasicMaterial({ color: 0x00ffff })  // Cyan
+        ];
+        
+        const cube = new THREE.Mesh(geometry, materials);
+        window.scene.add(cube);
+        
+        // Add some lights
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+        window.scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(1, 1, 1);
+        window.scene.add(directionalLight);
+        
+        // Position camera
+        window.camera.position.z = 5;
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotate the cube
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            
+            // Change colors over time
+            const time = Date.now() * 0.001;
+            materials.forEach((material, index) => {
+                const hue = (time + index * 0.2) % 1;
+                material.color.setHSL(hue, 0.8, 0.6);
+            });
+            
+            window.renderer.render(window.scene, window.camera);
+        }
+        
+        animate();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            window.camera.aspect = 400 / 400;
+            window.camera.updateProjectionMatrix();
+            window.renderer.setSize(400, 400);
+        });
+    </script>
+</body>
+</html>
