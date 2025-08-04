@@ -1,0 +1,33 @@
+{
+  "name": "chatooly-cdn",
+  "version": "1.0.0-poc",
+  "description": "Chatooly CDN - PNG export functionality for canvas-based design tools",
+  "main": "js/core.js",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "python3 -m http.server 8000",
+    "test": "open http://localhost:8000/tests/test-comprehensive.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yaelren/chatooly-cdn.git"
+  },
+  "keywords": [
+    "canvas",
+    "export",
+    "png",
+    "p5js",
+    "threejs",
+    "design-tools",
+    "cdn"
+  ],
+  "author": "Chatooly",
+  "license": "MIT",
+  "devDependencies": {
+    "terser": "^5.19.0"
+  },
+  "files": [
+    "js/core.js",
+    "js/core.min.js"
+  ]
+}

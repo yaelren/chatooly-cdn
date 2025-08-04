@@ -527,22 +527,22 @@
                     }
                     
                     // Override export target detection for this test
-                    const originalDetection = window.Chatooly._detectExportTarget;
-                    window.Chatooly._detectExportTarget = () => ({
+                    const originalDetection = window.Chatooly.utils.detectExportTarget;
+                    window.Chatooly.utils.detectExportTarget = () => ({
                         type: 'canvas',
                         element: canvasElement
                     });
                     
                     // Simulate export (we can't actually download in tests)
-                    const originalDownload = window.Chatooly._downloadImage;
+                    const originalDownload = window.Chatooly.utils.downloadImage;
                     
-                    window.Chatooly._downloadImage = (dataURL, filename) => {
+                    window.Chatooly.utils.downloadImage = (dataURL, filename) => {
                         const exportTime = performance.now() - startTime;
                         
                         // Clear timeout and restore original functions
                         clearTimeout(timeout);
-                        window.Chatooly._detectExportTarget = originalDetection;
-                        window.Chatooly._downloadImage = originalDownload;
+                        window.Chatooly.utils.detectExportTarget = originalDetection;
+                        window.Chatooly.utils.downloadImage = originalDownload;
                         
                         // Restore original canvas ID
                         canvasElement.id = originalCanvasId;
@@ -574,8 +574,8 @@
                         window.Chatooly.export('png', { resolution: resolution });
                     } catch (error) {
                         clearTimeout(timeout);
-                        window.Chatooly._detectExportTarget = originalDetection;
-                        window.Chatooly._downloadImage = originalDownload;
+                        window.Chatooly.utils.detectExportTarget = originalDetection;
+                        window.Chatooly.utils.downloadImage = originalDownload;
                         
                         // Restore original canvas ID
                         canvasElement.id = originalCanvasId;
@@ -608,46 +608,66 @@
             try {
                 const startTime = performance.now();
                 const elementId = elementType === 'gradient' ? 'gradient-display' : 'complex-dom';
+                const element = document.getElementById(elementId);
                 
-                // Override export target detection
-                const originalDetection = window.Chatooly._detectExportTarget;
-                window.Chatooly._detectExportTarget = () => ({
-                    type: 'dom',
-                    element: document.getElementById(elementId)
+                if (!element) {
+                    throw new Error(`Element not found: ${elementId}`);
+                }
+                
+                // Create a promise that resolves when DOM export completes
+                const exportPromise = new Promise((resolve, reject) => {
+                    // Override export target detection
+                    const originalDetection = window.Chatooly.utils.detectExportTarget;
+                    window.Chatooly.utils.detectExportTarget = () => ({
+                        type: 'dom',
+                        element: element
+                    });
+                    
+                    // Override download function to capture result
+                    const originalDownload = window.Chatooly.utils.downloadImage;
+                    window.Chatooly.utils.downloadImage = (dataURL, filename) => {
+                        const exportTime = performance.now() - startTime;
+                        
+                        // Clear timeout and restore functions
+                        clearTimeout(timeout);
+                        window.Chatooly.utils.detectExportTarget = originalDetection;
+                        window.Chatooly.utils.downloadImage = originalDownload;
+                        
+                        addExportToGallery(dataURL, `${elementType}-${resolution}x`);
+                        log(`DOM export completed: ${filename} (${exportTime.toFixed(2)}ms)`, 'success');
+                        
+                        resolve({
+                            success: true,
+                            exportTime: exportTime,
+                            resolution: resolution,
+                            dataURL: dataURL
+                        });
+                    };
+                    
+                    // Set timeout for DOM export (longer timeout as html2canvas may need to load)
+                    const timeout = setTimeout(() => {
+                        window.Chatooly.utils.detectExportTarget = originalDetection;
+                        window.Chatooly.utils.downloadImage = originalDownload;
+                        reject(new Error('DOM export timeout'));
+                    }, 10000); // 10 second timeout for DOM exports
+                    
+                    try {
+                        // Trigger export
+                        window.Chatooly.export('png', { resolution: resolution });
+                    } catch (error) {
+                        clearTimeout(timeout);
+                        window.Chatooly.utils.detectExportTarget = originalDetection;
+                        window.Chatooly.utils.downloadImage = originalDownload;
+                        reject(error);
+                    }
                 });
                 
-                // Simulate export
-                const originalDownload = window.Chatooly._downloadImage;
-                let exportSuccess = false;
-                window.Chatooly._downloadImage = (dataURL, filename) => {
-                    exportSuccess = true;
-                    addExportToGallery(dataURL, `${elementType}-${resolution}x`);
-                    log(`DOM export completed: ${filename}`, 'success');
-                };
+                // Wait for export to complete
+                const result = await exportPromise;
                 
-                // Trigger export
-                window.Chatooly.export('png', { resolution: resolution });
-                
-                // Wait a bit for html2canvas to load if needed
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                const exportTime = performance.now() - startTime;
-                
-                // Restore original functions
-                window.Chatooly._detectExportTarget = originalDetection;
-                window.Chatooly._downloadImage = originalDownload;
-                
-                if (exportSuccess) {
-                    testResults.domTests[`${elementType}_${resolution}x`] = {
-                        success: true,
-                        exportTime: exportTime,
-                        resolution: resolution
-                    };
-                    log(`✅ DOM ${elementType} ${resolution}x export: ${exportTime.toFixed(2)}ms`, 'success');
-                    updateStatus('dom', 'pass');
-                } else {
-                    throw new Error('DOM export failed');
-                }
+                testResults.domTests[`${elementType}_${resolution}x`] = result;
+                log(`✅ DOM ${elementType} ${resolution}x export: ${result.exportTime.toFixed(2)}ms`, 'success');
+                updateStatus('dom', 'pass');
                 
             } catch (error) {
                 testResults.domTests[`${elementType}_${resolution}x`] = {
@@ -742,7 +762,7 @@
         function testTargetPriority() {
             try {
                 // Test that gradient-display is detected with priority
-                const target = window.Chatooly._detectExportTarget();
+                const target = window.Chatooly.utils.detectExportTarget();
                 
                 if (target.element.id === 'gradient-display') {
                     log('✅ Target priority test passed - gradient-display detected first', 'success');
@@ -759,7 +779,7 @@
         
         function testPublishUI() {
             try {
-                const isDev = window.Chatooly._isDevelopment();
+                const isDev = window.Chatooly.utils.isDevelopment();
                 const publishButton = document.querySelector('button[onclick*="publish"]');
                 
                 if (isDev && publishButton) {
@@ -839,7 +859,7 @@
         
         function testTargetDetection() {
             try {
-                const target = window.Chatooly._detectExportTarget();
+                const target = window.Chatooly.utils.detectExportTarget();
                 
                 if (target && target.element && target.type) {
                     log(`✅ Target detection: ${target.type} element found`, 'success');
@@ -859,7 +879,7 @@
         
         function testDevMode() {
             try {
-                const isDev = window.Chatooly._isDevelopment();
+                const isDev = window.Chatooly.utils.isDevelopment();
                 log(`✅ Development mode: ${isDev ? 'enabled' : 'disabled'}`, 'success');
                 testResults.libraryTests.devMode = { success: true, isDevelopment: isDev };
             } catch (error) {
