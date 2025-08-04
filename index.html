@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatooly CDN - POC Version</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .usage-example {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+            margin: 20px 0;
+        }
+        .test-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .test-link {
+            display: block;
+            padding: 15px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .test-link:hover {
+            background: #0056b3;
+        }
+        .cdn-url {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            border: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📥 Chatooly CDN - POC Version</h1>
+        
+        <p>Minimal JavaScript library for PNG export and publishing functionality. Supports p5.js, Three.js, and DOM-based design tools.</p>
+        
+        <h2>🚀 CDN Usage</h2>
+        <div class="cdn-url">
+            &lt;script src="https://yaelren.github.io/chatooly-cdn/js/core.js"&gt;&lt;/script&gt;
+        </div>
+        
+        <div class="usage-example">
+            <h3>Basic Integration</h3>
+            <pre><code>&lt;script&gt;
+  window.ChatoolyConfig = {
+    name: "My Design Tool",
+    resolution: 2  // Default 2x for high quality
+  };
+&lt;/script&gt;</code></pre>
+        </div>
+        
+        <h2>🧪 Test Examples</h2>
+        <div class="test-links">
+            <a href="tests/test-p5.html" class="test-link">
+                🎨 p5.js Test<br>
+                <small>Animated canvas export</small>
+            </a>
+            <a href="tests/test-three.html" class="test-link">
+                🎮 Three.js Test<br>
+                <small>3D scene export</small>
+            </a>
+            <a href="tests/test-dom.html" class="test-link">
+                🌈 DOM Test<br>
+                <small>Gradient tool export</small>
+            </a>
+        </div>
+        
+        <h2>📚 Documentation</h2>
+        <ul>
+            <li><a href="docs/README.md">README</a> - Setup and usage guide</li>
+            <li><a href="docs/TASKS.md">TASKS</a> - Implementation progress</li>
+            <li><a href="js/core.js">core.js</a> - Main library file (~15KB)</li>
+        </ul>
+        
+        <h2>✨ Features</h2>
+        <ul>
+            <li><strong>Smart Export Detection</strong> - Automatically finds canvas or DOM elements</li>
+            <li><strong>High-Resolution Export</strong> - 1x, 2x, 4x scaling with quality optimization</li>
+            <li><strong>Framework Support</strong> - p5.js, Three.js, vanilla DOM</li>
+            <li><strong>Development Mode</strong> - Publishing functionality for tool creators</li>
+            <li><strong>Zero Dependencies</strong> - Loads html2canvas only when needed</li>
+        </ul>
+        
+        <p><small>🤖 Generated with Claude Code - POC Version 1.0.0</small></p>
+    </div>
+</body>
+</html>
