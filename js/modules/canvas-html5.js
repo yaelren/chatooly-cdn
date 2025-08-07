@@ -24,19 +24,46 @@
                     let dataURL;
                     
                     if (resolution > 1) {
-                        // Create scaled version for higher resolution
-                        const scaledCanvas = document.createElement('canvas');
-                        const ctx = scaledCanvas.getContext('2d');
-                        
-                        scaledCanvas.width = canvas.width * resolution;
-                        scaledCanvas.height = canvas.height * resolution;
-                        
-                        // Use high-quality interpolation
-                        ctx.imageSmoothingEnabled = true;
-                        ctx.imageSmoothingQuality = 'high';
-                        ctx.drawImage(canvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
-                        
-                        dataURL = scaledCanvas.toDataURL('image/png');
+                        // Check if the tool has a high-resolution render method
+                        if (window.renderHighResolution && typeof window.renderHighResolution === 'function') {
+                            // Use the tool's custom high-resolution render method
+                            const scaledCanvas = document.createElement('canvas');
+                            scaledCanvas.width = canvas.width * resolution;
+                            scaledCanvas.height = canvas.height * resolution;
+                            
+                            // Call the custom render function with the scaled canvas
+                            window.renderHighResolution(scaledCanvas, resolution);
+                            dataURL = scaledCanvas.toDataURL('image/png');
+                        } else if (window.Chatooly && window.Chatooly.renderHighRes && typeof window.Chatooly.renderHighRes === 'function') {
+                            // Use Chatooly API for high-res rendering
+                            const scaledCanvas = document.createElement('canvas');
+                            scaledCanvas.width = canvas.width * resolution;
+                            scaledCanvas.height = canvas.height * resolution;
+                            
+                            // Call the Chatooly high-res render function
+                            window.Chatooly.renderHighRes(scaledCanvas, resolution);
+                            dataURL = scaledCanvas.toDataURL('image/png');
+                            
+                            console.log('Chatooly: High-resolution export using Chatooly.renderHighRes API.');
+                        } else {
+                            // Fallback: Use high-quality bilinear interpolation
+                            const scaledCanvas = document.createElement('canvas');
+                            const scaledCtx = scaledCanvas.getContext('2d');
+                            
+                            scaledCanvas.width = canvas.width * resolution;
+                            scaledCanvas.height = canvas.height * resolution;
+                            
+                            // Enable high-quality image smoothing
+                            scaledCtx.imageSmoothingEnabled = true;
+                            scaledCtx.imageSmoothingQuality = 'high';
+                            
+                            // Draw the canvas scaled up
+                            scaledCtx.drawImage(canvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
+                            
+                            dataURL = scaledCanvas.toDataURL('image/png');
+                            
+                            console.warn('Chatooly: Using upscaling for export. For true high-resolution, implement window.renderHighResolution() or window.Chatooly.renderHighRes()');
+                        }
                     } else {
                         dataURL = canvas.toDataURL('image/png');
                     }

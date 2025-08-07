@@ -3,7 +3,7 @@
  * Provides PNG export functionality for canvas-based design tools
  * Supports p5.js, Three.js, and DOM-based tools
  * 
- * Built: 2025-08-04T18:16:02.901Z
+ * Built: 2025-08-07T11:33:00.355Z
  * Architecture: Modular components combined into single file
  */
 
@@ -55,7 +55,20 @@
             
             // Detect export target element with priority
             detectExportTarget: function() {
-                // 1. Look for canvas elements (p5.js, Three.js, etc.)
+                // 1. Look for Chatooly export container first (highest priority for HTML tools)
+                const chatoolyCanvas = document.querySelector('#chatooly-canvas');
+                if (chatoolyCanvas) {
+                    // Check if it contains a canvas that's managed by p5 or Three.js
+                    const innerCanvas = chatoolyCanvas.querySelector('canvas');
+                    if (innerCanvas && (this._isP5Canvas(innerCanvas) || this._isThreeCanvas(innerCanvas))) {
+                        // For p5/Three.js, export the canvas directly for better quality
+                        return { type: 'canvas', element: innerCanvas };
+                    }
+                    // For HTML tools with regular canvas or DOM content, export the container
+                    return { type: 'dom', element: chatoolyCanvas };
+                }
+                
+                // 2. Look for standalone canvas elements (p5.js, Three.js, etc.)
                 const canvases = document.querySelectorAll('canvas');
                 if (canvases.length > 0) {
                     // Use the largest canvas (likely the main one)
@@ -67,12 +80,6 @@
                         }
                     }
                     return { type: 'canvas', element: largestCanvas };
-                }
-                
-                // 2. Look for Chatooly export container first
-                const chatoolyCanvas = document.querySelector('#chatooly-canvas');
-                if (chatoolyCanvas) {
-                    return { type: 'dom', element: chatoolyCanvas };
                 }
                 
                 // 3. Look for common container IDs
@@ -123,6 +130,16 @@
                 if (this.isDevelopment()) {
                     console.log('Chatooly: Development mode detected - publish functionality enabled');
                 }
+            },
+            
+            // Detect if canvas is from p5.js
+            _isP5Canvas: function(canvas) {
+                return window.p5 && (canvas.id === 'defaultCanvas0' || window.pixelDensity);
+            },
+            
+            // Detect if canvas is from Three.js
+            _isThreeCanvas: function(canvas) {
+                return window.THREE && (window.renderer || window.threeRenderer);
             }
         };
 
@@ -150,19 +167,46 @@
                         let dataURL;
                         
                         if (resolution > 1) {
-                            // Create scaled version for higher resolution
-                            const scaledCanvas = document.createElement('canvas');
-                            const ctx = scaledCanvas.getContext('2d');
-                            
-                            scaledCanvas.width = canvas.width * resolution;
-                            scaledCanvas.height = canvas.height * resolution;
-                            
-                            // Use high-quality interpolation
-                            ctx.imageSmoothingEnabled = true;
-                            ctx.imageSmoothingQuality = 'high';
-                            ctx.drawImage(canvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
-                            
-                            dataURL = scaledCanvas.toDataURL('image/png');
+                            // Check if the tool has a high-resolution render method
+                            if (window.renderHighResolution && typeof window.renderHighResolution === 'function') {
+                                // Use the tool's custom high-resolution render method
+                                const scaledCanvas = document.createElement('canvas');
+                                scaledCanvas.width = canvas.width * resolution;
+                                scaledCanvas.height = canvas.height * resolution;
+                                
+                                // Call the custom render function with the scaled canvas
+                                window.renderHighResolution(scaledCanvas, resolution);
+                                dataURL = scaledCanvas.toDataURL('image/png');
+                            } else if (window.Chatooly && window.Chatooly.renderHighRes && typeof window.Chatooly.renderHighRes === 'function') {
+                                // Use Chatooly API for high-res rendering
+                                const scaledCanvas = document.createElement('canvas');
+                                scaledCanvas.width = canvas.width * resolution;
+                                scaledCanvas.height = canvas.height * resolution;
+                                
+                                // Call the Chatooly high-res render function
+                                window.Chatooly.renderHighRes(scaledCanvas, resolution);
+                                dataURL = scaledCanvas.toDataURL('image/png');
+                                
+                                console.log('Chatooly: High-resolution export using Chatooly.renderHighRes API.');
+                            } else {
+                                // Fallback: Use high-quality bilinear interpolation
+                                const scaledCanvas = document.createElement('canvas');
+                                const scaledCtx = scaledCanvas.getContext('2d');
+                                
+                                scaledCanvas.width = canvas.width * resolution;
+                                scaledCanvas.height = canvas.height * resolution;
+                                
+                                // Enable high-quality image smoothing
+                                scaledCtx.imageSmoothingEnabled = true;
+                                scaledCtx.imageSmoothingQuality = 'high';
+                                
+                                // Draw the canvas scaled up
+                                scaledCtx.drawImage(canvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
+                                
+                                dataURL = scaledCanvas.toDataURL('image/png');
+                                
+                                console.warn('Chatooly: Using upscaling for export. For true high-resolution, implement window.renderHighResolution() or window.Chatooly.renderHighRes()');
+                            }
                         } else {
                             dataURL = canvas.toDataURL('image/png');
                         }

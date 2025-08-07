@@ -11,7 +11,20 @@
         
         // Detect export target element with priority
         detectExportTarget: function() {
-            // 1. Look for canvas elements (p5.js, Three.js, etc.)
+            // 1. Look for Chatooly export container first (highest priority for HTML tools)
+            const chatoolyCanvas = document.querySelector('#chatooly-canvas');
+            if (chatoolyCanvas) {
+                // Check if it contains a canvas that's managed by p5 or Three.js
+                const innerCanvas = chatoolyCanvas.querySelector('canvas');
+                if (innerCanvas && (this._isP5Canvas(innerCanvas) || this._isThreeCanvas(innerCanvas))) {
+                    // For p5/Three.js, export the canvas directly for better quality
+                    return { type: 'canvas', element: innerCanvas };
+                }
+                // For HTML tools with regular canvas or DOM content, export the container
+                return { type: 'dom', element: chatoolyCanvas };
+            }
+            
+            // 2. Look for standalone canvas elements (p5.js, Three.js, etc.)
             const canvases = document.querySelectorAll('canvas');
             if (canvases.length > 0) {
                 // Use the largest canvas (likely the main one)
@@ -23,12 +36,6 @@
                     }
                 }
                 return { type: 'canvas', element: largestCanvas };
-            }
-            
-            // 2. Look for Chatooly export container first
-            const chatoolyCanvas = document.querySelector('#chatooly-canvas');
-            if (chatoolyCanvas) {
-                return { type: 'dom', element: chatoolyCanvas };
             }
             
             // 3. Look for common container IDs
@@ -79,6 +86,16 @@
             if (this.isDevelopment()) {
                 console.log('Chatooly: Development mode detected - publish functionality enabled');
             }
+        },
+        
+        // Detect if canvas is from p5.js
+        _isP5Canvas: function(canvas) {
+            return window.p5 && (canvas.id === 'defaultCanvas0' || window.pixelDensity);
+        },
+        
+        // Detect if canvas is from Three.js
+        _isThreeCanvas: function(canvas) {
+            return window.THREE && (window.renderer || window.threeRenderer);
         }
     };
     
