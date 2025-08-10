@@ -102,7 +102,10 @@
             files['index.html'] = htmlContent;
             discovered.add('index.html');
             
-            // Scan HTML for dependencies
+            // First, collect all external files referenced in HTML
+            await this._collectExternalFiles(htmlContent, files, discovered);
+            
+            // Then scan for additional dependencies
             await this._scanFileDependencies(htmlContent, files, discovered);
             
             // Get inline styles and scripts
@@ -125,6 +128,41 @@
             
             console.log('Chatooly: Collected files:', Object.keys(files));
             return files;
+        },
+        
+        // Collect external files directly referenced in HTML
+        _collectExternalFiles: async function(htmlContent, files, discovered) {
+            // Find all external script and stylesheet references
+            const externalFiles = [
+                // JavaScript files
+                ...Array.from(document.querySelectorAll('script[src]:not([src*="http"]):not([src*="chatooly-cdn"])')).map(s => s.getAttribute('src')),
+                // CSS files  
+                ...Array.from(document.querySelectorAll('link[rel="stylesheet"][href]:not([href*="http"])')).map(l => l.getAttribute('href'))
+            ];
+            
+            console.log('Chatooly: Found external files to collect:', externalFiles);
+            
+            // Download each external file
+            for (const filePath of externalFiles) {
+                if (filePath && !discovered.has(filePath)) {
+                    discovered.add(filePath);
+                    try {
+                        const fileContent = await this._fetchLocalFile(filePath);
+                        if (fileContent) {
+                            files[filePath] = fileContent;
+                            console.log(`Chatooly: Collected ${filePath} (${fileContent.length} chars)`);
+                            
+                            // Recursively scan collected files for more dependencies
+                            const extension = filePath.split('.').pop().toLowerCase();
+                            if (['html', 'css', 'js'].includes(extension)) {
+                                await this._scanFileDependencies(fileContent, files, discovered, extension);
+                            }
+                        }
+                    } catch (error) {
+                        console.warn(`Chatooly: Could not collect ${filePath}:`, error);
+                    }
+                }
+            }
         },
         
         // Scan file content for dependencies
