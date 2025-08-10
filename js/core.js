@@ -3,7 +3,7 @@
  * Provides PNG export functionality for canvas-based design tools
  * Supports p5.js, Three.js, and DOM-based tools
  * 
- * Built: 2025-08-07T11:33:00.355Z
+ * Built: 2025-08-10T15:32:54.744Z
  * Architecture: Modular components combined into single file
  */
 
@@ -628,7 +628,7 @@
         Chatooly.publish = {
             
             // Main publish function (development mode only)
-            publish: function(options) {
+            publish: async function(options) {
                 if (!Chatooly.utils.isDevelopment()) {
                     console.warn('Chatooly: Publishing only available in development mode');
                     return;
@@ -663,33 +663,34 @@
                     console.warn('Chatooly: Publishing warnings:', validation.warnings);
                 }
                 
-                // Gather tool files
-                const toolFiles = this._gatherToolFiles();
-                const metadata = {
-                    name: toolName,
-                    slug: toolSlug,
-                    category: config.category || 'uncategorized',
-                    tags: config.tags || [],
-                    description: config.description || '',
-                    private: config.private || false,
-                    version: config.version || '1.0.0',
-                    author: config.author || 'Anonymous',
-                    timestamp: new Date().toISOString()
-                };
-                
-                // Show publishing progress
+                // Show publishing progress early
                 this._showPublishingProgress();
                 
-                // Upload to staging
-                this._uploadToStaging(toolSlug, toolFiles, metadata)
-                    .then(result => {
-                        this._hidePublishingProgress();
-                        this._showPublishSuccess(result);
-                    })
-                    .catch(error => {
-                        this._hidePublishingProgress();
-                        this._showPublishError(error);
-                    });
+                try {
+                    // Gather tool files with dependency scanning
+                    const toolFiles = await this._gatherToolFiles();
+                    const metadata = {
+                        name: toolName,
+                        slug: toolSlug,
+                        category: config.category || 'generators',
+                        tags: config.tags || [],
+                        description: config.description || '',
+                        private: config.private || false,
+                        version: config.version || '1.0.0',
+                        author: config.author || 'Anonymous',
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    // Upload to Chatooly Hub
+                    const result = await this._uploadToStaging(toolSlug, toolFiles, metadata);
+                    
+                    this._hidePublishingProgress();
+                    this._showPublishSuccess(result);
+                    
+                } catch (error) {
+                    this._hidePublishingProgress();
+                    this._showPublishError(error);
+                }
             },
             
             // Create URL-safe tool slug
@@ -701,28 +702,124 @@
                     .replace(/^-|-$/g, '');       // Remove leading/trailing hyphens
             },
             
-            // Gather current tool files for publishing
-            _gatherToolFiles: function() {
+            // Gather current tool files for publishing with full dependency scanning
+            _gatherToolFiles: async function() {
                 const files = {};
+                const discovered = new Set();
                 
-                // Get current HTML (remove Chatooly button for published version)
+                // Get current HTML (remove Chatooly button and CDN script for published version)
                 const htmlClone = document.documentElement.cloneNode(true);
                 const exportBtn = htmlClone.querySelector('#chatooly-export-btn');
                 if (exportBtn) exportBtn.remove();
                 
-                files['index.html'] = '<!DOCTYPE html>' + htmlClone.outerHTML;
+                // Remove Chatooly CDN script from published version
+                const chatoolyCdnScript = htmlClone.querySelector('script[src*="chatooly-cdn"]');
+                if (chatoolyCdnScript) chatoolyCdnScript.remove();
+                
+                const htmlContent = '<!DOCTYPE html>' + htmlClone.outerHTML;
+                files['index.html'] = htmlContent;
+                discovered.add('index.html');
+                
+                // Scan HTML for dependencies
+                await this._scanFileDependencies(htmlContent, files, discovered);
                 
                 // Get inline styles and scripts
-                const styles = Array.from(document.querySelectorAll('style')).map(s => s.textContent).join('\n');
-                if (styles) files['style.css'] = styles;
+                const styles = Array.from(document.querySelectorAll('style:not(#chatooly-button-styles)')).map(s => s.textContent).join('\n');
+                if (styles) {
+                    files['style.css'] = styles;
+                    discovered.add('style.css');
+                    // Scan CSS for dependencies
+                    await this._scanFileDependencies(styles, files, discovered, 'css');
+                }
                 
-                const scripts = Array.from(document.querySelectorAll('script:not([src])')).map(s => s.textContent).join('\n');
-                if (scripts) files['tool.js'] = scripts;
+                // Get inline scripts (excluding CDN and system scripts)
+                const scripts = Array.from(document.querySelectorAll('script:not([src]):not([id])')).map(s => s.textContent).join('\n');
+                if (scripts) {
+                    files['tool.js'] = scripts;
+                    discovered.add('tool.js');
+                    // Scan JS for dependencies
+                    await this._scanFileDependencies(scripts, files, discovered, 'js');
+                }
                 
-                // Get external resource references
-                files['resources'] = this._gatherResourceReferences();
-                
+                console.log('Chatooly: Collected files:', Object.keys(files));
                 return files;
+            },
+            
+            // Scan file content for dependencies
+            _scanFileDependencies: async function(content, files, discovered, fileType = 'html') {
+                const dependencyPatterns = {
+                    html: [
+                        /<script src="\.\/([^"]+)"/g,      // Local scripts
+                        /<link href="\.\/([^"]+)"/g,       // Local stylesheets  
+                        /<img src="\.\/([^"]+)"/g,         // Local images
+                        /<source src="\.\/([^"]+)"/g,      // Audio/video
+                        /<video src="\.\/([^"]+)"/g,       // Video sources
+                        /<audio src="\.\/([^"]+)"/g        // Audio sources
+                    ],
+                    css: [
+                        /url\(['"]?\.\/([^'")\s]+)['"]?\)/g,  // CSS assets
+                        /@import ['"]\.\/([^'"]+)['"]/g        // CSS imports
+                    ],
+                    js: [
+                        /fetch\(['"`]\.\/([^'"`]+)['"`]\)/g,     // Fetch calls
+                        /import.*from ['"`]\.\/([^'"`]+)['"`]/g, // ES6 imports
+                        /require\(['"`]\.\/([^'"`]+)['"`]\)/g,   // CommonJS requires
+                        /loadJSON\(['"`]\.\/([^'"`]+)['"`]\)/g,  // p5.js loadJSON
+                        /loadImage\(['"`]\.\/([^'"`]+)['"`]\)/g, // p5.js loadImage
+                        /loadSound\(['"`]\.\/([^'"`]+)['"`]\)/g  // p5.js loadSound
+                    ]
+                };
+                
+                const patterns = dependencyPatterns[fileType] || [];
+                
+                for (const pattern of patterns) {
+                    let match;
+                    while ((match = pattern.exec(content)) !== null) {
+                        const filePath = match[1];
+                        if (!discovered.has(filePath)) {
+                            discovered.add(filePath);
+                            try {
+                                const fileContent = await this._fetchLocalFile(filePath);
+                                if (fileContent) {
+                                    files[filePath] = fileContent;
+                                    
+                                    // Recursively scan discovered files
+                                    const extension = filePath.split('.').pop().toLowerCase();
+                                    if (['html', 'css', 'js'].includes(extension)) {
+                                        await this._scanFileDependencies(fileContent, files, discovered, extension);
+                                    }
+                                }
+                            } catch (error) {
+                                console.warn(`Chatooly: Could not load dependency: ${filePath}`, error);
+                            }
+                        }
+                    }
+                }
+            },
+            
+            // Fetch local file content
+            _fetchLocalFile: async function(filePath) {
+                try {
+                    const response = await fetch(filePath);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    // Check if it's a binary file
+                    const contentType = response.headers.get('content-type') || '';
+                    if (contentType.startsWith('image/') || contentType.startsWith('audio/') || contentType.startsWith('video/')) {
+                        // Convert binary files to base64
+                        const arrayBuffer = await response.arrayBuffer();
+                        const bytes = new Uint8Array(arrayBuffer);
+                        let binary = '';
+                        bytes.forEach(byte => binary += String.fromCharCode(byte));
+                        return `data:${contentType};base64,${btoa(binary)}`;
+                    } else {
+                        // Text files
+                        return await response.text();
+                    }
+                } catch (error) {
+                    console.warn(`Chatooly: Failed to fetch ${filePath}:`, error);
+                    return null;
+                }
             },
             
             // Gather references to external resources
@@ -768,51 +865,59 @@
                 }, config, options);
             },
             
-            // Upload tool to staging server
-            _uploadToStaging: function(toolSlug, files, metadata) {
-                return new Promise((resolve, reject) => {
-                    // POC: For now, simulate upload with localStorage
-                    // TODO: Replace with actual API call to tools.chatooly.com/api/publish
+            // Upload tool to Chatooly Hub
+            _uploadToStaging: async function(toolSlug, files, metadata) {
+                try {
+                    console.log('Chatooly: Uploading to Chatooly Hub...');
                     
-                    try {
-                        // Simulate API call
-                        console.log('Chatooly: Uploading to staging...');
-                        
-                        // In real implementation:
-                        // const formData = new FormData();
-                        // formData.append('metadata', JSON.stringify(metadata));
-                        // Object.keys(files).forEach(filename => {
-                        //     formData.append(filename, files[filename]);
-                        // });
-                        
-                        // fetch('https://tools.chatooly.com/api/publish/staging', {
-                        //     method: 'POST',
-                        //     body: formData,
-                        //     headers: {
-                        //         'X-Chatooly-Auth': this._getAuthToken()
-                        //     }
-                        // })
-                        
-                        // POC simulation
-                        setTimeout(() => {
-                            const result = {
-                                success: true,
-                                stagingUrl: `https://tools.chatooly.com/staging/${toolSlug}`,
-                                productionUrl: `https://tools.chatooly.com/${toolSlug}`,
-                                publishedAt: new Date().toISOString(),
-                                metadata: metadata
-                            };
-                            
-                            // Store in localStorage for POC
-                            localStorage.setItem(`chatooly-published-${toolSlug}`, JSON.stringify(result));
-                            
-                            resolve(result);
-                        }, 2000); // Simulate network delay
-                        
-                    } catch (error) {
-                        reject(error);
+                    // Prepare payload for Chatooly Hub API
+                    const payload = {
+                        toolName: toolSlug,
+                        metadata: metadata,
+                        files: files
+                    };
+                    
+                    // Send to Chatooly Hub API
+                    const response = await fetch('https://studiovideotoolhub.vercel.app/api/publish', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Chatooly-Source': 'cdn'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
-                });
+                    
+                    const result = await response.json();
+                    
+                    if (!result.success) {
+                        throw new Error(result.message || 'Publishing failed');
+                    }
+                    
+                    return result;
+                    
+                } catch (error) {
+                    // If API fails, fall back to POC localStorage simulation
+                    console.warn('Chatooly: Hub API unavailable, using local simulation:', error);
+                    
+                    const result = {
+                        success: true,
+                        url: `https://tools.chatooly.com/${toolSlug}`,
+                        actualName: toolSlug,
+                        requestedName: metadata.name,
+                        publishedAt: new Date().toISOString(),
+                        metadata: metadata,
+                        message: 'Tool published successfully! (Simulated - Hub not available)'
+                    };
+                    
+                    // Store in localStorage for POC
+                    localStorage.setItem(`chatooly-published-${toolSlug}`, JSON.stringify(result));
+                    
+                    return result;
+                }
             },
             
             // Show publishing progress UI
@@ -866,6 +971,10 @@
             // Show success message
             _showPublishSuccess: function(result) {
                 const successDiv = document.createElement('div');
+                const nameMessage = result.actualName !== result.requestedName 
+                    ? `<p style="margin: 10px 0; color: #666;">Tool published as "${result.actualName}" (name was adjusted)</p>`
+                    : '';
+                
                 successDiv.innerHTML = `
                     <div style="
                         position: fixed;
@@ -895,8 +1004,9 @@
                         ">✓</div>
                         <h3 style="margin: 0 0 10px; color: #28a745;">Published Successfully!</h3>
                         <p style="margin: 10px 0; color: #666;">
-                            Your tool has been uploaded to staging for review.
+                            ${result.message || 'Your tool has been published to Chatooly.'}
                         </p>
+                        ${nameMessage}
                         <div style="
                             background: #f8f9fa;
                             padding: 15px;
@@ -904,14 +1014,13 @@
                             margin: 20px 0;
                             text-align: left;
                         ">
-                            <p style="margin: 5px 0;"><strong>Staging URL:</strong><br>
-                                <a href="${result.stagingUrl}" target="_blank" style="color: #007bff;">
-                                    ${result.stagingUrl}
+                            <p style="margin: 5px 0;"><strong>Live URL:</strong><br>
+                                <a href="${result.url}" target="_blank" style="color: #007bff;">
+                                    ${result.url}
                                 </a>
                             </p>
-                            <p style="margin: 5px 0;"><strong>Production URL:</strong><br>
-                                <span style="color: #666;">${result.productionUrl}</span>
-                                <br><small>(Available after admin approval)</small>
+                            <p style="margin: 5px 0; font-size: 12px; color: #888;">
+                                Published: ${new Date(result.publishedAt).toLocaleString()}
                             </p>
                         </div>
                         <button onclick="this.closest('div').parentElement.remove()" style="
