@@ -3,7 +3,7 @@
  * Provides PNG export functionality for canvas-based design tools
  * Supports p5.js, Three.js, and DOM-based tools
  * 
- * Built: 2025-08-10T17:56:45.114Z
+ * Built: 2025-08-10T18:25:17.774Z
  * Architecture: Modular components combined into single file
  */
 
@@ -707,14 +707,33 @@
                 const files = {};
                 const discovered = new Set();
                 
-                // Get current HTML (remove Chatooly button and CDN script for published version)
+                // Get current HTML (clean up for published version but keep CDN for export functionality)
                 const htmlClone = document.documentElement.cloneNode(true);
                 const exportBtn = htmlClone.querySelector('#chatooly-export-btn');
                 if (exportBtn) exportBtn.remove();
                 
-                // Remove Chatooly CDN script from published version
+                // Remove any publishing popups that might be stuck
+                const publishProgress = htmlClone.querySelector('#chatooly-publish-progress');
+                if (publishProgress) publishProgress.remove();
+                
+                const publishSuccess = htmlClone.querySelector('div[style*="Published Successfully"]');
+                if (publishSuccess) publishSuccess.remove();
+                
+                const publishError = htmlClone.querySelector('div[style*="Publishing Failed"]');
+                if (publishError) publishError.remove();
+                
+                // Keep Chatooly CDN script for export functionality, but ensure it's the production version
                 const chatoolyCdnScript = htmlClone.querySelector('script[src*="chatooly-cdn"]');
-                if (chatoolyCdnScript) chatoolyCdnScript.remove();
+                if (chatoolyCdnScript) {
+                    // Update to production CDN URL
+                    chatoolyCdnScript.setAttribute('src', 'https://yaelren.github.io/chatooly-cdn/js/core.min.js');
+                } else {
+                    // Add CDN script if not present
+                    const script = htmlClone.createElement('script');
+                    script.src = 'https://yaelren.github.io/chatooly-cdn/js/core.min.js';
+                    script.async = true;
+                    htmlClone.head.appendChild(script);
+                }
                 
                 const htmlContent = '<!DOCTYPE html>' + htmlClone.outerHTML;
                 files['index.html'] = htmlContent;
