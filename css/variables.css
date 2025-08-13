@@ -1,0 +1,175 @@
+/**
+ * Chatooly Design System - CSS Variables
+ * Core design tokens that ensure visual consistency across all tools
+ */
+
+:root {
+  /* ========== Typography ========== */
+  --chatooly-font-family: 'Lucida Console', Monaco, monospace;
+  --chatooly-font-family-mono: 'Lucida Console', Monaco, monospace;
+  
+  --chatooly-font-size-xs: 11px;
+  --chatooly-font-size-sm: 12px;
+  --chatooly-font-size-base: 14px;
+  --chatooly-font-size-md: 16px;
+  --chatooly-font-size-lg: 18px;
+  --chatooly-font-size-xl: 24px;
+  --chatooly-font-size-2xl: 32px;
+  
+  --chatooly-font-weight-light: 300;
+  --chatooly-font-weight-normal: 400;
+  --chatooly-font-weight-medium: 500;
+  --chatooly-font-weight-semibold: 600;
+  --chatooly-font-weight-bold: 700;
+  
+  --chatooly-line-height-tight: 1.2;
+  --chatooly-line-height-normal: 1.5;
+  --chatooly-line-height-relaxed: 1.75;
+  
+  /* ========== Colors ========== */
+  /* Primary Palette */
+  --chatooly-color-primary: #007bff;
+  --chatooly-color-primary-hover: #0056b3;
+  --chatooly-color-primary-active: #004085;
+  --chatooly-color-primary-light: #cfe2ff;
+  --chatooly-color-primary-dark: #004085;
+  
+  /* Semantic Colors */
+  --chatooly-color-success: #28a745;
+  --chatooly-color-success-hover: #218838;
+  --chatooly-color-success-light: #d4edda;
+  
+  --chatooly-color-danger: #dc3545;
+  --chatooly-color-danger-hover: #c82333;
+  --chatooly-color-danger-light: #f8d7da;
+  
+  --chatooly-color-warning: #ffc107;
+  --chatooly-color-warning-hover: #e0a800;
+  --chatooly-color-warning-light: #fff3cd;
+  
+  --chatooly-color-info: #17a2b8;
+  --chatooly-color-info-hover: #138496;
+  --chatooly-color-info-light: #d1ecf1;
+  
+  /* Neutral Colors */
+  --chatooly-color-white: #ffffff;
+  --chatooly-color-gray-50: #f8f9fa;
+  --chatooly-color-gray-100: #f5f5f5;
+  --chatooly-color-gray-200: #e9ecef;
+  --chatooly-color-gray-300: #dee2e6;
+  --chatooly-color-gray-400: #ced4da;
+  --chatooly-color-gray-500: #adb5bd;
+  --chatooly-color-gray-600: #6c757d;
+  --chatooly-color-gray-700: #495057;
+  --chatooly-color-gray-800: #343a40;
+  --chatooly-color-gray-900: #212529;
+  --chatooly-color-black: #000000;
+  
+  /* Functional Colors */
+  --chatooly-color-text: #ffffff;
+  --chatooly-color-text-muted: #cccccc;
+  --chatooly-color-text-light: #999999;
+  --chatooly-color-text-inverse: #000000;
+  
+  --chatooly-color-background: #2b2b2b;
+  --chatooly-color-surface: #2b2b2b;
+  --chatooly-color-surface-hover: #111111;
+  --chatooly-color-surface-active: #222222;
+  
+  --chatooly-color-border: #ffffff;
+  --chatooly-color-border-light: #cccccc;
+  --chatooly-color-border-dark: #999999;
+  
+  /* ========== Spacing ========== */
+  --chatooly-spacing-0: 0;
+  --chatooly-spacing-1: 4px;
+  --chatooly-spacing-2: 8px;
+  --chatooly-spacing-3: 12px;
+  --chatooly-spacing-4: 16px;
+  --chatooly-spacing-5: 20px;
+  --chatooly-spacing-6: 24px;
+  --chatooly-spacing-7: 28px;
+  --chatooly-spacing-8: 32px;
+  --chatooly-spacing-10: 40px;
+  --chatooly-spacing-12: 48px;
+  --chatooly-spacing-16: 64px;
+  --chatooly-spacing-20: 80px;
+  
+  /* Semantic spacing */
+  --chatooly-spacing-xs: var(--chatooly-spacing-1);
+  --chatooly-spacing-sm: var(--chatooly-spacing-2);
+  --chatooly-spacing-md: var(--chatooly-spacing-4);
+  --chatooly-spacing-lg: var(--chatooly-spacing-6);
+  --chatooly-spacing-xl: var(--chatooly-spacing-8);
+  --chatooly-spacing-2xl: var(--chatooly-spacing-12);
+  
+  /* ========== Borders ========== */
+  --chatooly-border-width-thin: 1px;
+  --chatooly-border-width: 2px;
+  --chatooly-border-width-thick: 3px;
+  
+  --chatooly-border-radius-sm: 0px;
+  --chatooly-border-radius: 0px;
+  --chatooly-border-radius-md: 0px;
+  --chatooly-border-radius-lg: 0px;
+  --chatooly-border-radius-xl: 0px;
+  --chatooly-border-radius-full: 0px;
+  
+  /* ========== Shadows ========== */
+  --chatooly-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --chatooly-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --chatooly-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --chatooly-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --chatooly-shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.25);
+  
+  --chatooly-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  --chatooly-shadow-focus: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  
+  /* ========== Transitions ========== */
+  --chatooly-transition-fast: 150ms ease;
+  --chatooly-transition-normal: 200ms ease;
+  --chatooly-transition-slow: 300ms ease;
+  --chatooly-transition-slower: 500ms ease;
+  
+  --chatooly-transition-property: color, background-color, border-color, opacity, transform;
+  
+  /* ========== Z-Index ========== */
+  --chatooly-z-base: 0;
+  --chatooly-z-dropdown: 1000;
+  --chatooly-z-sticky: 1020;
+  --chatooly-z-fixed: 1030;
+  --chatooly-z-modal-backdrop: 1040;
+  --chatooly-z-modal: 1050;
+  --chatooly-z-popover: 1060;
+  --chatooly-z-tooltip: 1070;
+  --chatooly-z-notification: 1080;
+  
+  /* ========== Layout ========== */
+  --chatooly-sidebar-width: 300px;
+  --chatooly-sidebar-collapsed-width: 60px;
+  --chatooly-header-height: 60px;
+  --chatooly-footer-height: 40px;
+  
+  /* ========== Canvas ========== */
+  --chatooly-canvas-background: var(--chatooly-color-surface);
+  --chatooly-canvas-border: var(--chatooly-border-width) solid var(--chatooly-color-border);
+  --chatooly-canvas-shadow: none;
+  --chatooly-canvas-radius: var(--chatooly-border-radius);
+  
+  /* ========== Breakpoints (for CSS calculations) ========== */
+  --chatooly-screen-xs: 480px;
+  --chatooly-screen-sm: 640px;
+  --chatooly-screen-md: 768px;
+  --chatooly-screen-lg: 1024px;
+  --chatooly-screen-xl: 1280px;
+  --chatooly-screen-2xl: 1536px;
+}
+
+/* ========== Dark Mode Variables (future) ========== */
+[data-theme="dark"] {
+  --chatooly-color-text: #e4e4e7;
+  --chatooly-color-background: #18181b;
+  --chatooly-color-surface: #27272a;
+  --chatooly-color-border: #3f3f46;
+  /* ... more dark mode overrides ... */
+}

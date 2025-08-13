@@ -1,0 +1,363 @@
+/**
+ * Chatooly Design System - Base Styles
+ * Universal styles that apply to all tools regardless of layout
+ */
+
+/* ========== Reset & Box Model ========== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ========== Document ========== */
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--chatooly-font-family);
+  font-size: var(--chatooly-font-size-base);
+  font-weight: var(--chatooly-font-weight-normal);
+  line-height: var(--chatooly-line-height-normal);
+  color: var(--chatooly-color-text);
+  background-color: var(--chatooly-color-background);
+  overflow: hidden; /* Prevent double scrollbars */
+}
+
+/* ========== Typography ========== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--chatooly-font-family);
+  font-weight: var(--chatooly-font-weight-semibold);
+  line-height: var(--chatooly-line-height-tight);
+  color: var(--chatooly-color-text);
+  margin-bottom: var(--chatooly-spacing-3);
+}
+
+h1 {
+  font-size: var(--chatooly-font-size-2xl);
+  font-weight: var(--chatooly-font-weight-bold);
+}
+
+h2 {
+  font-size: var(--chatooly-font-size-xl);
+}
+
+h3 {
+  font-size: var(--chatooly-font-size-lg);
+}
+
+h4 {
+  font-size: var(--chatooly-font-size-md);
+}
+
+h5 {
+  font-size: var(--chatooly-font-size-base);
+}
+
+h6 {
+  font-size: var(--chatooly-font-size-sm);
+}
+
+p {
+  margin-bottom: var(--chatooly-spacing-3);
+}
+
+a {
+  color: var(--chatooly-color-primary);
+  text-decoration: none;
+  transition: color var(--chatooly-transition-fast);
+}
+
+a:hover {
+  color: var(--chatooly-color-primary-hover);
+  text-decoration: underline;
+}
+
+/* ========== Forms - Universal Styling ========== */
+label {
+  display: block;
+  font-size: var(--chatooly-font-size-sm);
+  font-weight: var(--chatooly-font-weight-medium);
+  color: var(--chatooly-color-text);
+  margin-bottom: var(--chatooly-spacing-2);
+}
+
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+select,
+textarea {
+  display: block;
+  width: 100%;
+  padding: var(--chatooly-spacing-2) var(--chatooly-spacing-3);
+  font-size: var(--chatooly-font-size-base);
+  font-weight: var(--chatooly-font-weight-normal);
+  line-height: var(--chatooly-line-height-normal);
+  color: var(--chatooly-color-text);
+  background-color: var(--chatooly-color-surface);
+  background-clip: padding-box;
+  border: var(--chatooly-border-width) solid var(--chatooly-color-border);
+  border-radius: var(--chatooly-border-radius);
+  transition: border-color var(--chatooly-transition-fast), 
+              box-shadow var(--chatooly-transition-fast);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--chatooly-color-primary);
+  box-shadow: var(--chatooly-shadow-focus);
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background-color: var(--chatooly-color-gray-100);
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Color inputs */
+input[type="color"] {
+  height: 40px;
+  padding: var(--chatooly-spacing-1);
+  cursor: pointer;
+}
+
+/* Range inputs */
+input[type="range"] {
+  display: block;
+  width: 100%;
+  height: 6px;
+  padding: 0;
+  background: var(--chatooly-color-gray-300);
+  border-radius: var(--chatooly-border-radius-full);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--chatooly-color-primary);
+  border: 2px solid var(--chatooly-color-white);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: var(--chatooly-shadow-sm);
+  transition: all var(--chatooly-transition-fast);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: var(--chatooly-shadow-md);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--chatooly-color-primary);
+  border: 2px solid var(--chatooly-color-white);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: var(--chatooly-shadow-sm);
+  transition: all var(--chatooly-transition-fast);
+}
+
+/* Checkboxes and radios */
+input[type="checkbox"],
+input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  margin-right: var(--chatooly-spacing-2);
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+/* Select dropdowns */
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--chatooly-spacing-3) center;
+  background-size: 12px;
+  padding-right: var(--chatooly-spacing-10);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Textarea */
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* ========== Buttons - Universal Styling ========== */
+button,
+.btn,
+.chatooly-btn {
+  display: inline-block;
+  padding: var(--chatooly-spacing-2) var(--chatooly-spacing-4);
+  font-family: var(--chatooly-font-family);
+  font-size: var(--chatooly-font-size-base);
+  font-weight: var(--chatooly-font-weight-medium);
+  line-height: var(--chatooly-line-height-normal);
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  background-color: var(--chatooly-color-background);
+  color: var(--chatooly-color-text);
+  border: var(--chatooly-border-width) solid var(--chatooly-color-border);
+  border-radius: var(--chatooly-border-radius);
+  transition: all var(--chatooly-transition-normal);
+}
+
+button:hover,
+.btn:hover {
+  background-color: var(--chatooly-color-surface-hover);
+  transform: none;
+  box-shadow: none;
+}
+
+button:active,
+.btn:active {
+  background-color: var(--chatooly-color-surface-active);
+  transform: none;
+  box-shadow: none;
+}
+
+button:focus,
+.btn:focus {
+  outline: none;
+  box-shadow: var(--chatooly-shadow-focus);
+}
+
+button:disabled,
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Button variants */
+.btn-secondary {
+  background-color: var(--chatooly-color-gray-600);
+  color: var(--chatooly-color-white);
+}
+
+.btn-secondary:hover {
+  background-color: var(--chatooly-color-gray-700);
+}
+
+.btn-success {
+  background-color: var(--chatooly-color-success);
+}
+
+.btn-success:hover {
+  background-color: var(--chatooly-color-success-hover);
+}
+
+.btn-danger {
+  background-color: var(--chatooly-color-danger);
+}
+
+.btn-danger:hover {
+  background-color: var(--chatooly-color-danger-hover);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--chatooly-color-primary);
+  border-color: var(--chatooly-color-primary);
+}
+
+.btn-outline:hover {
+  background-color: var(--chatooly-color-primary);
+  color: var(--chatooly-color-white);
+}
+
+/* ========== Utility Classes ========== */
+.chatooly-text-muted {
+  color: var(--chatooly-color-text-muted);
+}
+
+.chatooly-text-small {
+  font-size: var(--chatooly-font-size-sm);
+}
+
+.chatooly-text-center {
+  text-align: center;
+}
+
+.chatooly-mt-1 { margin-top: var(--chatooly-spacing-1); }
+.chatooly-mt-2 { margin-top: var(--chatooly-spacing-2); }
+.chatooly-mt-3 { margin-top: var(--chatooly-spacing-3); }
+.chatooly-mt-4 { margin-top: var(--chatooly-spacing-4); }
+
+.chatooly-mb-1 { margin-bottom: var(--chatooly-spacing-1); }
+.chatooly-mb-2 { margin-bottom: var(--chatooly-spacing-2); }
+.chatooly-mb-3 { margin-bottom: var(--chatooly-spacing-3); }
+.chatooly-mb-4 { margin-bottom: var(--chatooly-spacing-4); }
+
+.chatooly-p-1 { padding: var(--chatooly-spacing-1); }
+.chatooly-p-2 { padding: var(--chatooly-spacing-2); }
+.chatooly-p-3 { padding: var(--chatooly-spacing-3); }
+.chatooly-p-4 { padding: var(--chatooly-spacing-4); }
+
+/* ========== Scrollbar Styling ========== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--chatooly-color-gray-100);
+  border-radius: var(--chatooly-border-radius);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--chatooly-color-gray-400);
+  border-radius: var(--chatooly-border-radius);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--chatooly-color-gray-500);
+}
+
+/* ========== Focus Visible (Accessibility) ========== */
+:focus-visible {
+  outline: 2px solid var(--chatooly-color-primary);
+  outline-offset: 2px;
+}
+
+/* ========== Selection ========== */
+::selection {
+  background-color: var(--chatooly-color-primary-light);
+  color: var(--chatooly-color-text);
+}

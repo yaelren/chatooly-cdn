@@ -1,0 +1,419 @@
+/**
+ * Chatooly Design System - Component Styles
+ * Pre-built UI components for consistent tool interfaces
+ */
+
+/* ========== Export Canvas Container ========== */
+#chatooly-canvas {
+  /* Ensure clean exports - transparent background by default */
+  background: transparent;
+  
+  /* Remove default margins/padding that could affect exports */
+  margin: 0;
+  padding: 0;
+  
+  /* Ensure content fits properly */
+  overflow: hidden;
+  
+  /* Center content by default */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Minimum size to prevent empty exports */
+  min-width: 200px;
+  min-height: 200px;
+}
+
+/* When canvas needs a visible background during development/editing */
+#chatooly-canvas.chatooly-dev-background {
+  background: var(--chatooly-color-surface);
+  border: 1px dashed var(--chatooly-color-border);
+}
+
+/* ========== Control Groups ========== */
+.chatooly-control-group {
+  margin-bottom: var(--chatooly-spacing-4);
+  padding: var(--chatooly-spacing-3);
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: var(--chatooly-border-radius-md);
+  transition: background-color var(--chatooly-transition-fast);
+}
+
+.chatooly-control-group:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.chatooly-control-group:last-child {
+  margin-bottom: 0;
+}
+
+.chatooly-control-group label {
+  display: block;
+  margin-bottom: var(--chatooly-spacing-2);
+  font-size: var(--chatooly-font-size-sm);
+  font-weight: var(--chatooly-font-weight-medium);
+  color: var(--chatooly-color-text);
+}
+
+/* Collapsible control groups */
+.chatooly-control-group-collapsible {
+  position: relative;
+}
+
+.chatooly-control-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--chatooly-spacing-3);
+  background: var(--chatooly-color-surface);
+  border: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  border-radius: var(--chatooly-border-radius);
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--chatooly-transition-fast);
+}
+
+.chatooly-control-group-header:hover {
+  background: var(--chatooly-color-surface-hover);
+}
+
+.chatooly-control-group-header::after {
+  content: '▼';
+  font-size: var(--chatooly-font-size-xs);
+  transition: transform var(--chatooly-transition-normal);
+}
+
+.chatooly-control-group-collapsible.collapsed .chatooly-control-group-header::after {
+  transform: rotate(-90deg);
+}
+
+.chatooly-control-group-content {
+  margin-top: var(--chatooly-spacing-2);
+  padding: var(--chatooly-spacing-3);
+  background: var(--chatooly-color-surface);
+  border: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  border-radius: var(--chatooly-border-radius);
+  transition: all var(--chatooly-transition-normal);
+}
+
+.chatooly-control-group-collapsible.collapsed .chatooly-control-group-content {
+  display: none;
+}
+
+/* ========== Range Slider with Value Display ========== */
+.chatooly-range-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--chatooly-spacing-2);
+}
+
+.chatooly-range-wrapper input[type="range"] {
+  flex: 1;
+}
+
+.chatooly-range-value {
+  min-width: 45px;
+  padding: var(--chatooly-spacing-1) var(--chatooly-spacing-2);
+  background: var(--chatooly-color-primary-light);
+  color: var(--chatooly-color-primary-dark);
+  border-radius: var(--chatooly-border-radius-sm);
+  font-size: var(--chatooly-font-size-sm);
+  font-weight: var(--chatooly-font-weight-medium);
+  text-align: center;
+}
+
+/* ========== Color Picker Enhanced ========== */
+.chatooly-color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--chatooly-spacing-2);
+}
+
+.chatooly-color-picker-wrapper input[type="color"] {
+  width: 60px;
+  height: 40px;
+}
+
+.chatooly-color-picker-value {
+  font-family: var(--chatooly-font-family-mono);
+  font-size: var(--chatooly-font-size-sm);
+  color: var(--chatooly-color-text-muted);
+}
+
+/* ========== Toggle Switch ========== */
+.chatooly-toggle {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.chatooly-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.chatooly-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--chatooly-color-gray-400);
+  transition: var(--chatooly-transition-normal);
+  border-radius: var(--chatooly-border-radius-full);
+}
+
+.chatooly-toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--chatooly-color-white);
+  transition: var(--chatooly-transition-normal);
+  border-radius: 50%;
+  box-shadow: var(--chatooly-shadow-sm);
+}
+
+.chatooly-toggle input:checked + .chatooly-toggle-slider {
+  background-color: var(--chatooly-color-primary);
+}
+
+.chatooly-toggle input:checked + .chatooly-toggle-slider:before {
+  transform: translateX(24px);
+}
+
+/* ========== Cards ========== */
+.chatooly-card {
+  background: var(--chatooly-color-surface);
+  border: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  border-radius: var(--chatooly-border-radius-md);
+  padding: var(--chatooly-spacing-4);
+  box-shadow: var(--chatooly-shadow-xs);
+  transition: all var(--chatooly-transition-normal);
+}
+
+.chatooly-card:hover {
+  box-shadow: var(--chatooly-shadow-md);
+  transform: translateY(-2px);
+}
+
+.chatooly-card-header {
+  margin-bottom: var(--chatooly-spacing-3);
+  padding-bottom: var(--chatooly-spacing-3);
+  border-bottom: var(--chatooly-border-width-thin) solid var(--chatooly-color-border-light);
+}
+
+.chatooly-card-title {
+  font-size: var(--chatooly-font-size-lg);
+  font-weight: var(--chatooly-font-weight-semibold);
+  color: var(--chatooly-color-text);
+}
+
+.chatooly-card-body {
+  color: var(--chatooly-color-text);
+}
+
+/* ========== Tabs ========== */
+.chatooly-tabs {
+  display: flex;
+  border-bottom: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  margin-bottom: var(--chatooly-spacing-4);
+}
+
+.chatooly-tab {
+  padding: var(--chatooly-spacing-2) var(--chatooly-spacing-4);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--chatooly-color-text-muted);
+  font-size: var(--chatooly-font-size-base);
+  font-weight: var(--chatooly-font-weight-medium);
+  cursor: pointer;
+  transition: all var(--chatooly-transition-fast);
+}
+
+.chatooly-tab:hover {
+  color: var(--chatooly-color-text);
+  background: var(--chatooly-color-surface-hover);
+}
+
+.chatooly-tab.active {
+  color: var(--chatooly-color-primary);
+  border-bottom-color: var(--chatooly-color-primary);
+}
+
+.chatooly-tab-content {
+  padding: var(--chatooly-spacing-4);
+}
+
+.chatooly-tab-panel {
+  display: none;
+}
+
+.chatooly-tab-panel.active {
+  display: block;
+  animation: fadeIn var(--chatooly-transition-normal);
+}
+
+/* ========== Dropdown ========== */
+.chatooly-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.chatooly-dropdown-toggle {
+  position: relative;
+  padding-right: var(--chatooly-spacing-8);
+}
+
+.chatooly-dropdown-toggle::after {
+  content: '▼';
+  position: absolute;
+  right: var(--chatooly-spacing-3);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--chatooly-font-size-xs);
+}
+
+.chatooly-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: var(--chatooly-z-dropdown);
+  display: none;
+  min-width: 160px;
+  padding: var(--chatooly-spacing-2);
+  margin-top: var(--chatooly-spacing-1);
+  background: var(--chatooly-color-surface);
+  border: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  border-radius: var(--chatooly-border-radius);
+  box-shadow: var(--chatooly-shadow-md);
+}
+
+.chatooly-dropdown.open .chatooly-dropdown-menu {
+  display: block;
+  animation: slideDown var(--chatooly-transition-fast);
+}
+
+.chatooly-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: var(--chatooly-spacing-2) var(--chatooly-spacing-3);
+  color: var(--chatooly-color-text);
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: var(--chatooly-border-radius-sm);
+  cursor: pointer;
+  transition: all var(--chatooly-transition-fast);
+}
+
+.chatooly-dropdown-item:hover {
+  background: var(--chatooly-color-surface-hover);
+  color: var(--chatooly-color-primary);
+}
+
+/* ========== Progress Bar ========== */
+.chatooly-progress {
+  height: 8px;
+  background: var(--chatooly-color-gray-200);
+  border-radius: var(--chatooly-border-radius-full);
+  overflow: hidden;
+}
+
+.chatooly-progress-bar {
+  height: 100%;
+  background: var(--chatooly-color-primary);
+  border-radius: var(--chatooly-border-radius-full);
+  transition: width var(--chatooly-transition-slow);
+}
+
+/* ========== Tooltips ========== */
+.chatooly-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.chatooly-tooltip-content {
+  visibility: hidden;
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--chatooly-color-gray-900);
+  color: var(--chatooly-color-white);
+  padding: var(--chatooly-spacing-1) var(--chatooly-spacing-2);
+  border-radius: var(--chatooly-border-radius-sm);
+  font-size: var(--chatooly-font-size-xs);
+  white-space: nowrap;
+  z-index: var(--chatooly-z-tooltip);
+  opacity: 0;
+  transition: opacity var(--chatooly-transition-fast);
+}
+
+.chatooly-tooltip:hover .chatooly-tooltip-content {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* ========== Animations ========== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========== Loading Spinner ========== */
+.chatooly-spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--chatooly-color-gray-300);
+  border-top-color: var(--chatooly-color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* ========== Dividers ========== */
+.chatooly-divider {
+  height: var(--chatooly-border-width-thin);
+  background: var(--chatooly-color-border);
+  margin: var(--chatooly-spacing-4) 0;
+  border: none;
+}
+
+.chatooly-divider-vertical {
+  width: var(--chatooly-border-width-thin);
+  height: 100%;
+  background: var(--chatooly-color-border);
+  margin: 0 var(--chatooly-spacing-4);
+}

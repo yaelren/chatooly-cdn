@@ -46,24 +46,54 @@
                 const camera = window.camera || window.threeCamera;
                 
                 if (renderer && scene && camera) {
+                    // Get the current renderer size
                     const originalSize = renderer.getSize(new THREE.Vector2());
+                    const targetWidth = originalSize.x * resolution;
+                    const targetHeight = originalSize.y * resolution;
+                    
+                    console.log(`Three.js high-res export: ${originalSize.x}x${originalSize.y} -> ${targetWidth}x${targetHeight} (${resolution}x)`);
+                    
                     const tempCanvas = document.createElement('canvas');
                     const tempRenderer = new THREE.WebGLRenderer({ 
                         canvas: tempCanvas, 
                         antialias: true, 
-                        preserveDrawingBuffer: true 
+                        preserveDrawingBuffer: true,
+                        alpha: true // Support transparency
                     });
                     
-                    tempRenderer.setSize(originalSize.x * resolution, originalSize.y * resolution, false);
+                    // Set the high resolution size
+                    tempRenderer.setSize(targetWidth, targetHeight, false);
+                    tempRenderer.setPixelRatio(1); // Force pixel ratio to 1 for consistent output
                     tempRenderer.setClearColor(renderer.getClearColor(), renderer.getClearAlpha());
+                    
+                    // Copy renderer settings
+                    tempRenderer.shadowMap.enabled = renderer.shadowMap.enabled;
+                    tempRenderer.shadowMap.type = renderer.shadowMap.type;
+                    tempRenderer.outputEncoding = renderer.outputEncoding;
+                    tempRenderer.toneMapping = renderer.toneMapping;
+                    tempRenderer.toneMappingExposure = renderer.toneMappingExposure;
+                    
+                    // Update camera aspect ratio for high-res render
+                    const originalAspect = camera.aspect;
+                    camera.aspect = targetWidth / targetHeight;
+                    camera.updateProjectionMatrix();
+                    
+                    // Render at high resolution
                     tempRenderer.render(scene, camera);
+                    
+                    // Restore original camera aspect ratio
+                    camera.aspect = originalAspect;
+                    camera.updateProjectionMatrix();
                     
                     const dataURL = tempCanvas.toDataURL('image/png');
                     tempRenderer.dispose();
+                    
+                    console.log(`Three.js export completed: ${tempCanvas.width}x${tempCanvas.height}px`);
                     return dataURL;
                 }
                 
                 // Fallback to canvas scaling
+                console.warn('Three.js high-res export: falling back to canvas scaling');
                 return this._fallbackScale(canvas, resolution);
             },
             
@@ -71,11 +101,18 @@
             _fallbackScale: function(canvas, resolution) {
                 const scaledCanvas = document.createElement('canvas');
                 const ctx = scaledCanvas.getContext('2d');
-                scaledCanvas.width = canvas.width * resolution;
-                scaledCanvas.height = canvas.height * resolution;
+                const targetWidth = canvas.width * resolution;
+                const targetHeight = canvas.height * resolution;
+                
+                scaledCanvas.width = targetWidth;
+                scaledCanvas.height = targetHeight;
+                
+                console.log(`Three.js fallback scaling: ${canvas.width}x${canvas.height} -> ${targetWidth}x${targetHeight} (${resolution}x)`);
+                
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(canvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
+                ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
+                
                 return scaledCanvas.toDataURL('image/png');
             }
         },

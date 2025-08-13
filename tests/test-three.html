@@ -14,11 +14,9 @@
         h1 {
             color: #333;
         }
-        #canvas-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-            border: 1px solid #ddd;
+        /* Canvas will be positioned by Chatooly CDN */
+        #chatooly-canvas {
+            border: 2px solid #ddd;
         }
     </style>
 </head>
@@ -39,7 +37,8 @@
         <span id="current-version" style="margin-left: 20px; font-weight: bold; color: #007bff;">Using: Full</span>
     </div>
     
-    <div id="canvas-container">
+    <!-- Canvas container for proper positioning -->
+    <div id="canvas-container" style="width: 100%; height: 500px; margin: 20px 0; border: 2px solid #ddd; border-radius: 8px; background: #f8f9fa; position: relative;">
         <!-- Three.js canvas will be created here -->
     </div>
     
@@ -54,8 +53,8 @@
     <!-- Three.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
-    <!-- Chatooly CDN - Dynamic Loading -->
-    <script id="chatooly-script" src="../js/core.js"></script>
+    <!-- Chatooly CDN - Dynamic Loading with CSS -->
+    <script id="chatooly-script" src="../js/core.min.js"></script>
     
     <!-- Version Switching Logic -->
     <script>
@@ -88,7 +87,10 @@
     <script>
         window.ChatoolyConfig = {
             name: "Three.js Test Tool",
-            resolution: 2
+            resolution: 2,
+            enableCanvasArea: true,
+            canvasAreaPosition: 'full',
+            enableZoom: true
         };
     </script>
     
@@ -97,11 +99,20 @@
         // Scene setup (expose globally for Chatooly export)
         window.scene = new THREE.Scene();
         window.camera = new THREE.PerspectiveCamera(75, 400 / 400, 0.1, 1000);
-        window.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+        // Create renderer with canvas that has chatooly-canvas id
+        window.renderer = new THREE.WebGLRenderer({ 
+            antialias: true, 
+            preserveDrawingBuffer: true
+        });
+        
+        // Set the canvas id for Chatooly detection
+        window.renderer.domElement.id = 'chatooly-canvas';
         
         window.renderer.setSize(400, 400);
         window.renderer.setClearColor(0x222222);
-        document.getElementById('canvas-container').appendChild(window.renderer.domElement);
+        
+        // Add to body temporarily - canvas area will move it automatically
+        document.body.appendChild(window.renderer.domElement);
         
         // Create a colorful cube
         const geometry = new THREE.BoxGeometry(2, 2, 2);
@@ -150,12 +161,26 @@
         
         animate();
         
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            window.camera.aspect = 400 / 400;
-            window.camera.updateProjectionMatrix();
-            window.renderer.setSize(400, 400);
+        // Listen for Chatooly canvas resize events
+        document.addEventListener('chatooly:canvas-resized', function(event) {
+            if (event.detail && window.renderer && window.camera) {
+                const { export: exportDims } = event.detail;
+                if (exportDims.width && exportDims.height) {
+                    // Update renderer size to match export resolution
+                    window.renderer.setSize(exportDims.width, exportDims.height);
+                    window.camera.aspect = exportDims.width / exportDims.height;
+                    window.camera.updateProjectionMatrix();
+                    console.log(`Three.js renderer updated to: ${exportDims.width}x${exportDims.height}`);
+                }
+            }
         });
+        
+        // Set up redraw function for canvas area
+        window.chatoolyRedraw = function() {
+            if (window.renderer && window.scene && window.camera) {
+                window.renderer.render(window.scene, window.camera);
+            }
+        };
     </script>
 </body>
 </html>

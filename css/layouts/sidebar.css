@@ -1,0 +1,230 @@
+/**
+ * Chatooly Design System - Sidebar Layout
+ * Standard sidebar + canvas layout for design tools
+ */
+
+/* ========== Layout Container ========== */
+.chatooly-app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: var(--chatooly-color-background);
+}
+
+/* ========== Sidebar Panel ========== */
+.chatooly-controls-panel {
+  width: var(--chatooly-sidebar-width);
+  background: var(--chatooly-color-surface);
+  box-shadow: var(--chatooly-shadow-md);
+  display: flex;
+  flex-direction: column;
+  z-index: var(--chatooly-z-sticky);
+  transition: width var(--chatooly-transition-normal);
+}
+
+/* Sidebar header */
+.chatooly-controls-header {
+  padding: var(--chatooly-spacing-4);
+  background: var(--chatooly-color-surface);
+  border-bottom: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+}
+
+.chatooly-controls-header h1 {
+  font-size: var(--chatooly-font-size-xl);
+  font-weight: var(--chatooly-font-weight-bold);
+  color: var(--chatooly-color-text);
+  margin: 0;
+}
+
+.chatooly-controls-header p {
+  font-size: var(--chatooly-font-size-sm);
+  color: var(--chatooly-color-text-muted);
+  margin: var(--chatooly-spacing-1) 0 0 0;
+}
+
+/* Sidebar controls container */
+.chatooly-controls-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--chatooly-spacing-4);
+}
+
+/* Smooth scrolling for controls */
+.chatooly-controls-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatooly-controls-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chatooly-controls-content::-webkit-scrollbar-thumb {
+  background: var(--chatooly-color-gray-300);
+  border-radius: var(--chatooly-border-radius-full);
+}
+
+.chatooly-controls-content::-webkit-scrollbar-thumb:hover {
+  background: var(--chatooly-color-gray-400);
+}
+
+/* Sidebar footer (optional) */
+.chatooly-controls-footer {
+  padding: var(--chatooly-spacing-3);
+  background: var(--chatooly-color-surface);
+  border-top: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+}
+
+/* ========== Preview/Canvas Panel ========== */
+.chatooly-preview-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--chatooly-spacing-6);
+  background: var(--chatooly-color-background);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ========== Canvas Container ========== */
+#chatooly-canvas {
+  position: relative;
+  background: var(--chatooly-canvas-background);
+  border-radius: var(--chatooly-canvas-radius);
+  box-shadow: var(--chatooly-canvas-shadow);
+  overflow: hidden;
+  transition: all var(--chatooly-transition-normal);
+}
+
+/* Canvas sizing modes */
+#chatooly-canvas[data-display="fit"] {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+#chatooly-canvas[data-display="fill"] {
+  width: 100%;
+  height: 100%;
+}
+
+#chatooly-canvas[data-display="actual"] {
+  /* Use actual dimensions */
+}
+
+/* Canvas content styling */
+#chatooly-canvas canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+/* ========== Collapsible Sidebar ========== */
+.chatooly-sidebar-toggle {
+  position: absolute;
+  top: var(--chatooly-spacing-4);
+  right: calc(-1 * var(--chatooly-spacing-4));
+  width: 32px;
+  height: 32px;
+  background: var(--chatooly-color-surface);
+  border: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  border-radius: var(--chatooly-border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--chatooly-shadow-sm);
+  transition: all var(--chatooly-transition-fast);
+  z-index: var(--chatooly-z-sticky);
+}
+
+.chatooly-sidebar-toggle:hover {
+  background: var(--chatooly-color-surface-hover);
+  box-shadow: var(--chatooly-shadow-md);
+}
+
+.chatooly-sidebar-toggle::before {
+  content: '◀';
+  font-size: var(--chatooly-font-size-sm);
+  color: var(--chatooly-color-text-muted);
+}
+
+.chatooly-app-container.sidebar-collapsed .chatooly-controls-panel {
+  width: var(--chatooly-sidebar-collapsed-width);
+}
+
+.chatooly-app-container.sidebar-collapsed .chatooly-sidebar-toggle::before {
+  content: '▶';
+}
+
+.chatooly-app-container.sidebar-collapsed .chatooly-controls-content,
+.chatooly-app-container.sidebar-collapsed .chatooly-controls-header h1,
+.chatooly-app-container.sidebar-collapsed .chatooly-controls-header p {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ========== Responsive Design ========== */
+@media (max-width: 768px) {
+  .chatooly-app-container {
+    flex-direction: column;
+  }
+  
+  .chatooly-controls-panel {
+    width: 100%;
+    height: auto;
+    max-height: 40vh;
+    border-right: none;
+    border-bottom: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  }
+  
+  .chatooly-preview-panel {
+    padding: var(--chatooly-spacing-4);
+  }
+  
+  #chatooly-canvas {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .chatooly-sidebar-toggle {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .chatooly-controls-panel {
+    max-height: 50vh;
+  }
+  
+  .chatooly-preview-panel {
+    padding: var(--chatooly-spacing-2);
+  }
+  
+  .chatooly-controls-header {
+    padding: var(--chatooly-spacing-3);
+  }
+  
+  .chatooly-controls-content {
+    padding: var(--chatooly-spacing-3);
+  }
+}
+
+/* ========== Print Styles ========== */
+@media print {
+  .chatooly-controls-panel {
+    display: none;
+  }
+  
+  .chatooly-preview-panel {
+    padding: 0;
+  }
+  
+  #chatooly-canvas {
+    box-shadow: none;
+    border-radius: 0;
+  }
+}

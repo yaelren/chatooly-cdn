@@ -14,6 +14,17 @@
         h1 {
             color: #333;
         }
+        #chatooly-canvas {
+            width: calc(100vw - 40px);
+            height: calc(100vh - 200px);
+            margin: 20px auto;
+            border: 2px solid #ddd;
+            background: #fff;
+            border-radius: 8px;
+            position: relative;
+            overflow: auto;
+        }
+        
         #app {
             max-width: 600px;
             margin: 20px auto;
@@ -82,7 +93,8 @@
         <span id="current-version" style="margin-left: 20px; font-weight: bold; color: #007bff;">Using: Full</span>
     </div>
     
-    <div id="app">
+    <div id="chatooly-canvas">
+        <div id="app">
         <h2>Interactive Gradient Tool</h2>
         <p>Adjust the controls below to modify the gradient, then export as PNG.</p>
         
@@ -122,10 +134,11 @@
             <li>Use the floating export button to save as PNG</li>
             <li>This tests DOM-based export (html2canvas fallback)</li>
         </ul>
+        </div>
     </div>
 
-    <!-- Chatooly CDN - Dynamic Loading -->
-    <script id="chatooly-script" src="../js/core.js"></script>
+    <!-- Chatooly CDN - Dynamic Loading with CSS -->
+    <script id="chatooly-script" src="../js/core.min.js"></script>
     
     <!-- Version Switching Logic -->
     <script>
@@ -158,7 +171,8 @@
     <script>
         window.ChatoolyConfig = {
             name: "DOM Gradient Tool",
-            resolution: 2
+            resolution: 2,
+            enableCanvasArea: false // DOM export doesn't need canvas area
         };
     </script>
     

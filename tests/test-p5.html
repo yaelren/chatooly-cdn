@@ -14,10 +14,9 @@
         h1 {
             color: #333;
         }
-        #canvas-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
+        /* Canvas will be positioned by Chatooly CDN */
+        #chatooly-canvas {
+            border: 2px solid #ddd;
         }
     </style>
 </head>
@@ -38,7 +37,8 @@
         <span id="current-version" style="margin-left: 20px; font-weight: bold; color: #007bff;">Using: Full</span>
     </div>
     
-    <div id="canvas-container">
+    <!-- Canvas container for proper positioning -->
+    <div id="canvas-container" style="width: 100%; height: 500px; margin: 20px 0; border: 2px solid #ddd; border-radius: 8px; background: #f8f9fa; position: relative;">
         <!-- p5.js canvas will be created here -->
     </div>
     
@@ -53,8 +53,8 @@
     <!-- p5.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
     
-    <!-- Chatooly CDN - Dynamic Loading -->
-    <script id="chatooly-script" src="../js/core.js"></script>
+    <!-- Chatooly CDN - Dynamic Loading with CSS -->
+    <script id="chatooly-script" src="../js/core.min.js"></script>
     
     <!-- Version Switching Logic -->
     <script>
@@ -87,17 +87,30 @@
     <script>
         window.ChatoolyConfig = {
             name: "p5.js Test Tool",
-            resolution: 2
+            resolution: 2,
+            enableCanvasArea: true,
+            canvasAreaPosition: 'full',
+            enableZoom: true
         };
     </script>
     
     <!-- p5.js Sketch -->
     <script>
         function setup() {
-            // Create canvas and parent it to the container
+            // Create canvas with chatooly-canvas id for Chatooly detection
             let canvas = createCanvas(400, 400);
-            canvas.parent('canvas-container');
+            canvas.canvas.id = 'chatooly-canvas'; // Set the id on the actual canvas element
+            
+            // Initialize color mode
             colorMode(HSB, 360, 100, 100);
+            
+            // Ensure Chatooly detects the canvas after it's created
+            setTimeout(() => {
+                if (window.Chatooly && Chatooly.canvasArea) {
+                    console.log('Detecting p5.js canvas for Chatooly...');
+                    Chatooly.canvasArea.detectCanvas();
+                }
+            }, 100);
         }
         
         function draw() {
@@ -131,6 +144,11 @@
             textAlign(LEFT);
             text(`FPS: ${Math.round(frameRate())}`, 10, 20);
             text('Canvas: ' + width + 'x' + height, 10, 40);
+        }
+        
+        function windowResized() {
+            // Let Chatooly handle canvas resizing
+            // This function can be used for custom resize logic if needed
         }
     </script>
 </body>

@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatooly CDN - Comprehensive Test Suite</title>
     <style>
-        body {
+        /* Let CDN handle base styling, only add specific test overrides */
+        .test-page {
             margin: 0;
             padding: 20px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: #f5f5f5;
+            background: var(--chatooly-color-background, #f5f5f5);
             line-height: 1.6;
+            font-family: var(--chatooly-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif);
         }
         .container {
             max-width: 1200px;
@@ -75,18 +76,20 @@
         .log-info { color: #007bff; }
         .log-warn { color: #ffc107; }
         
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
+        /* Use CDN button styling where possible */
+        .test-button {
+            background: var(--chatooly-color-primary, #007bff) !important;
+            color: var(--chatooly-color-white, white) !important;
+            border: var(--chatooly-border-width, 1px) solid var(--chatooly-color-primary, #007bff) !important;
+            padding: var(--chatooly-spacing-2, 8px) var(--chatooly-spacing-3, 16px) !important;
+            border-radius: var(--chatooly-border-radius, 4px) !important;
             cursor: pointer;
-            font-size: 14px;
+            font-size: var(--chatooly-font-size-sm, 14px) !important;
             margin: 2px;
+            font-family: var(--chatooly-font-family) !important;
         }
-        button:hover { background: #0056b3; }
-        button:disabled { background: #6c757d; cursor: not-allowed; }
+        .test-button:hover { background: var(--chatooly-color-primary-dark, #0056b3) !important; }
+        .test-button:disabled { background: var(--chatooly-color-muted, #6c757d) !important; cursor: not-allowed; }
         
         .status-indicator {
             display: inline-block;
@@ -134,7 +137,7 @@
         }
     </style>
 </head>
-<body>
+<body class="test-page">
     <div class="container">
         <h1>🧪 Chatooly CDN Comprehensive Test Suite</h1>
         <p>This test suite validates all functionality of the Chatooly CDN library across different scenarios and configurations.</p>
@@ -153,14 +156,14 @@
         </div>
         
         <div class="test-controls">
-            <button onclick="runAllTests()">🚀 Run All Tests</button>
-            <button onclick="runCanvasTests()">🎨 Canvas Tests</button>
-            <button onclick="runDOMTests()">📄 DOM Tests</button>
-            <button onclick="runResolutionTests()">📐 Resolution Tests</button>
-            <button onclick="runPublishTests()">📤 Publish Tests</button>
-            <button onclick="runPerformanceTests()">⚡ Performance Tests</button>
-            <button onclick="clearResults()">🗑️ Clear Results</button>
-            <button onclick="exportTestReport()">💾 Export Report</button>
+            <button class="test-button" onclick="runAllTests()">🚀 Run All Tests</button>
+            <button class="test-button" onclick="runCanvasTests()">🎨 Canvas Tests</button>
+            <button class="test-button" onclick="runDOMTests()">📄 DOM Tests</button>
+            <button class="test-button" onclick="runResolutionTests()">📐 Resolution Tests</button>
+            <button class="test-button" onclick="runPublishTests()">📤 Publish Tests</button>
+            <button class="test-button" onclick="runPerformanceTests()">⚡ Performance Tests</button>
+            <button class="test-button" onclick="clearResults()">🗑️ Clear Results</button>
+            <button class="test-button" onclick="exportTestReport()">💾 Export Report</button>
         </div>
         
         <div class="test-grid">
@@ -290,13 +293,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <!-- Chatooly CDN - Dynamic Loading -->
-    <script id="chatooly-script" src="../js/core.js"></script>
+    <script id="chatooly-script" src="../js/core.min.js"></script>
     
     <!-- Tool Configuration -->
     <script>
         window.ChatoolyConfig = {
             name: "Comprehensive Test Suite",
-            resolution: 2
+            resolution: 2,
+            enableCanvasArea: true,
+            canvasAreaPosition: 'full',
+            enableZoom: true
         };
     </script>
     

@@ -11,17 +11,23 @@
         
         // Detect export target element with priority
         detectExportTarget: function() {
-            // 1. Look for Chatooly export container first (highest priority for HTML tools)
-            const chatoolyCanvas = document.querySelector('#chatooly-canvas');
-            if (chatoolyCanvas) {
+            // 1. Look for canvas#chatooly-canvas first (new direct canvas approach)
+            const chatoolyCanvasElement = document.querySelector('canvas#chatooly-canvas');
+            if (chatoolyCanvasElement) {
+                return { type: 'canvas', element: chatoolyCanvasElement };
+            }
+            
+            // 2. Look for div#chatooly-canvas (legacy wrapper approach)
+            const chatoolyContainer = document.querySelector('div#chatooly-canvas');
+            if (chatoolyContainer) {
                 // Check if it contains a canvas that's managed by p5 or Three.js
-                const innerCanvas = chatoolyCanvas.querySelector('canvas');
+                const innerCanvas = chatoolyContainer.querySelector('canvas');
                 if (innerCanvas && (this._isP5Canvas(innerCanvas) || this._isThreeCanvas(innerCanvas))) {
                     // For p5/Three.js, export the canvas directly for better quality
                     return { type: 'canvas', element: innerCanvas };
                 }
                 // For HTML tools with regular canvas or DOM content, export the container
-                return { type: 'dom', element: chatoolyCanvas };
+                return { type: 'dom', element: chatoolyContainer };
             }
             
             // 2. Look for standalone canvas elements (p5.js, Three.js, etc.)
