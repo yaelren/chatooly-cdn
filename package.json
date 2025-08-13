@@ -5,8 +5,11 @@
   "main": "js/core.js",
   "scripts": {
     "build": "node build.js",
+    "build:js": "node build.js js",
+    "build:css": "node build.js css",
     "dev": "python3 -m http.server 8000",
-    "test": "open http://localhost:8000/tests/test-comprehensive.html"
+    "test": "open http://localhost:8000/tests/test-comprehensive.html",
+    "test:canvas-area": "open http://localhost:8000/test-canvas-area.html"
   },
   "repository": {
     "type": "git",
