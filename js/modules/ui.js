@@ -45,7 +45,10 @@
             const currentHeight = dimensions.height;
             
             return `
-                <div class="chatooly-btn-main">🎨 Chatooly</div>
+                <div class="chatooly-btn-main">
+                    <div style="font-size: 10px; opacity: 0.7;">CHATOOLY</div>
+                    <div>Export & Controls</div>
+                </div>
                 <div class="chatooly-btn-menu" style="display: none;">
                     <div class="chatooly-menu-section">
                         <h4>📥 Export</h4>
@@ -61,7 +64,7 @@
                             <button onclick="Chatooly.ui.centerCanvas()" class="chatooly-control-btn">📍 Center Canvas</button>
                         </div>
                         <div class="chatooly-canvas-help">
-                            <small>💡 Drag canvas area to move around<br>
+                            <small>💡 Spacebar + drag to pan when zoomed<br>
                             🎨 Press R to reset zoom & center<br>
                             🔍 Ctrl+scroll to zoom in/out</small>
                         </div>

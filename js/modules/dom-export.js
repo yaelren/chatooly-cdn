@@ -95,6 +95,15 @@
             }
             
             this._html2canvasPromise = new Promise((resolve, reject) => {
+                // Check if running locally and show helpful warning
+                const isLocalDev = window.location.hostname === 'localhost' || 
+                                 window.location.hostname === '127.0.0.1' ||
+                                 window.location.protocol === 'file:';
+                
+                if (isLocalDev) {
+                    console.warn('Chatooly: Running locally - html2canvas CDN may cause mixed content warnings. Consider serving over HTTPS.');
+                }
+                
                 // Try multiple CDN sources for reliability
                 const cdnSources = [
                     'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',

@@ -18,6 +18,7 @@
         panY: 0,
         isPanning: false,
         lastPanPoint: null,
+        spacebarPressed: false,
         
         // Canvas info
         canvasElement: null,
@@ -113,8 +114,18 @@
                 }
             }, { passive: false });
             
-            // Keyboard zoom
+            // Keyboard zoom and spacebar tracking
             document.addEventListener('keydown', (e) => {
+                // Track spacebar state for pan control
+                if (e.code === 'Space') {
+                    this.spacebarPressed = true;
+                    this.updateCursor(); // Update cursor when spacebar is pressed
+                    // Only prevent default if we're zoomed in (to avoid interfering with page scroll)
+                    if (this.currentZoom > 1.0) {
+                        e.preventDefault();
+                    }
+                }
+                
                 if (e.ctrlKey || e.metaKey) {
                     if (e.key === '=' || e.key === '+') {
                         e.preventDefault();
@@ -137,9 +148,19 @@
                 }
             });
             
-            // Pan controls (drag canvas when zoomed)
+            // Track spacebar release
+            document.addEventListener('keyup', (e) => {
+                if (e.code === 'Space') {
+                    this.spacebarPressed = false;
+                    this.updateCursor(); // Update cursor when spacebar is released
+                    // End any active panning when spacebar is released
+                    this.endPan();
+                }
+            });
+            
+            // Pan controls (drag canvas when zoomed AND spacebar pressed)
             document.addEventListener('mousedown', (e) => {
-                if (this.currentZoom > 1.0 && e.target === this.canvasElement) {
+                if (this.currentZoom > 1.0 && e.target === this.canvasElement && this.spacebarPressed) {
                     this.startPan(e.clientX, e.clientY);
                     e.preventDefault();
                 }
@@ -270,8 +291,8 @@
             const transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.currentZoom})`;
             this.canvasElement.style.transform = transform;
             
-            // Update cursor
-            this.canvasElement.style.cursor = this.currentZoom > 1.0 ? 'grab' : 'default';
+            // Update cursor based on zoom and spacebar state
+            this.updateCursor();
             
             // Update canvas area zoom mode
             if (this.canvasArea && Chatooly.canvasArea) {
@@ -325,8 +346,21 @@
             if (this.isPanning) {
                 this.isPanning = false;
                 this.lastPanPoint = null;
-                this.canvasElement.style.cursor = this.currentZoom > 1.0 ? 'grab' : 'default';
+                this.updateCursor();
                 document.body.style.userSelect = '';
+            }
+        },
+        
+        // Update cursor based on current state
+        updateCursor: function() {
+            if (!this.canvasElement) return;
+            
+            if (this.isPanning) {
+                this.canvasElement.style.cursor = 'grabbing';
+            } else if (this.currentZoom > 1.0 && this.spacebarPressed) {
+                this.canvasElement.style.cursor = 'grab';
+            } else {
+                this.canvasElement.style.cursor = 'default';
             }
         },
         

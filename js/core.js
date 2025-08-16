@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-08-16T12:12:09.105Z
+ * Built: 2025-08-16T13:11:16.668Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -82,13 +82,13 @@
             // 2. Look for div#chatooly-canvas (legacy wrapper approach)
             const chatoolyContainer = document.querySelector('div#chatooly-canvas');
             if (chatoolyContainer) {
-                // Check if it contains a canvas that's managed by p5 or Three.js
+                // Check if it contains any canvas element
                 const innerCanvas = chatoolyContainer.querySelector('canvas');
-                if (innerCanvas && (this._isP5Canvas(innerCanvas) || this._isThreeCanvas(innerCanvas))) {
-                    // For p5/Three.js, export the canvas directly for better quality
+                if (innerCanvas) {
+                    // Export any canvas directly for better quality (p5, Three.js, or regular HTML5)
                     return { type: 'canvas', element: innerCanvas };
                 }
-                // For HTML tools with regular canvas or DOM content, export the container
+                // For HTML tools with DOM content only, export the container
                 return { type: 'dom', element: chatoolyContainer };
             }
             
@@ -874,6 +874,15 @@
             }
             
             this._html2canvasPromise = new Promise((resolve, reject) => {
+                // Check if running locally and show helpful warning
+                const isLocalDev = window.location.hostname === 'localhost' || 
+                                 window.location.hostname === '127.0.0.1' ||
+                                 window.location.protocol === 'file:';
+                
+                if (isLocalDev) {
+                    console.warn('Chatooly: Running locally - html2canvas CDN may cause mixed content warnings. Consider serving over HTTPS.');
+                }
+                
                 // Try multiple CDN sources for reliability
                 const cdnSources = [
                     'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
@@ -2037,6 +2046,7 @@ Chatooly.canvasZoom = {
         panY: 0,
         isPanning: false,
         lastPanPoint: null,
+        spacebarPressed: false,
         
         // Canvas info
         canvasElement: null,
@@ -2132,8 +2142,18 @@ Chatooly.canvasZoom = {
                 }
             }, { passive: false });
             
-            // Keyboard zoom
+            // Keyboard zoom and spacebar tracking
             document.addEventListener('keydown', (e) => {
+                // Track spacebar state for pan control
+                if (e.code === 'Space') {
+                    this.spacebarPressed = true;
+                    this.updateCursor(); // Update cursor when spacebar is pressed
+                    // Only prevent default if we're zoomed in (to avoid interfering with page scroll)
+                    if (this.currentZoom > 1.0) {
+                        e.preventDefault();
+                    }
+                }
+                
                 if (e.ctrlKey || e.metaKey) {
                     if (e.key === '=' || e.key === '+') {
                         e.preventDefault();
@@ -2156,9 +2176,19 @@ Chatooly.canvasZoom = {
                 }
             });
             
-            // Pan controls (drag canvas when zoomed)
+            // Track spacebar release
+            document.addEventListener('keyup', (e) => {
+                if (e.code === 'Space') {
+                    this.spacebarPressed = false;
+                    this.updateCursor(); // Update cursor when spacebar is released
+                    // End any active panning when spacebar is released
+                    this.endPan();
+                }
+            });
+            
+            // Pan controls (drag canvas when zoomed AND spacebar pressed)
             document.addEventListener('mousedown', (e) => {
-                if (this.currentZoom > 1.0 && e.target === this.canvasElement) {
+                if (this.currentZoom > 1.0 && e.target === this.canvasElement && this.spacebarPressed) {
                     this.startPan(e.clientX, e.clientY);
                     e.preventDefault();
                 }
@@ -2289,8 +2319,8 @@ Chatooly.canvasZoom = {
             const transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.currentZoom})`;
             this.canvasElement.style.transform = transform;
             
-            // Update cursor
-            this.canvasElement.style.cursor = this.currentZoom > 1.0 ? 'grab' : 'default';
+            // Update cursor based on zoom and spacebar state
+            this.updateCursor();
             
             // Update canvas area zoom mode
             if (this.canvasArea && Chatooly.canvasArea) {
@@ -2344,8 +2374,21 @@ Chatooly.canvasZoom = {
             if (this.isPanning) {
                 this.isPanning = false;
                 this.lastPanPoint = null;
-                this.canvasElement.style.cursor = this.currentZoom > 1.0 ? 'grab' : 'default';
+                this.updateCursor();
                 document.body.style.userSelect = '';
+            }
+        },
+        
+        // Update cursor based on current state
+        updateCursor: function() {
+            if (!this.canvasElement) return;
+            
+            if (this.isPanning) {
+                this.canvasElement.style.cursor = 'grabbing';
+            } else if (this.currentZoom > 1.0 && this.spacebarPressed) {
+                this.canvasElement.style.cursor = 'grab';
+            } else {
+                this.canvasElement.style.cursor = 'default';
             }
         },
         
@@ -3092,7 +3135,10 @@ Chatooly.canvasZoom = {
             const currentHeight = dimensions.height;
             
             return `
-                <div class="chatooly-btn-main">🎨 Chatooly</div>
+                <div class="chatooly-btn-main">
+                    <div style="font-size: 10px; opacity: 0.7;">CHATOOLY</div>
+                    <div>Export & Controls</div>
+                </div>
                 <div class="chatooly-btn-menu" style="display: none;">
                     <div class="chatooly-menu-section">
                         <h4>📥 Export</h4>
@@ -3108,7 +3154,7 @@ Chatooly.canvasZoom = {
                             <button onclick="Chatooly.ui.centerCanvas()" class="chatooly-control-btn">📍 Center Canvas</button>
                         </div>
                         <div class="chatooly-canvas-help">
-                            <small>💡 Drag canvas area to move around<br>
+                            <small>💡 Spacebar + drag to pan when zoomed<br>
                             🎨 Press R to reset zoom & center<br>
                             🔍 Ctrl+scroll to zoom in/out</small>
                         </div>

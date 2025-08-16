@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Unified Design System
- * Built: 2025-08-16T12:12:09.109Z
+ * Built: 2025-08-16T13:11:16.672Z
  */
 
 
@@ -36,11 +36,11 @@
   
   /* ========== Colors ========== */
   /* Primary Palette */
-  --chatooly-color-primary: #007bff;
-  --chatooly-color-primary-hover: #0056b3;
-  --chatooly-color-primary-active: #004085;
-  --chatooly-color-primary-light: #cfe2ff;
-  --chatooly-color-primary-dark: #004085;
+  --chatooly-color-primary: #e91e63;
+  --chatooly-color-primary-hover: #c2185b;
+  --chatooly-color-primary-active: #ad1457;
+  --chatooly-color-primary-light: #fce4ec;
+  --chatooly-color-primary-dark: #880e4f;
   
   /* Semantic Colors */
   --chatooly-color-success: #28a745;

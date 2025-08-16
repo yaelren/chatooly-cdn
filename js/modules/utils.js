@@ -20,13 +20,13 @@
             // 2. Look for div#chatooly-canvas (legacy wrapper approach)
             const chatoolyContainer = document.querySelector('div#chatooly-canvas');
             if (chatoolyContainer) {
-                // Check if it contains a canvas that's managed by p5 or Three.js
+                // Check if it contains any canvas element
                 const innerCanvas = chatoolyContainer.querySelector('canvas');
-                if (innerCanvas && (this._isP5Canvas(innerCanvas) || this._isThreeCanvas(innerCanvas))) {
-                    // For p5/Three.js, export the canvas directly for better quality
+                if (innerCanvas) {
+                    // Export any canvas directly for better quality (p5, Three.js, or regular HTML5)
                     return { type: 'canvas', element: innerCanvas };
                 }
-                // For HTML tools with regular canvas or DOM content, export the container
+                // For HTML tools with DOM content only, export the container
                 return { type: 'dom', element: chatoolyContainer };
             }
             
