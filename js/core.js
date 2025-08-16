@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-08-16T13:20:51.161Z
+ * Built: 2025-08-16T13:48:30.480Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -123,6 +123,8 @@
         isDevelopment: function() {
             return location.hostname === 'localhost' || 
                    location.hostname === '127.0.0.1' || 
+                   location.hostname === '::' ||
+                   location.hostname === '[::1]' ||
                    location.protocol === 'file:';
         },
         
@@ -265,6 +267,8 @@
         isDevelopment: function() {
             return location.hostname === 'localhost' || 
                    location.hostname === '127.0.0.1' || 
+                   location.hostname === '::' ||
+                   location.hostname === '[::1]' ||
                    location.protocol === 'file:';
         },
         
@@ -877,6 +881,8 @@
                 // Check if running locally and show helpful warning
                 const isLocalDev = window.location.hostname === 'localhost' || 
                                  window.location.hostname === '127.0.0.1' ||
+                                 window.location.hostname === '::' ||
+                                 window.location.hostname === '[::1]' ||
                                  window.location.protocol === 'file:';
                 
                 if (isLocalDev) {

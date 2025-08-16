@@ -98,6 +98,8 @@
                 // Check if running locally and show helpful warning
                 const isLocalDev = window.location.hostname === 'localhost' || 
                                  window.location.hostname === '127.0.0.1' ||
+                                 window.location.hostname === '::' ||
+                                 window.location.hostname === '[::1]' ||
                                  window.location.protocol === 'file:';
                 
                 if (isLocalDev) {

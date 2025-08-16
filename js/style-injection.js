@@ -20,6 +20,8 @@
         isDevelopment: function() {
             return location.hostname === 'localhost' || 
                    location.hostname === '127.0.0.1' || 
+                   location.hostname === '::' ||
+                   location.hostname === '[::1]' ||
                    location.protocol === 'file:' ||
                    location.search.includes('dev=true');
         },
