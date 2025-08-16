@@ -22,23 +22,18 @@
         
         // Get CDN URL based on environment
         getCDNUrl: function(path) {
-            if (this.isDevelopment()) {
-                // Use local path in development
-                const currentUrl = window.location.href;
-                let cdnPath;
-                
-                if (currentUrl.includes('chatooly-cdn')) {
-                    // Extract the chatooly-cdn root path
-                    cdnPath = currentUrl.substring(0, currentUrl.indexOf('chatooly-cdn') + 'chatooly-cdn'.length);
-                } else {
-                    // Fallback: assume we're in the project directory
-                    cdnPath = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
-                }
+            // Check if we're actually developing the CDN itself (not just any localhost)
+            const currentUrl = window.location.href;
+            const isLocalCDNDevelopment = this.isDevelopment() && currentUrl.includes('chatooly-cdn');
+            
+            if (isLocalCDNDevelopment) {
+                // Only use local paths when developing the CDN itself
+                let cdnPath = currentUrl.substring(0, currentUrl.indexOf('chatooly-cdn') + 'chatooly-cdn'.length);
                 
                 // Remove any trailing slashes and add the path
                 cdnPath = cdnPath.replace(/\/$/, '');
                 const fullPath = cdnPath + path;
-                console.log('Chatooly StyleLoader: Attempting to load CSS from:', fullPath);
+                console.log('Chatooly StyleLoader: Local CDN development mode, loading from:', fullPath);
                 
                 // For tests subfolder, ensure we go up one level
                 if (currentUrl.includes('/tests/')) {
@@ -49,6 +44,9 @@
                 
                 return fullPath;
             }
+            
+            // For all external tools (localhost or production), always use the CDN
+            console.log('Chatooly StyleLoader: Loading from CDN:', this.cdnBase + path);
             return this.cdnBase + path;
         },
         

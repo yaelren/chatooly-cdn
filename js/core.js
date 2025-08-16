@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-08-13T10:57:00.534Z
+ * Built: 2025-08-16T11:39:24.836Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -196,25 +196,31 @@
         
         // Get CDN URL based on environment
         getCDNUrl: function(path) {
-            if (this.isDevelopment()) {
-                // Use local path in development
-                const currentUrl = window.location.href;
-                let cdnPath;
-                
-                if (currentUrl.includes('chatooly-cdn')) {
-                    // Extract the chatooly-cdn root path
-                    cdnPath = currentUrl.substring(0, currentUrl.indexOf('chatooly-cdn') + 'chatooly-cdn'.length);
-                } else {
-                    // Fallback: assume we're in the project directory
-                    cdnPath = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
-                }
+            // Check if we're actually developing the CDN itself (not just any localhost)
+            const currentUrl = window.location.href;
+            const isLocalCDNDevelopment = this.isDevelopment() && currentUrl.includes('chatooly-cdn');
+            
+            if (isLocalCDNDevelopment) {
+                // Only use local paths when developing the CDN itself
+                let cdnPath = currentUrl.substring(0, currentUrl.indexOf('chatooly-cdn') + 'chatooly-cdn'.length);
                 
                 // Remove any trailing slashes and add the path
                 cdnPath = cdnPath.replace(/\/$/, '');
                 const fullPath = cdnPath + path;
-                console.log('Chatooly StyleLoader: Attempting to load CSS from:', fullPath);
+                console.log('Chatooly StyleLoader: Local CDN development mode, loading from:', fullPath);
+                
+                // For tests subfolder, ensure we go up one level
+                if (currentUrl.includes('/tests/')) {
+                    const testPath = cdnPath.replace('/tests', '') + path;
+                    console.log('Chatooly StyleLoader: Test subfolder detected, using path:', testPath);
+                    return testPath;
+                }
+                
                 return fullPath;
             }
+            
+            // For all external tools (localhost or production), always use the CDN
+            console.log('Chatooly StyleLoader: Loading from CDN:', this.cdnBase + path);
             return this.cdnBase + path;
         },
         
@@ -2296,18 +2302,25 @@ Chatooly.canvasZoom = {
         
         // Update when canvas is resized by canvas-resizer
         onCanvasResize: function(width, height) {
-            console.log(`Chatooly: Canvas resized to ${width}x${height} - updating zoom`);
-            this.baseWidth = width;
-            this.baseHeight = height;
-            this.centerX = width / 2;
-            this.centerY = height / 2;
+            // Debounce rapid resize calls to prevent feedback loops
+            if (this.resizeTimeout) {
+                clearTimeout(this.resizeTimeout);
+            }
             
-            // Reset zoom and pan to avoid issues
-            this.currentZoom = 1.0;
-            this.panX = 0;
-            this.panY = 0;
-            this.applyTransform();
-            this.updateBodySize();
+            this.resizeTimeout = setTimeout(() => {
+                console.log(`Chatooly: Canvas resized to ${width}x${height} - updating zoom`);
+                this.baseWidth = width;
+                this.baseHeight = height;
+                this.centerX = width / 2;
+                this.centerY = height / 2;
+                
+                // Reset zoom and pan to avoid issues
+                this.currentZoom = 1.0;
+                this.panX = 0;
+                this.panY = 0;
+                this.applyTransform();
+                this.updateBodySize();
+            }, 150); // Debounce for 150ms
         },
         
         // Reinitialize for new canvas
