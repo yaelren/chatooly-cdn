@@ -102,6 +102,80 @@
         // Detect if canvas is from Three.js
         _isThreeCanvas: function(canvas) {
             return window.THREE && (window.renderer || window.threeRenderer);
+        },
+        
+        // Get current canvas coordinate mapping
+        getCanvasCoordinateMapping: function() {
+            const target = this.detectExportTarget();
+            if (!target.element || target.type !== 'canvas') {
+                return null;
+            }
+            
+            const canvas = target.element;
+            const rect = canvas.getBoundingClientRect();
+            
+            // Canvas internal resolution
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            
+            // Display size
+            const displayWidth = rect.width;
+            const displayHeight = rect.height;
+            
+            return {
+                canvas: { width: canvasWidth, height: canvasHeight },
+                display: { width: displayWidth, height: displayHeight },
+                scale: {
+                    x: canvasWidth / displayWidth,
+                    y: canvasHeight / displayHeight
+                }
+            };
+        },
+        
+        // Map mouse event coordinates to canvas space
+        mapMouseToCanvas: function(mouseEvent, canvas) {
+            canvas = canvas || this.detectExportTarget().element;
+            if (!canvas) return { x: 0, y: 0 };
+            
+            const rect = canvas.getBoundingClientRect();
+            
+            // Get display coordinates (relative to canvas element)
+            const displayX = mouseEvent.clientX - rect.left;
+            const displayY = mouseEvent.clientY - rect.top;
+            
+            // Get scale factors
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            // Map to canvas internal coordinates
+            const canvasX = displayX * scaleX;
+            const canvasY = displayY * scaleY;
+            
+            return {
+                x: canvasX,
+                y: canvasY,
+                displayX: displayX,
+                displayY: displayY,
+                scaleX: scaleX,
+                scaleY: scaleY
+            };
+        },
+        
+        // Map canvas coordinates back to display space
+        mapCanvasToDisplay: function(canvasX, canvasY, canvas) {
+            canvas = canvas || this.detectExportTarget().element;
+            if (!canvas) return { x: 0, y: 0 };
+            
+            const rect = canvas.getBoundingClientRect();
+            
+            // Get scale factors
+            const scaleX = rect.width / canvas.width;
+            const scaleY = rect.height / canvas.height;
+            
+            return {
+                x: canvasX * scaleX,
+                y: canvasY * scaleY
+            };
         }
     };
     

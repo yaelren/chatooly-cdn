@@ -390,17 +390,51 @@
         },
         
         // Dispatch resize event for frameworks that need it
-        _dispatchResizeEvent: function(width, height) {
-            const event = new CustomEvent('chatooly:canvas-resized', {
-                detail: { 
-                    width: width, 
-                    height: height,
-                    type: 'display' // Indicate these are display dimensions
+        _dispatchResizeEvent: function(displayWidth, displayHeight) {
+            // Get the actual canvas element
+            const target = Chatooly.utils.detectExportTarget();
+            let canvasWidth = this.exportWidth;
+            let canvasHeight = this.exportHeight;
+            
+            if (target.type === 'canvas' && target.element) {
+                canvasWidth = target.element.width;
+                canvasHeight = target.element.height;
+            }
+            
+            const eventDetail = {
+                display: {
+                    width: displayWidth,
+                    height: displayHeight
                 },
+                canvas: {
+                    width: canvasWidth,
+                    height: canvasHeight
+                },
+                scale: {
+                    x: canvasWidth / displayWidth,
+                    y: canvasHeight / displayHeight
+                },
+                // Helper function to convert mouse coordinates
+                mapMouseEvent: function(mouseEvent) {
+                    const rect = target.element ? target.element.getBoundingClientRect() : { left: 0, top: 0 };
+                    const displayX = mouseEvent.clientX - rect.left;
+                    const displayY = mouseEvent.clientY - rect.top;
+                    
+                    return {
+                        canvasX: displayX * (canvasWidth / displayWidth),
+                        canvasY: displayY * (canvasHeight / displayHeight),
+                        displayX: displayX,
+                        displayY: displayY
+                    };
+                }
+            };
+            
+            const event = new CustomEvent('chatooly:canvas-resized', {
+                detail: eventDetail,
                 bubbles: true
             });
             document.dispatchEvent(event);
-            console.log(`Chatooly: Dispatched canvas resize event: ${width}x${height} (display dimensions)`);
+            console.log(`Chatooly: Canvas resized - Display: ${displayWidth}x${displayHeight}, Canvas: ${canvasWidth}x${canvasHeight}`);
         },
         
         // Get current export dimensions

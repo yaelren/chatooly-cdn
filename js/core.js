@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-08-16T11:39:24.836Z
+ * Built: 2025-08-16T12:03:08.103Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -164,6 +164,80 @@
         // Detect if canvas is from Three.js
         _isThreeCanvas: function(canvas) {
             return window.THREE && (window.renderer || window.threeRenderer);
+        },
+        
+        // Get current canvas coordinate mapping
+        getCanvasCoordinateMapping: function() {
+            const target = this.detectExportTarget();
+            if (!target.element || target.type !== 'canvas') {
+                return null;
+            }
+            
+            const canvas = target.element;
+            const rect = canvas.getBoundingClientRect();
+            
+            // Canvas internal resolution
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            
+            // Display size
+            const displayWidth = rect.width;
+            const displayHeight = rect.height;
+            
+            return {
+                canvas: { width: canvasWidth, height: canvasHeight },
+                display: { width: displayWidth, height: displayHeight },
+                scale: {
+                    x: canvasWidth / displayWidth,
+                    y: canvasHeight / displayHeight
+                }
+            };
+        },
+        
+        // Map mouse event coordinates to canvas space
+        mapMouseToCanvas: function(mouseEvent, canvas) {
+            canvas = canvas || this.detectExportTarget().element;
+            if (!canvas) return { x: 0, y: 0 };
+            
+            const rect = canvas.getBoundingClientRect();
+            
+            // Get display coordinates (relative to canvas element)
+            const displayX = mouseEvent.clientX - rect.left;
+            const displayY = mouseEvent.clientY - rect.top;
+            
+            // Get scale factors
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            // Map to canvas internal coordinates
+            const canvasX = displayX * scaleX;
+            const canvasY = displayY * scaleY;
+            
+            return {
+                x: canvasX,
+                y: canvasY,
+                displayX: displayX,
+                displayY: displayY,
+                scaleX: scaleX,
+                scaleY: scaleY
+            };
+        },
+        
+        // Map canvas coordinates back to display space
+        mapCanvasToDisplay: function(canvasX, canvasY, canvas) {
+            canvas = canvas || this.detectExportTarget().element;
+            if (!canvas) return { x: 0, y: 0 };
+            
+            const rect = canvas.getBoundingClientRect();
+            
+            // Get scale factors
+            const scaleX = rect.width / canvas.width;
+            const scaleY = rect.height / canvas.height;
+            
+            return {
+                x: canvasX * scaleX,
+                y: canvasY * scaleY
+            };
         }
     };
     
@@ -1842,17 +1916,51 @@ Chatooly.canvasResizer = {
         },
         
         // Dispatch resize event for frameworks that need it
-        _dispatchResizeEvent: function(width, height) {
-            const event = new CustomEvent('chatooly:canvas-resized', {
-                detail: { 
-                    width: width, 
-                    height: height,
-                    type: 'display' // Indicate these are display dimensions
+        _dispatchResizeEvent: function(displayWidth, displayHeight) {
+            // Get the actual canvas element
+            const target = Chatooly.utils.detectExportTarget();
+            let canvasWidth = this.exportWidth;
+            let canvasHeight = this.exportHeight;
+            
+            if (target.type === 'canvas' && target.element) {
+                canvasWidth = target.element.width;
+                canvasHeight = target.element.height;
+            }
+            
+            const eventDetail = {
+                display: {
+                    width: displayWidth,
+                    height: displayHeight
                 },
+                canvas: {
+                    width: canvasWidth,
+                    height: canvasHeight
+                },
+                scale: {
+                    x: canvasWidth / displayWidth,
+                    y: canvasHeight / displayHeight
+                },
+                // Helper function to convert mouse coordinates
+                mapMouseEvent: function(mouseEvent) {
+                    const rect = target.element ? target.element.getBoundingClientRect() : { left: 0, top: 0 };
+                    const displayX = mouseEvent.clientX - rect.left;
+                    const displayY = mouseEvent.clientY - rect.top;
+                    
+                    return {
+                        canvasX: displayX * (canvasWidth / displayWidth),
+                        canvasY: displayY * (canvasHeight / displayHeight),
+                        displayX: displayX,
+                        displayY: displayY
+                    };
+                }
+            };
+            
+            const event = new CustomEvent('chatooly:canvas-resized', {
+                detail: eventDetail,
                 bubbles: true
             });
             document.dispatchEvent(event);
-            console.log(`Chatooly: Dispatched canvas resize event: ${width}x${height} (display dimensions)`);
+            console.log(`Chatooly: Canvas resized - Display: ${displayWidth}x${displayHeight}, Canvas: ${canvasWidth}x${canvasHeight}`);
         },
         
         // Get current export dimensions
