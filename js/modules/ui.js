@@ -126,6 +126,7 @@
                     border: 2px solid #ffffff;
                     border-radius: 0px;
                     display: flex;
+                    flex-direction: column;
                     align-items: center;
                     justify-content: center;
                     cursor: pointer;
@@ -133,9 +134,10 @@
                     font-size: 14px;
                     font-family: 'Lucida Console', Monaco, monospace;
                     font-weight: bold;
-                    padding: 0 15px;
+                    padding: 5px 15px;
                     transition: all 0.2s ease;
                     user-select: none;
+                    text-align: center;
                 }
                 
                 #chatooly-export-btn .chatooly-btn-main:hover {

@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-08-16T13:11:16.668Z
+ * Built: 2025-08-16T13:20:51.161Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -3216,6 +3216,7 @@ Chatooly.canvasZoom = {
                     border: 2px solid #ffffff;
                     border-radius: 0px;
                     display: flex;
+                    flex-direction: column;
                     align-items: center;
                     justify-content: center;
                     cursor: pointer;
@@ -3223,9 +3224,10 @@ Chatooly.canvasZoom = {
                     font-size: 14px;
                     font-family: 'Lucida Console', Monaco, monospace;
                     font-weight: bold;
-                    padding: 0 15px;
+                    padding: 5px 15px;
                     transition: all 0.2s ease;
                     user-select: none;
+                    text-align: center;
                 }
                 
                 #chatooly-export-btn .chatooly-btn-main:hover {
