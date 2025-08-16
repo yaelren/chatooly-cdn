@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-08-16T13:48:30.480Z
+ * Built: 2025-08-16T14:45:38.746Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -263,13 +263,14 @@
         // CDN base URL
         cdnBase: 'https://yaelren.github.io/chatooly-cdn',
         
-        // Development mode detection
+        // Development mode detection - delegates to utils
         isDevelopment: function() {
-            return location.hostname === 'localhost' || 
-                   location.hostname === '127.0.0.1' || 
-                   location.hostname === '::' ||
-                   location.hostname === '[::1]' ||
-                   location.protocol === 'file:';
+            return Chatooly.utils ? Chatooly.utils.isDevelopment() : 
+                   (location.hostname === 'localhost' || 
+                    location.hostname === '127.0.0.1' || 
+                    location.hostname === '::' ||
+                    location.hostname === '[::1]' ||
+                    location.protocol === 'file:');
         },
         
         // Get CDN URL based on environment
@@ -879,11 +880,12 @@
             
             this._html2canvasPromise = new Promise((resolve, reject) => {
                 // Check if running locally and show helpful warning
-                const isLocalDev = window.location.hostname === 'localhost' || 
-                                 window.location.hostname === '127.0.0.1' ||
-                                 window.location.hostname === '::' ||
-                                 window.location.hostname === '[::1]' ||
-                                 window.location.protocol === 'file:';
+                const isLocalDev = Chatooly.utils ? Chatooly.utils.isDevelopment() :
+                                 (window.location.hostname === 'localhost' || 
+                                  window.location.hostname === '127.0.0.1' ||
+                                  window.location.hostname === '::' ||
+                                  window.location.hostname === '[::1]' ||
+                                  window.location.protocol === 'file:');
                 
                 if (isLocalDev) {
                     console.warn('Chatooly: Running locally - html2canvas CDN may cause mixed content warnings. Consider serving over HTTPS.');

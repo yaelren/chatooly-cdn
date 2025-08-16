@@ -96,11 +96,12 @@
             
             this._html2canvasPromise = new Promise((resolve, reject) => {
                 // Check if running locally and show helpful warning
-                const isLocalDev = window.location.hostname === 'localhost' || 
-                                 window.location.hostname === '127.0.0.1' ||
-                                 window.location.hostname === '::' ||
-                                 window.location.hostname === '[::1]' ||
-                                 window.location.protocol === 'file:';
+                const isLocalDev = Chatooly.utils ? Chatooly.utils.isDevelopment() :
+                                 (window.location.hostname === 'localhost' || 
+                                  window.location.hostname === '127.0.0.1' ||
+                                  window.location.hostname === '::' ||
+                                  window.location.hostname === '[::1]' ||
+                                  window.location.protocol === 'file:');
                 
                 if (isLocalDev) {
                     console.warn('Chatooly: Running locally - html2canvas CDN may cause mixed content warnings. Consider serving over HTTPS.');

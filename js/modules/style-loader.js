@@ -13,13 +13,14 @@
         // CDN base URL
         cdnBase: 'https://yaelren.github.io/chatooly-cdn',
         
-        // Development mode detection
+        // Development mode detection - delegates to utils
         isDevelopment: function() {
-            return location.hostname === 'localhost' || 
-                   location.hostname === '127.0.0.1' || 
-                   location.hostname === '::' ||
-                   location.hostname === '[::1]' ||
-                   location.protocol === 'file:';
+            return Chatooly.utils ? Chatooly.utils.isDevelopment() : 
+                   (location.hostname === 'localhost' || 
+                    location.hostname === '127.0.0.1' || 
+                    location.hostname === '::' ||
+                    location.hostname === '[::1]' ||
+                    location.protocol === 'file:');
         },
         
         // Get CDN URL based on environment
