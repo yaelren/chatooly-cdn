@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-08-17T14:04:48.094Z
+ * Built: 2025-08-17T14:52:44.286Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -2244,8 +2244,8 @@ Chatooly.canvasZoom = {
                 if (e.code === 'Space') {
                     this.spacebarPressed = true;
                     this.updateCursor(); // Update cursor when spacebar is pressed
-                    // Only prevent default if we're zoomed in (to avoid interfering with page scroll)
-                    if (this.currentZoom > 1.0) {
+                    // Prevent default when hovering over canvas to enable panning
+                    if (e.target === this.canvasElement || this.canvasElement?.contains(e.target)) {
                         e.preventDefault();
                     }
                 }
@@ -2282,9 +2282,9 @@ Chatooly.canvasZoom = {
                 }
             });
             
-            // Pan controls (drag canvas when zoomed AND spacebar pressed)
+            // Pan controls (drag canvas when spacebar pressed at any zoom level)
             document.addEventListener('mousedown', (e) => {
-                if (this.currentZoom > 1.0 && e.target === this.canvasElement && this.spacebarPressed) {
+                if (e.target === this.canvasElement && this.spacebarPressed) {
                     this.startPan(e.clientX, e.clientY);
                     e.preventDefault();
                 }
@@ -2481,7 +2481,7 @@ Chatooly.canvasZoom = {
             
             if (this.isPanning) {
                 this.canvasElement.style.cursor = 'grabbing';
-            } else if (this.currentZoom > 1.0 && this.spacebarPressed) {
+            } else if (this.spacebarPressed) {
                 this.canvasElement.style.cursor = 'grab';
             } else {
                 this.canvasElement.style.cursor = 'default';
