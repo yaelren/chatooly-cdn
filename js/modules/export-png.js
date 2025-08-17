@@ -21,9 +21,9 @@
         // Route canvas export to appropriate handler
         _exportCanvas: function(canvas, options) {
             // Detect canvas type and route to appropriate PNG exporter
-            if (this._isP5Canvas(canvas)) {
+            if (Chatooly.utils._isP5Canvas(canvas)) {
                 Chatooly.canvasExporters.p5.png.export(canvas, options);
-            } else if (this._isThreeCanvas(canvas)) {
+            } else if (Chatooly.utils._isThreeCanvas(canvas)) {
                 Chatooly.canvasExporters.three.png.export(canvas, options);
             } else {
                 Chatooly.canvasExporters.html5.png.export(canvas, options);
@@ -33,16 +33,6 @@
         // Route DOM export
         _exportDOM: function(element, options) {
             Chatooly.domExport.export(element, options);
-        },
-        
-        // Detect if canvas is from p5.js
-        _isP5Canvas: function(canvas) {
-            return window.p5 && (canvas.id === 'defaultCanvas0' || window.pixelDensity);
-        },
-        
-        // Detect if canvas is from Three.js
-        _isThreeCanvas: function(canvas) {
-            return window.THREE && (window.renderer || window.threeRenderer);
         }
     };
     

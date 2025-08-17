@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-08-17T14:52:44.286Z
+ * Built: 2025-08-17T15:27:53.788Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -160,12 +160,45 @@
         
         // Detect if canvas is from p5.js
         _isP5Canvas: function(canvas) {
-            return window.p5 && (canvas.id === 'defaultCanvas0' || window.pixelDensity);
+            // Check for p5.js library
+            if (!window.p5) return false;
+            
+            // Check for default p5.js canvas ID
+            if (canvas.id === 'defaultCanvas0') return true;
+            
+            // Check for p5.js-specific functions
+            if (typeof window.pixelDensity === 'function') return true;
+            
+            // Check if canvas has p5.js-specific properties
+            if (canvas._pInst || canvas.drawingContext?._pInst) return true;
+            
+            // Check for p5.js canvas class
+            if (canvas.classList && canvas.classList.contains('p5Canvas')) return true;
+            
+            return false;
         },
         
         // Detect if canvas is from Three.js
         _isThreeCanvas: function(canvas) {
-            return window.THREE && (window.renderer || window.threeRenderer);
+            // Check for Three.js library
+            if (!window.THREE) return false;
+            
+            // Check for common global renderer variables
+            if (window.renderer || window.threeRenderer) return true;
+            
+            // Check if canvas has WebGL context (typical for Three.js)
+            const context = canvas.getContext('webgl') || canvas.getContext('webgl2') || canvas.getContext('experimental-webgl');
+            if (!context) return false;
+            
+            // Check for Three.js-specific properties on canvas
+            if (canvas._threeRenderer || canvas.threeRenderer) return true;
+            
+            // Check for Three.js renderer in canvas attributes or data
+            if (canvas.dataset && canvas.dataset.threeRenderer) return true;
+            
+            // Heuristic: if WebGL context exists with Three.js loaded, likely Three.js canvas
+            // This is less reliable but covers cases where renderer isn't globally accessible
+            return true;
         },
         
         // Get current canvas coordinate mapping
@@ -967,9 +1000,9 @@
         // Route canvas export to appropriate handler
         _exportCanvas: function(canvas, options) {
             // Detect canvas type and route to appropriate PNG exporter
-            if (this._isP5Canvas(canvas)) {
+            if (Chatooly.utils._isP5Canvas(canvas)) {
                 Chatooly.canvasExporters.p5.png.export(canvas, options);
-            } else if (this._isThreeCanvas(canvas)) {
+            } else if (Chatooly.utils._isThreeCanvas(canvas)) {
                 Chatooly.canvasExporters.three.png.export(canvas, options);
             } else {
                 Chatooly.canvasExporters.html5.png.export(canvas, options);
@@ -979,16 +1012,6 @@
         // Route DOM export
         _exportDOM: function(element, options) {
             Chatooly.domExport.export(element, options);
-        },
-        
-        // Detect if canvas is from p5.js
-        _isP5Canvas: function(canvas) {
-            return window.p5 && (canvas.id === 'defaultCanvas0' || window.pixelDensity);
-        },
-        
-        // Detect if canvas is from Three.js
-        _isThreeCanvas: function(canvas) {
-            return window.THREE && (window.renderer || window.threeRenderer);
         }
     };
     
