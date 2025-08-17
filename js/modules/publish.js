@@ -532,6 +532,19 @@
                 errors: []
             };
             
+            // Check for required template structure
+            const chatoolyContainer = document.getElementById('chatooly-container');
+            if (!chatoolyContainer) {
+                validation.errors.push('Missing required template structure: <div id="chatooly-container"> not found');
+                validation.valid = false;
+            } else {
+                const chatoolyCanvas = chatoolyContainer.querySelector('canvas#chatooly-canvas');
+                if (!chatoolyCanvas) {
+                    validation.errors.push('Missing required canvas: <canvas id="chatooly-canvas"> not found inside chatooly-container');
+                    validation.valid = false;
+                }
+            }
+            
             // Check for required elements
             if (!Chatooly.config.name || Chatooly.config.name === 'Untitled Tool') {
                 validation.warnings.push('Tool name not set - using default');

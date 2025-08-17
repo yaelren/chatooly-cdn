@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-08-17T07:22:31.276Z
+ * Built: 2025-08-17T09:46:43.763Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -1042,21 +1042,25 @@ Chatooly.canvasArea = {
         
         // Create the main canvas area container
         createContainer: function() {
-            // Remove existing container if any
-            const existing = document.getElementById('chatooly-canvas-area');
-            if (existing) {
-                existing.remove();
-            }
+            // First, check if the template already has the correct structure
+            const templateContainer = document.getElementById('chatooly-container');
             
-            // Create new container
-            this.areaContainer = document.createElement('div');
-            this.areaContainer.id = 'chatooly-canvas-area';
+            if (templateContainer) {
+                // Use the existing container from the template
+                this.areaContainer = templateContainer;
+                console.log('Chatooly: Using template chatooly-container (no DOM manipulation needed)');
+            } else {
+                // Template doesn't have the required structure - this shouldn't happen with new tools
+                console.error('Chatooly: No chatooly-container found in template. Please use the correct template structure.');
+                console.error('Required structure: <div id="chatooly-container"><canvas id="chatooly-canvas"></canvas></div>');
+                
+                // Don't create a fallback - this forces proper template usage
+                this.areaContainer = null;
+                return;
+            }
             
             // Apply styles based on position
             this.applyContainerStyles();
-            
-            // Add to body
-            document.body.appendChild(this.areaContainer);
             
             // Inject CSS for consistent styling
             this.injectStyles();
@@ -1220,13 +1224,17 @@ Chatooly.canvasArea = {
                 canvas.id = 'chatooly-canvas';
             }
             
-            // Move canvas to area container
-            this.areaContainer.appendChild(canvas);
+            // Check if canvas is already in the correct container
+            if (canvas.parentElement === this.areaContainer) {
+                console.log('Chatooly: Canvas already in correct container (no move needed)');
+            } else {
+                // Move canvas to area container
+                this.areaContainer.appendChild(canvas);
+                console.log('Chatooly: Canvas moved to canvas area');
+            }
             
             // Setup canvas properties
             this.setupCanvas();
-            
-            console.log('Chatooly: Canvas moved to canvas area');
         },
         
         // Setup canvas properties and events
@@ -3028,6 +3036,19 @@ Chatooly.canvasZoom = {
                 warnings: [],
                 errors: []
             };
+            
+            // Check for required template structure
+            const chatoolyContainer = document.getElementById('chatooly-container');
+            if (!chatoolyContainer) {
+                validation.errors.push('Missing required template structure: <div id="chatooly-container"> not found');
+                validation.valid = false;
+            } else {
+                const chatoolyCanvas = chatoolyContainer.querySelector('canvas#chatooly-canvas');
+                if (!chatoolyCanvas) {
+                    validation.errors.push('Missing required canvas: <canvas id="chatooly-canvas"> not found inside chatooly-container');
+                    validation.valid = false;
+                }
+            }
             
             // Check for required elements
             if (!Chatooly.config.name || Chatooly.config.name === 'Untitled Tool') {
