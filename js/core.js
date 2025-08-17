@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-08-17T09:46:43.763Z
+ * Built: 2025-08-17T14:04:48.094Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -1044,11 +1044,16 @@ Chatooly.canvasArea = {
         createContainer: function() {
             // First, check if the template already has the correct structure
             const templateContainer = document.getElementById('chatooly-container');
+            const previewPanel = document.querySelector('.chatooly-preview-panel');
             
             if (templateContainer) {
                 // Use the existing container from the template
                 this.areaContainer = templateContainer;
-                console.log('Chatooly: Using template chatooly-container (no DOM manipulation needed)');
+                
+                // Store reference to the preview panel (the actual full-size container)
+                this.previewPanel = previewPanel;
+                
+                console.log('Chatooly: Using template chatooly-container with preview panel');
             } else {
                 // Template doesn't have the required structure - this shouldn't happen with new tools
                 console.error('Chatooly: No chatooly-container found in template. Please use the correct template structure.');
@@ -1070,28 +1075,62 @@ Chatooly.canvasArea = {
         applyContainerStyles: function() {
             if (!this.areaContainer) return;
             
-            let styles = {
-                position: 'fixed',
-                backgroundColor: this.config.backgroundColor,
-                border: `1px solid ${this.config.borderColor}`,
-                overflow: 'auto', // Enable scrolling when content exceeds bounds
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: '1'
-            };
-            
-            // Check if there's a sidebar and leave space for it
-            const sidebar = document.querySelector('.tools-sidebar');
-            const sidebarWidth = sidebar ? sidebar.offsetWidth : 0;
-            
-            styles.top = '60px'; // Leave space for header/controls
-            styles.left = sidebarWidth + 'px'; // Leave space for sidebar
-            styles.right = '0';
-            styles.bottom = '60px'; // Leave space for Chatooly button
-            
-            // Apply styles
-            Object.assign(this.areaContainer.style, styles);
+            // Check if we're working with the template structure
+            if (this.previewPanel) {
+                // Working with template - chatooly-container should be centered in preview panel
+                let containerStyles = {
+                    position: 'relative', // Not fixed since it's inside preview panel
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxSizing: 'border-box',
+                    width: '100%',
+                    height: '100%',
+                    overflow: 'auto' // Enable scrolling when content exceeds bounds
+                };
+                
+                // Apply styles to the container
+                Object.assign(this.areaContainer.style, containerStyles);
+                
+                // Ensure preview panel maintains proper flex centering
+                if (this.previewPanel) {
+                    this.previewPanel.style.display = 'flex';
+                    this.previewPanel.style.alignItems = 'center';
+                    this.previewPanel.style.justifyContent = 'center';
+                }
+            } else {
+                // Legacy mode - full positioning (for older templates)
+                let styles = {
+                    position: 'fixed',
+                    backgroundColor: this.config.backgroundColor,
+                    border: `1px solid ${this.config.borderColor}`,
+                    overflow: 'auto', // Enable scrolling when content exceeds bounds
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: '1',
+                    boxSizing: 'border-box' // Ensure padding/border don't affect size calculations
+                };
+                
+                // Check if there's a sidebar and leave space for it
+                const sidebar = document.querySelector('.chatooly-controls-panel') || document.querySelector('.tools-sidebar');
+                let sidebarWidth = 0;
+                if (sidebar) {
+                    // Get the computed style to ensure we get the actual rendered width
+                    const sidebarStyle = window.getComputedStyle(sidebar);
+                    sidebarWidth = sidebar.offsetWidth + 
+                                 parseInt(sidebarStyle.marginLeft || 0) + 
+                                 parseInt(sidebarStyle.marginRight || 0);
+                }
+                
+                styles.top = '60px'; // Leave space for header/controls
+                styles.left = sidebarWidth + 'px'; // Leave space for sidebar
+                styles.right = '0';
+                styles.bottom = '60px'; // Leave space for Chatooly button
+                
+                // Apply styles
+                Object.assign(this.areaContainer.style, styles);
+            }
         },
         
         // Inject global styles for canvas area
@@ -1103,16 +1142,31 @@ Chatooly.canvasArea = {
             const style = document.createElement('style');
             style.id = 'chatooly-canvas-area-styles';
             style.textContent = `
-                /* Canvas area container */
-                #chatooly-canvas-area {
+                /* Canvas area container - works with both template and legacy */
+                #chatooly-container, #chatooly-canvas-area {
                     box-sizing: border-box;
                     transition: all 0.3s ease;
                 }
                 
-                /* Canvas inside the area */
-                #chatooly-canvas-area canvas {
+                /* Template structure - ensure proper centering */
+                .chatooly-preview-panel {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                }
+                
+                #chatooly-container {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    width: 100%;
+                    height: 100%;
+                }
+                
+                /* Canvas inside the area - universal rules */
+                #chatooly-container canvas, #chatooly-canvas-area canvas {
                     display: block;
-                    margin: auto;
+                    margin: 0; /* Remove auto margin - let flexbox handle centering */
                     max-width: 100%;
                     max-height: 100%;
                     object-fit: contain;
@@ -1120,41 +1174,43 @@ Chatooly.canvasArea = {
                     image-rendering: -moz-crisp-edges;
                     image-rendering: -webkit-crisp-edges;
                     image-rendering: pixelated;
+                    /* Ensure canvas is centered by flexbox parent */
+                    flex-shrink: 0;
                 }
                 
                 /* When zoomed, allow canvas to exceed container bounds */
-                #chatooly-canvas-area.zoomed {
+                #chatooly-container.zoomed, #chatooly-canvas-area.zoomed {
                     overflow: auto;
                     cursor: grab;
                 }
                 
-                #chatooly-canvas-area.zoomed.dragging {
+                #chatooly-container.zoomed.dragging, #chatooly-canvas-area.zoomed.dragging {
                     cursor: grabbing;
                     user-select: none;
                 }
                 
                 /* Custom scrollbar for canvas area */
-                #chatooly-canvas-area::-webkit-scrollbar {
+                #chatooly-container::-webkit-scrollbar, #chatooly-canvas-area::-webkit-scrollbar {
                     width: 12px;
                     height: 12px;
                 }
                 
-                #chatooly-canvas-area::-webkit-scrollbar-track {
+                #chatooly-container::-webkit-scrollbar-track, #chatooly-canvas-area::-webkit-scrollbar-track {
                     background: #f1f1f1;
                     border-radius: 6px;
                 }
                 
-                #chatooly-canvas-area::-webkit-scrollbar-thumb {
+                #chatooly-container::-webkit-scrollbar-thumb, #chatooly-canvas-area::-webkit-scrollbar-thumb {
                     background: #888;
                     border-radius: 6px;
                 }
                 
-                #chatooly-canvas-area::-webkit-scrollbar-thumb:hover {
+                #chatooly-container::-webkit-scrollbar-thumb:hover, #chatooly-canvas-area::-webkit-scrollbar-thumb:hover {
                     background: #555;
                 }
                 
                 /* Zoom indicator inside canvas area */
-                #chatooly-canvas-area .zoom-indicator {
+                #chatooly-container .zoom-indicator, #chatooly-canvas-area .zoom-indicator {
                     position: absolute;
                     top: 10px;
                     right: 10px;
@@ -1169,19 +1225,19 @@ Chatooly.canvasArea = {
                 }
                 
                 /* Canvas fit modes */
-                #chatooly-canvas-area[data-fit="contain"] canvas {
+                #chatooly-container[data-fit="contain"] canvas, #chatooly-canvas-area[data-fit="contain"] canvas {
                     width: 100%;
                     height: 100%;
                     object-fit: contain;
                 }
                 
-                #chatooly-canvas-area[data-fit="cover"] canvas {
+                #chatooly-container[data-fit="cover"] canvas, #chatooly-canvas-area[data-fit="cover"] canvas {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
                 }
                 
-                #chatooly-canvas-area[data-fit="actual"] canvas {
+                #chatooly-container[data-fit="actual"] canvas, #chatooly-canvas-area[data-fit="actual"] canvas {
                     width: auto;
                     height: auto;
                     max-width: none;
@@ -1242,10 +1298,11 @@ Chatooly.canvasArea = {
             if (!this.canvasElement) return;
             
             // Reset any existing transforms or positioning
-            this.canvasElement.style.position = 'relative';
+            this.canvasElement.style.position = 'static'; // Use static for better flex behavior
             this.canvasElement.style.transform = '';
             this.canvasElement.style.left = '';
             this.canvasElement.style.top = '';
+            this.canvasElement.style.margin = '0'; // Ensure no margin interferes with flexbox
             
             // Store original dimensions
             this.originalWidth = this.canvasElement.width;
@@ -1383,24 +1440,47 @@ Chatooly.canvasArea = {
         centerCanvas: function() {
             if (!this.areaContainer || !this.canvasElement) return;
             
+            // Ensure proper flexbox centering for template structure
+            if (this.previewPanel) {
+                this.previewPanel.style.display = 'flex';
+                this.previewPanel.style.alignItems = 'center';
+                this.previewPanel.style.justifyContent = 'center';
+            }
+            
+            this.areaContainer.style.display = 'flex';
+            this.areaContainer.style.alignItems = 'center';
+            this.areaContainer.style.justifyContent = 'center';
+            
             // Get the actual dimensions
             const areaWidth = this.areaContainer.clientWidth;
             const areaHeight = this.areaContainer.clientHeight;
             const canvasWidth = this.canvasElement.offsetWidth;
             const canvasHeight = this.canvasElement.offsetHeight;
             
-            // Calculate center position
-            const scrollLeft = Math.max(0, (canvasWidth - areaWidth) / 2);
-            const scrollTop = Math.max(0, (canvasHeight - areaHeight) / 2);
-            
-            // Smooth scroll to center
-            this.areaContainer.scrollTo({
-                left: scrollLeft,
-                top: scrollTop,
-                behavior: 'smooth'
-            });
-            
-            console.log(`Chatooly: Canvas centered - scroll to ${Math.round(scrollLeft)}, ${Math.round(scrollTop)}`);
+            // Only use scroll centering if canvas is larger than area (zoomed)
+            if (canvasWidth > areaWidth || canvasHeight > areaHeight) {
+                // Calculate center position
+                const scrollLeft = Math.max(0, (canvasWidth - areaWidth) / 2);
+                const scrollTop = Math.max(0, (canvasHeight - areaHeight) / 2);
+                
+                // Smooth scroll to center
+                this.areaContainer.scrollTo({
+                    left: scrollLeft,
+                    top: scrollTop,
+                    behavior: 'smooth'
+                });
+                
+                console.log(`Chatooly: Canvas centered via scroll - ${Math.round(scrollLeft)}, ${Math.round(scrollTop)}`);
+            } else {
+                // Canvas fits in area - reset scroll to ensure flexbox centering works
+                this.areaContainer.scrollTo({
+                    left: 0,
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                
+                console.log('Chatooly: Canvas centered via flexbox (fits in area)');
+            }
         },
         
         // Trigger redraw for various frameworks
