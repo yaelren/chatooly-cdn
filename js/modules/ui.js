@@ -51,10 +51,17 @@
                 </div>
                 <div class="chatooly-btn-menu" style="display: none;">
                     <div class="chatooly-menu-section">
-                        <h4>📥 Export</h4>
+                        <h4>📸 Images</h4>
                         <button onclick="Chatooly.export('png', {resolution: 1})">1x PNG</button>
                         <button onclick="Chatooly.export('png', {resolution: 2})">2x PNG</button>
                         <button onclick="Chatooly.export('png', {resolution: 4})">4x PNG</button>
+                    </div>
+                    
+                    <div class="chatooly-menu-section">
+                        <h4>🎬 Animations</h4>
+                        <button onclick="Chatooly.ui.exportAnimation()">📦 PNG Sequence</button>
+                        <button disabled style="opacity: 0.5;">🎥 WebM Video (Soon)</button>
+                        <button disabled style="opacity: 0.5;">🎬 MOV Video (Soon)</button>
                     </div>
                     
                     <div class="chatooly-menu-section">
@@ -477,6 +484,27 @@
             if (menu && this._hideMenu) {
                 this._hideMenu(menu);
             }
+        },
+        
+        // Animation export function
+        exportAnimation: function() {
+            // Initialize animation exporter if not already done
+            if (!window.chatoolyAnimationExporter) {
+                window.chatoolyAnimationExporter = new AnimationExporter({
+                    renderServiceUrl: Chatooly.config.renderServiceUrl || 'https://chatooly-render-service.onrender.com',
+                    maxDuration: Chatooly.config.maxAnimationDuration || 15,
+                    defaultDuration: Chatooly.config.defaultAnimationDuration || 5
+                });
+            }
+            
+            // Hide menu after action
+            const menu = document.querySelector('.chatooly-btn-menu');
+            if (menu && this._hideMenu) {
+                this._hideMenu(menu);
+            }
+            
+            // Start export process
+            window.chatoolyAnimationExporter.exportAnimation();
         }
     };
     

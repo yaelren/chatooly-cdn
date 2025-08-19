@@ -19,11 +19,12 @@ const config = {
         'canvas-three.js',    // Three.js exporters - depends on utils
         'dom-export.js',      // DOM export - depends on utils
         'export-png.js',      // PNG orchestrator - depends on canvas exporters + dom-export
+        'animation-export.js', // Animation export - depends on utils
         'canvas-area.js',     // Canvas area container - depends on utils
         'canvas-resizer.js',  // Canvas resizing - depends on utils, canvas-area
         'canvas-zoom.js',     // Canvas zoom functionality - depends on utils, canvas-area
         'publish.js',         // Publishing - depends on utils
-        'ui.js',              // UI components - depends on utils, canvas-resizer, publish
+        'ui.js',              // UI components - depends on utils, canvas-resizer, publish, animation-export
         'core.js'             // Main entry point - depends on all modules
     ],
     
