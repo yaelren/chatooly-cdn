@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-09-11T16:58:10.261Z
+ * Built: 2025-09-11T17:02:26.268Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -1212,17 +1212,20 @@ class AnimationExporter {
         
         for (const script of externalScripts) {
             const src = script.src;
-            // Include known animation libraries
+            // Include known animation libraries AND tool-specific main.js
             if (src && (
                 src.includes('three.min.js') || 
                 src.includes('p5.min.js') || 
                 src.includes('gsap') ||
                 src.includes('animation-library') ||
                 src.includes('matter.js') ||
-                src.includes('anime.js')
+                src.includes('anime.js') ||
+                src.includes('/main.js') || // Include tool's main.js
+                src.includes('/app.js') ||   // Common app script names
+                src.includes('/script.js')   // Common script names
             )) {
                 essentialScripts.push(`<script src="${src}"></script>`);
-                console.log('🔧 DEBUG: Including animation library:', src);
+                console.log('🔧 DEBUG: Including script:', src);
             } else {
                 console.log('🔧 DEBUG: Skipping external script:', src);
             }
