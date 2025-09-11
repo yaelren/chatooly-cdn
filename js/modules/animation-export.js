@@ -77,11 +77,11 @@ class AnimationExporter {
         const width = canvas.width || 800;
         const height = canvas.height || 600;
 
-        // Get full page HTML
-        let fullHTML = document.documentElement.outerHTML;
+        // Build minimal HTML focusing only on the canvas container
+        const minimalHTML = this.buildMinimalHTML(canvas, container, width, height, isTransparent);
 
         // Inline external libraries
-        const inlinedHTML = await this.inlineExternalLibraries(fullHTML);
+        const inlinedHTML = await this.inlineExternalLibraries(minimalHTML);
 
         // Compress HTML
         const compressedHTML = this.compressHTML(inlinedHTML);
@@ -98,7 +98,7 @@ class AnimationExporter {
                 width,
                 height,
                 transparent: isTransparent,
-                originalSize: fullHTML.length,
+                originalSize: minimalHTML.length,
                 compressedSize: finalHTML.length
             }
         };
@@ -131,6 +131,98 @@ class AnimationExporter {
             console.warn('Could not detect transparency:', e);
             return false; // Fallback to opaque
         }
+    }
+
+    /**
+     * Build minimal HTML with only canvas container and necessary scripts
+     */
+    buildMinimalHTML(canvas, container, width, height, isTransparent) {
+        // Clone the container to isolate it from the page
+        const containerClone = container ? container.cloneNode(true) : document.createElement('div');
+        
+        // If no container, wrap the canvas
+        if (!container) {
+            containerClone.id = 'chatooly-container';
+            containerClone.appendChild(canvas.cloneNode(true));
+        }
+        
+        // Get essential scripts (exclude UI-related scripts)
+        const scripts = Array.from(document.querySelectorAll('script'))
+            .filter(script => {
+                // Skip Chatooly CDN core (will be re-added if needed)
+                if (script.src && script.src.includes('chatooly-cdn/js/core')) return false;
+                // Skip analytics, tracking, etc.
+                if (script.src && (script.src.includes('analytics') || script.src.includes('gtag'))) return false;
+                // Keep animation libraries and main logic
+                return true;
+            })
+            .map(script => {
+                if (script.src) {
+                    return `<script src="${script.src}"></script>`;
+                } else {
+                    return `<script>${script.innerHTML}</script>`;
+                }
+            })
+            .join('\n');
+        
+        // Get essential styles (skip UI styles)
+        const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+            .filter(style => {
+                // Skip Chatooly unified styles (UI only)
+                if (style.href && style.href.includes('unified.min.css')) return false;
+                // Skip Chatooly component styles
+                if (style.href && style.href.includes('chatooly-cdn/css/')) return false;
+                return true;
+            })
+            .map(style => {
+                if (style.href) {
+                    return `<link rel="stylesheet" href="${style.href}">`;
+                } else {
+                    return `<style>${style.innerHTML}</style>`;
+                }
+            })
+            .join('\n');
+        
+        // Build minimal HTML
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation Export</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: ${isTransparent ? 'transparent' : '#000'};
+        }
+        #chatooly-container {
+            width: ${width}px;
+            height: ${height}px;
+            position: relative;
+        }
+        #chatooly-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    ${styles}
+</head>
+<body>
+    ${containerClone.outerHTML}
+    ${scripts}
+</body>
+</html>`;
     }
 
     /**
