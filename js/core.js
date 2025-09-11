@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-09-11T17:02:26.268Z
+ * Built: 2025-09-11T17:06:27.815Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -1088,29 +1088,67 @@ class AnimationExporter {
         const canvas = document.getElementById('chatooly-canvas');
         const container = document.getElementById('chatooly-container');
         
-        console.log('🔧 DEBUG: Found elements:', {
-            canvas: canvas ? `${canvas.width}x${canvas.height}` : 'NOT FOUND',
-            container: container ? 'FOUND' : 'NOT FOUND',
-            containerHTML: container ? container.outerHTML.slice(0, 200) + '...' : 'N/A'
+        // Check what's actually in the DOM
+        const allCanvases = document.querySelectorAll('canvas');
+        const allContainers = document.querySelectorAll('[id*="container"]');
+        
+        console.log('🔧 DEBUG: DOM Analysis:', {
+            targetCanvas: canvas ? `${canvas.width}x${canvas.height}` : 'NOT FOUND',
+            targetContainer: container ? 'FOUND' : 'NOT FOUND',
+            allCanvasCount: allCanvases.length,
+            allCanvases: Array.from(allCanvases).map(c => ({
+                id: c.id,
+                class: c.className,
+                width: c.width,
+                height: c.height,
+                parent: c.parentElement?.id || c.parentElement?.className
+            })),
+            allContainers: Array.from(allContainers).map(c => ({
+                id: c.id,
+                class: c.className,
+                children: c.children.length
+            }))
         });
         
-        if (!canvas) {
-            throw new Error('Canvas not found. Make sure your canvas has id="chatooly-canvas"');
+        // If no canvas with chatooly-canvas ID, try to find the actual canvas
+        let actualCanvas = canvas;
+        if (!actualCanvas && allCanvases.length > 0) {
+            // Use the first canvas or the largest one
+            actualCanvas = Array.from(allCanvases).reduce((largest, current) => {
+                const largestSize = (largest.width || 0) * (largest.height || 0);
+                const currentSize = current.width * current.height;
+                return currentSize > largestSize ? current : largest;
+            });
+            console.log('🔧 DEBUG: Using alternative canvas:', {
+                id: actualCanvas.id,
+                class: actualCanvas.className,
+                size: `${actualCanvas.width}x${actualCanvas.height}`
+            });
+        }
+        
+        if (!actualCanvas) {
+            throw new Error('No canvas found on the page');
         }
 
         // Auto-detect transparency
         const isTransparent = config.transparent !== undefined ? 
             config.transparent : 
-            this.detectCanvasTransparency(canvas, container);
+            this.detectCanvasTransparency(actualCanvas, container);
 
         // Get canvas dimensions
-        const width = canvas.width || 800;
-        const height = canvas.height || 600;
+        const width = actualCanvas.width || 800;
+        const height = actualCanvas.height || 600;
 
-        console.log('🔧 DEBUG: Canvas info:', { width, height, isTransparent });
+        console.log('🔧 DEBUG: Canvas info:', { 
+            width, 
+            height, 
+            isTransparent,
+            canvasId: actualCanvas.id,
+            canvasClass: actualCanvas.className
+        });
 
-        // Build minimal HTML focusing only on the canvas container
-        const minimalHTML = this.buildMinimalHTML(canvas, container, width, height, isTransparent);
+        // Build minimal HTML focusing only on the canvas
+        const minimalHTML = this.buildMinimalHTML(actualCanvas, container, width, height, isTransparent);
         
         console.log('🔧 DEBUG: Minimal HTML generated:', {
             size: minimalHTML.length,
@@ -1189,19 +1227,42 @@ class AnimationExporter {
      * Build minimal HTML with only canvas element and necessary scripts
      */
     buildMinimalHTML(canvas, container, width, height, isTransparent) {
-        console.log('🔧 DEBUG: buildMinimalHTML starting with:', { width, height, isTransparent });
+        console.log('🔧 DEBUG: buildMinimalHTML starting with:', { 
+            width, 
+            height, 
+            isTransparent,
+            originalCanvasId: canvas.id,
+            originalCanvasClass: canvas.className
+        });
         
         // Create a truly minimal container with ONLY the canvas
         const minimalContainer = document.createElement('div');
         minimalContainer.id = 'chatooly-container';
         
-        // Clone ONLY the canvas, not any UI containers
-        const canvasClone = canvas.cloneNode(true);
-        canvasClone.id = 'chatooly-canvas';
+        // Create a new canvas (cloning doesn't preserve drawn content!)
+        const canvasClone = document.createElement('canvas');
+        canvasClone.id = canvas.id || 'chatooly-canvas';
+        canvasClone.width = width;
+        canvasClone.height = height;
+        
+        // Try to capture current canvas state as image data
+        let canvasDataUrl = '';
+        try {
+            canvasDataUrl = canvas.toDataURL('image/png');
+            console.log('🔧 DEBUG: Captured canvas state as data URL (length:', canvasDataUrl.length, ')');
+        } catch (e) {
+            console.log('🔧 DEBUG: Could not capture canvas state:', e.message);
+        }
+        
         minimalContainer.appendChild(canvasClone);
         
-        console.log('🔧 DEBUG: Created minimal container with only canvas');
-        console.log('🔧 DEBUG: Minimal container HTML:', minimalContainer.outerHTML.slice(0, 300) + '...');
+        console.log('🔧 DEBUG: Created minimal container with canvas:', {
+            canvasId: canvasClone.id,
+            canvasWidth: canvasClone.width,
+            canvasHeight: canvasClone.height,
+            hasDataUrl: !!canvasDataUrl
+        });
+        console.log('🔧 DEBUG: Minimal container HTML:', minimalContainer.outerHTML.slice(0, 500) + '...');
         
         // Include essential scripts: external libraries + minimal inline animation code
         const essentialScripts = [];
@@ -1261,6 +1322,33 @@ class AnimationExporter {
                 console.log('🔧 DEBUG: Skipping inline script (UI or large:', content.length, ')');
             }
         }
+        
+        // Add initialization script to ensure canvas gets drawn
+        const initScript = `<script>
+// Wait for scripts to load then initialize
+window.addEventListener('load', function() {
+    console.log('Initializing canvas for render...');
+    
+    // Call any initialization functions that might exist
+    if (typeof init === 'function') init();
+    if (typeof setup === 'function') setup();
+    if (typeof start === 'function') start();
+    if (typeof main === 'function') main();
+    
+    // Trigger a draw/render if functions exist
+    if (typeof draw === 'function') draw();
+    if (typeof render === 'function') render();
+    if (typeof animate === 'function') animate();
+    
+    // For sticker-maker specific initialization
+    if (typeof initStickers === 'function') initStickers();
+    if (typeof loadStickers === 'function') loadStickers();
+    
+    console.log('Canvas initialization attempted');
+});
+</script>`;
+        
+        essentialScripts.push(initScript);
         
         const scripts = essentialScripts.join('\n');
         console.log('🔧 DEBUG: Final script count:', essentialScripts.length);
