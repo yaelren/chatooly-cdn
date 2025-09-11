@@ -60,9 +60,17 @@ class AnimationExporter {
      * Capture current page as animation-ready HTML
      */
     async captureAnimationHTML(config) {
+        console.log('🔧 DEBUG: Starting captureAnimationHTML with config:', config);
+        
         // Get canvas and container
         const canvas = document.getElementById('chatooly-canvas');
         const container = document.getElementById('chatooly-container');
+        
+        console.log('🔧 DEBUG: Found elements:', {
+            canvas: canvas ? `${canvas.width}x${canvas.height}` : 'NOT FOUND',
+            container: container ? 'FOUND' : 'NOT FOUND',
+            containerHTML: container ? container.outerHTML.slice(0, 200) + '...' : 'N/A'
+        });
         
         if (!canvas) {
             throw new Error('Canvas not found. Make sure your canvas has id="chatooly-canvas"');
@@ -77,19 +85,41 @@ class AnimationExporter {
         const width = canvas.width || 800;
         const height = canvas.height || 600;
 
+        console.log('🔧 DEBUG: Canvas info:', { width, height, isTransparent });
+
         // Build minimal HTML focusing only on the canvas container
         const minimalHTML = this.buildMinimalHTML(canvas, container, width, height, isTransparent);
+        
+        console.log('🔧 DEBUG: Minimal HTML generated:', {
+            size: minimalHTML.length,
+            preview: minimalHTML.slice(0, 500) + '...'
+        });
 
         // Inline external libraries
         const inlinedHTML = await this.inlineExternalLibraries(minimalHTML);
+        
+        console.log('🔧 DEBUG: After inlining libraries:', {
+            size: inlinedHTML.length,
+            sizeIncrease: inlinedHTML.length - minimalHTML.length
+        });
 
         // Compress HTML
         const compressedHTML = this.compressHTML(inlinedHTML);
+        
+        console.log('🔧 DEBUG: After compression:', {
+            size: compressedHTML.length,
+            compressionRatio: Math.round((1 - compressedHTML.length / inlinedHTML.length) * 100) + '%'
+        });
 
         // Add render service integration script
         const finalHTML = this.addRenderServiceIntegration(compressedHTML, {
             canvasId: 'chatooly-canvas',
             transparent: isTransparent
+        });
+
+        console.log('🔧 DEBUG: Final HTML ready:', {
+            size: finalHTML.length,
+            preview: finalHTML.slice(0, 300) + '...'
         });
 
         return {
@@ -137,6 +167,8 @@ class AnimationExporter {
      * Build minimal HTML with only canvas container and necessary scripts
      */
     buildMinimalHTML(canvas, container, width, height, isTransparent) {
+        console.log('🔧 DEBUG: buildMinimalHTML starting with:', { width, height, isTransparent });
+        
         // Clone the container to isolate it from the page
         const containerClone = container ? container.cloneNode(true) : document.createElement('div');
         
@@ -144,16 +176,31 @@ class AnimationExporter {
         if (!container) {
             containerClone.id = 'chatooly-container';
             containerClone.appendChild(canvas.cloneNode(true));
+            console.log('🔧 DEBUG: No container found, created wrapper');
+        } else {
+            console.log('🔧 DEBUG: Using existing container');
         }
         
+        console.log('🔧 DEBUG: Container clone HTML:', containerClone.outerHTML.slice(0, 300) + '...');
+        
         // Get essential scripts (exclude UI-related scripts)
-        const scripts = Array.from(document.querySelectorAll('script'))
+        const allScripts = Array.from(document.querySelectorAll('script'));
+        console.log('🔧 DEBUG: Found total scripts:', allScripts.length);
+        
+        const scripts = allScripts
             .filter(script => {
                 // Skip Chatooly CDN core (will be re-added if needed)
-                if (script.src && script.src.includes('chatooly-cdn/js/core')) return false;
+                if (script.src && script.src.includes('chatooly-cdn/js/core')) {
+                    console.log('🔧 DEBUG: Skipping CDN core script:', script.src);
+                    return false;
+                }
                 // Skip analytics, tracking, etc.
-                if (script.src && (script.src.includes('analytics') || script.src.includes('gtag'))) return false;
+                if (script.src && (script.src.includes('analytics') || script.src.includes('gtag'))) {
+                    console.log('🔧 DEBUG: Skipping analytics script:', script.src);
+                    return false;
+                }
                 // Keep animation libraries and main logic
+                console.log('🔧 DEBUG: Including script:', script.src || 'inline script');
                 return true;
             })
             .map(script => {
@@ -164,6 +211,8 @@ class AnimationExporter {
                 }
             })
             .join('\n');
+        
+        console.log('🔧 DEBUG: Filtered scripts count:', scripts.split('<script').length - 1);
         
         // Get essential styles (skip UI styles)
         const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
@@ -393,13 +442,38 @@ class AnimationExporter {
             naturalPeriod: null
         };
 
-        console.log('Submitting render job:', {
+        console.log('🔧 DEBUG: Submitting render job:', {
             format: payload.exportFormat,
             duration: payload.duration,
             size: `${metadata.width}x${metadata.height}`,
             transparent: payload.transparent,
             htmlSize: `${Math.round(html.length / 1024)}KB`
         });
+
+        // First, send to debug endpoint for inspection
+        try {
+            console.log('🔧 DEBUG: Sending HTML to debug endpoint...');
+            const debugResponse = await fetch(`${this.renderServiceUrl}/debug/html`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    html: html, 
+                    metadata: { ...metadata, config }
+                })
+            });
+            
+            if (debugResponse.ok) {
+                const debugResult = await debugResponse.json();
+                console.log('🔧 DEBUG: HTML stored for inspection:', {
+                    debugId: debugResult.debugId,
+                    previewUrl: `${this.renderServiceUrl}${debugResult.previewUrl}`,
+                    infoUrl: `${this.renderServiceUrl}/debug/info/${debugResult.debugId}`
+                });
+                console.log('🔧 DEBUG: You can inspect the HTML at:', `${this.renderServiceUrl}${debugResult.previewUrl}`);
+            }
+        } catch (debugError) {
+            console.warn('🔧 DEBUG: Failed to store HTML for debugging:', debugError.message);
+        }
 
         // Submit job
         const response = await fetch(`${this.renderServiceUrl}/render`, {
