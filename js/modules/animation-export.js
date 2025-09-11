@@ -164,24 +164,22 @@ class AnimationExporter {
     }
 
     /**
-     * Build minimal HTML with only canvas container and necessary scripts
+     * Build minimal HTML with only canvas element and necessary scripts
      */
     buildMinimalHTML(canvas, container, width, height, isTransparent) {
         console.log('🔧 DEBUG: buildMinimalHTML starting with:', { width, height, isTransparent });
         
-        // Clone the container to isolate it from the page
-        const containerClone = container ? container.cloneNode(true) : document.createElement('div');
+        // Create a truly minimal container with ONLY the canvas
+        const minimalContainer = document.createElement('div');
+        minimalContainer.id = 'chatooly-container';
         
-        // If no container, wrap the canvas
-        if (!container) {
-            containerClone.id = 'chatooly-container';
-            containerClone.appendChild(canvas.cloneNode(true));
-            console.log('🔧 DEBUG: No container found, created wrapper');
-        } else {
-            console.log('🔧 DEBUG: Using existing container');
-        }
+        // Clone ONLY the canvas, not any UI containers
+        const canvasClone = canvas.cloneNode(true);
+        canvasClone.id = 'chatooly-canvas';
+        minimalContainer.appendChild(canvasClone);
         
-        console.log('🔧 DEBUG: Container clone HTML:', containerClone.outerHTML.slice(0, 300) + '...');
+        console.log('🔧 DEBUG: Created minimal container with only canvas');
+        console.log('🔧 DEBUG: Minimal container HTML:', minimalContainer.outerHTML.slice(0, 300) + '...');
         
         // Get essential scripts (exclude UI-related scripts)
         const allScripts = Array.from(document.querySelectorAll('script'));
@@ -232,7 +230,7 @@ class AnimationExporter {
             })
             .join('\n');
         
-        // Build minimal HTML
+        // Build minimal HTML with only canvas, no UI
         return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -268,7 +266,7 @@ class AnimationExporter {
     ${styles}
 </head>
 <body>
-    ${containerClone.outerHTML}
+    ${minimalContainer.outerHTML}
     ${scripts}
 </body>
 </html>`;
