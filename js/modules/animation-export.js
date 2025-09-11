@@ -181,54 +181,35 @@ class AnimationExporter {
         console.log('🔧 DEBUG: Created minimal container with only canvas');
         console.log('🔧 DEBUG: Minimal container HTML:', minimalContainer.outerHTML.slice(0, 300) + '...');
         
-        // Get essential scripts (exclude UI-related scripts)
-        const allScripts = Array.from(document.querySelectorAll('script'));
-        console.log('🔧 DEBUG: Found total scripts:', allScripts.length);
+        // Only include essential animation libraries - NO inline scripts or UI styles
+        const essentialScripts = [];
+        const allScripts = Array.from(document.querySelectorAll('script[src]')); // Only external scripts
+        console.log('🔧 DEBUG: Found total external scripts:', allScripts.length);
         
-        const scripts = allScripts
-            .filter(script => {
-                // Skip Chatooly CDN core (will be re-added if needed)
-                if (script.src && script.src.includes('chatooly-cdn/js/core')) {
-                    console.log('🔧 DEBUG: Skipping CDN core script:', script.src);
-                    return false;
-                }
-                // Skip analytics, tracking, etc.
-                if (script.src && (script.src.includes('analytics') || script.src.includes('gtag'))) {
-                    console.log('🔧 DEBUG: Skipping analytics script:', script.src);
-                    return false;
-                }
-                // Keep animation libraries and main logic
-                console.log('🔧 DEBUG: Including script:', script.src || 'inline script');
-                return true;
-            })
-            .map(script => {
-                if (script.src) {
-                    return `<script src="${script.src}"></script>`;
-                } else {
-                    return `<script>${script.innerHTML}</script>`;
-                }
-            })
-            .join('\n');
+        for (const script of allScripts) {
+            const src = script.src;
+            // Only include known animation libraries
+            if (src && (
+                src.includes('three.min.js') || 
+                src.includes('p5.min.js') || 
+                src.includes('gsap') ||
+                src.includes('animation-library') ||
+                src.includes('matter.js') ||
+                src.includes('anime.js')
+            )) {
+                essentialScripts.push(`<script src="${src}"></script>`);
+                console.log('🔧 DEBUG: Including animation library:', src);
+            } else {
+                console.log('🔧 DEBUG: Skipping script:', src);
+            }
+        }
         
-        console.log('🔧 DEBUG: Filtered scripts count:', scripts.split('<script').length - 1);
+        const scripts = essentialScripts.join('\n');
+        console.log('🔧 DEBUG: Final script count:', essentialScripts.length);
         
-        // Get essential styles (skip UI styles)
-        const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
-            .filter(style => {
-                // Skip Chatooly unified styles (UI only)
-                if (style.href && style.href.includes('unified.min.css')) return false;
-                // Skip Chatooly component styles
-                if (style.href && style.href.includes('chatooly-cdn/css/')) return false;
-                return true;
-            })
-            .map(style => {
-                if (style.href) {
-                    return `<link rel="stylesheet" href="${style.href}">`;
-                } else {
-                    return `<style>${style.innerHTML}</style>`;
-                }
-            })
-            .join('\n');
+        // NO external styles - only our minimal canvas styles
+        const styles = '';
+        console.log('🔧 DEBUG: Skipping all external styles to ensure minimal HTML');
         
         // Build minimal HTML with only canvas, no UI
         return `<!DOCTYPE html>
