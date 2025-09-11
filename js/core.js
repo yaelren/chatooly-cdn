@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-09-11T16:45:47.290Z
+ * Built: 2025-09-11T16:58:10.261Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -1203,14 +1203,16 @@ class AnimationExporter {
         console.log('🔧 DEBUG: Created minimal container with only canvas');
         console.log('🔧 DEBUG: Minimal container HTML:', minimalContainer.outerHTML.slice(0, 300) + '...');
         
-        // Only include essential animation libraries - NO inline scripts or UI styles
+        // Include essential scripts: external libraries + minimal inline animation code
         const essentialScripts = [];
-        const allScripts = Array.from(document.querySelectorAll('script[src]')); // Only external scripts
-        console.log('🔧 DEBUG: Found total external scripts:', allScripts.length);
         
-        for (const script of allScripts) {
+        // 1. Include essential external animation libraries
+        const externalScripts = Array.from(document.querySelectorAll('script[src]'));
+        console.log('🔧 DEBUG: Found total external scripts:', externalScripts.length);
+        
+        for (const script of externalScripts) {
             const src = script.src;
-            // Only include known animation libraries
+            // Include known animation libraries
             if (src && (
                 src.includes('three.min.js') || 
                 src.includes('p5.min.js') || 
@@ -1222,7 +1224,38 @@ class AnimationExporter {
                 essentialScripts.push(`<script src="${src}"></script>`);
                 console.log('🔧 DEBUG: Including animation library:', src);
             } else {
-                console.log('🔧 DEBUG: Skipping script:', src);
+                console.log('🔧 DEBUG: Skipping external script:', src);
+            }
+        }
+        
+        // 2. Include ONLY animation-related inline scripts (not UI scripts)
+        const inlineScripts = Array.from(document.querySelectorAll('script:not([src])'));
+        console.log('🔧 DEBUG: Found inline scripts:', inlineScripts.length);
+        
+        for (const script of inlineScripts) {
+            const content = script.innerHTML;
+            // Include if it contains animation keywords but NOT UI keywords
+            const hasAnimation = content.includes('animate') || 
+                                  content.includes('draw') || 
+                                  content.includes('render') ||
+                                  content.includes('requestAnimationFrame') ||
+                                  content.includes('canvas') ||
+                                  content.includes('ctx.') ||
+                                  content.includes('context.');
+            
+            const hasUI = content.includes('chatooly-controls') ||
+                         content.includes('sidebar') ||
+                         content.includes('dialog') ||
+                         content.includes('modal') ||
+                         content.includes('button') ||
+                         content.includes('menu') ||
+                         content.length > 5000; // Skip very large UI scripts
+            
+            if (hasAnimation && !hasUI) {
+                essentialScripts.push(`<script>${content}</script>`);
+                console.log('🔧 DEBUG: Including animation script (length:', content.length, ')');
+            } else {
+                console.log('🔧 DEBUG: Skipping inline script (UI or large:', content.length, ')');
             }
         }
         
