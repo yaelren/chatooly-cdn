@@ -5,16 +5,16 @@
 
 :root {
   /* ========== Typography ========== */
-  --chatooly-font-family: 'Lucida Console', Monaco, monospace;
-  --chatooly-font-family-mono: 'Lucida Console', Monaco, monospace;
+  --chatooly-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --chatooly-font-family-mono: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
   
   --chatooly-font-size-xs: 11px;
   --chatooly-font-size-sm: 12px;
-  --chatooly-font-size-base: 14px;
-  --chatooly-font-size-md: 16px;
-  --chatooly-font-size-lg: 18px;
-  --chatooly-font-size-xl: 24px;
-  --chatooly-font-size-2xl: 32px;
+  --chatooly-font-size-base: 13px;
+  --chatooly-font-size-md: 14px;
+  --chatooly-font-size-lg: 16px;
+  --chatooly-font-size-xl: 18px;
+  --chatooly-font-size-2xl: 24px;
   
   --chatooly-font-weight-light: 300;
   --chatooly-font-weight-normal: 400;
@@ -23,16 +23,16 @@
   --chatooly-font-weight-bold: 700;
   
   --chatooly-line-height-tight: 1.2;
-  --chatooly-line-height-normal: 1.5;
+  --chatooly-line-height-normal: 1.6;
   --chatooly-line-height-relaxed: 1.75;
   
   /* ========== Colors ========== */
-  /* Primary Palette */
-  --chatooly-color-primary: #e91e63;
-  --chatooly-color-primary-hover: #c2185b;
-  --chatooly-color-primary-active: #ad1457;
-  --chatooly-color-primary-light: #fce4ec;
-  --chatooly-color-primary-dark: #880e4f;
+  /* Primary Palette - Ultra-minimalistic inspired by 099.supply */
+  --chatooly-color-primary: #e5e5e5;
+  --chatooly-color-primary-hover: #fff;
+  --chatooly-color-primary-active: #888;
+  --chatooly-color-primary-light: rgba(229, 229, 229, 0.1);
+  --chatooly-color-primary-dark: #555;
   
   /* Semantic Colors */
   --chatooly-color-success: #28a745;
@@ -51,34 +51,35 @@
   --chatooly-color-info-hover: #138496;
   --chatooly-color-info-light: #d1ecf1;
   
-  /* Neutral Colors */
+  /* Neutral Colors - Dark Mode Palette */
   --chatooly-color-white: #ffffff;
-  --chatooly-color-gray-50: #f8f9fa;
-  --chatooly-color-gray-100: #f5f5f5;
-  --chatooly-color-gray-200: #e9ecef;
-  --chatooly-color-gray-300: #dee2e6;
-  --chatooly-color-gray-400: #ced4da;
-  --chatooly-color-gray-500: #adb5bd;
-  --chatooly-color-gray-600: #6c757d;
-  --chatooly-color-gray-700: #495057;
-  --chatooly-color-gray-800: #343a40;
-  --chatooly-color-gray-900: #212529;
+  --chatooly-color-gray-50: #2a2a2a;
+  --chatooly-color-gray-100: #1f1f1f;
+  --chatooly-color-gray-200: #1a1a1a;
+  --chatooly-color-gray-300: #181818;
+  --chatooly-color-gray-400: #333333;
+  --chatooly-color-gray-500: #555555;
+  --chatooly-color-gray-600: #888888;
+  --chatooly-color-gray-700: #aaaaaa;
+  --chatooly-color-gray-800: #cccccc;
+  --chatooly-color-gray-900: #e5e5e5;
   --chatooly-color-black: #000000;
   
-  /* Functional Colors */
-  --chatooly-color-text: #ffffff;
-  --chatooly-color-text-muted: #cccccc;
-  --chatooly-color-text-light: #999999;
+  /* Functional Colors - Ultra-minimal Dark Theme */
+  --chatooly-color-text: #e5e5e5;
+  --chatooly-color-text-muted: #888888;
+  --chatooly-color-text-light: #555555;
   --chatooly-color-text-inverse: #000000;
+  --chatooly-color-text-bright: #ffffff;
   
-  --chatooly-color-background: #202120;
-  --chatooly-color-surface: #2b2b2b;
-  --chatooly-color-surface-hover: #111111;
+  --chatooly-color-background: #121212;
+  --chatooly-color-surface: #0f0f0f;
+  --chatooly-color-surface-hover: #1a1a1a;
   --chatooly-color-surface-active: #222222;
   
-  --chatooly-color-border: #ffffff;
-  --chatooly-color-border-light: #cccccc;
-  --chatooly-color-border-dark: #999999;
+  --chatooly-color-border: #2a2a2a;
+  --chatooly-color-border-light: #1f1f1f;
+  --chatooly-color-border-dark: #333333;
   
   /* ========== Spacing ========== */
   --chatooly-spacing-0: 0;
@@ -105,31 +106,31 @@
   
   /* ========== Borders ========== */
   --chatooly-border-width-thin: 1px;
-  --chatooly-border-width: 2px;
-  --chatooly-border-width-thick: 3px;
+  --chatooly-border-width: 1px;
+  --chatooly-border-width-thick: 2px;
   
-  --chatooly-border-radius-sm: 0px;
-  --chatooly-border-radius: 0px;
-  --chatooly-border-radius-md: 0px;
-  --chatooly-border-radius-lg: 0px;
-  --chatooly-border-radius-xl: 0px;
-  --chatooly-border-radius-full: 0px;
+  --chatooly-border-radius-sm: 2px;
+  --chatooly-border-radius: 4px;
+  --chatooly-border-radius-md: 4px;
+  --chatooly-border-radius-lg: 6px;
+  --chatooly-border-radius-xl: 8px;
+  --chatooly-border-radius-full: 50%;
   
   /* ========== Shadows ========== */
-  --chatooly-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --chatooly-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --chatooly-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --chatooly-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
-  --chatooly-shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.25);
+  --chatooly-shadow-xs: none;
+  --chatooly-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --chatooly-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --chatooly-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.4);
+  --chatooly-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.5);
   
-  --chatooly-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.06);
-  --chatooly-shadow-focus: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  --chatooly-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  --chatooly-shadow-focus: 0 0 0 2px rgba(229, 229, 229, 0.1);
   
   /* ========== Transitions ========== */
-  --chatooly-transition-fast: 150ms ease;
-  --chatooly-transition-normal: 200ms ease;
-  --chatooly-transition-slow: 300ms ease;
-  --chatooly-transition-slower: 500ms ease;
+  --chatooly-transition-fast: 0.15s ease;
+  --chatooly-transition-normal: 0.2s ease;
+  --chatooly-transition-slow: 0.25s ease;
+  --chatooly-transition-slower: 0.3s ease;
   
   --chatooly-transition-property: color, background-color, border-color, opacity, transform;
   

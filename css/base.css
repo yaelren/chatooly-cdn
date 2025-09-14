@@ -25,21 +25,26 @@ body {
   line-height: var(--chatooly-line-height-normal);
   color: var(--chatooly-color-text);
   background-color: var(--chatooly-color-background);
-  overflow: hidden; /* Prevent double scrollbars */
+  overflow: auto;
+  user-select: none;
+  margin: 0;
+  padding: 0;
+  letter-spacing: -0.01em;
 }
 
 /* ========== Typography ========== */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--chatooly-font-family);
-  font-weight: var(--chatooly-font-weight-semibold);
+  font-weight: var(--chatooly-font-weight-medium);
   line-height: var(--chatooly-line-height-tight);
-  color: var(--chatooly-color-text);
+  color: var(--chatooly-color-text-bright);
   margin-bottom: var(--chatooly-spacing-3);
+  letter-spacing: 0.01em;
 }
 
 h1 {
   font-size: var(--chatooly-font-size-2xl);
-  font-weight: var(--chatooly-font-weight-bold);
+  font-weight: var(--chatooly-font-weight-medium);
 }
 
 h2 {
@@ -47,11 +52,17 @@ h2 {
 }
 
 h3 {
-  font-size: var(--chatooly-font-size-lg);
+  font-size: var(--chatooly-font-size-md);
+  font-weight: var(--chatooly-font-weight-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 h4 {
-  font-size: var(--chatooly-font-size-md);
+  font-size: var(--chatooly-font-size-sm);
+  font-weight: var(--chatooly-font-weight-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 h5 {
@@ -221,41 +232,40 @@ button,
 .btn,
 .chatooly-btn {
   display: inline-block;
-  padding: var(--chatooly-spacing-2) var(--chatooly-spacing-4);
+  padding: 8px 16px;
   font-family: var(--chatooly-font-family);
-  font-size: var(--chatooly-font-size-base);
-  font-weight: var(--chatooly-font-weight-medium);
+  font-size: var(--chatooly-font-size-xs);
+  font-weight: var(--chatooly-font-weight-normal);
   line-height: var(--chatooly-line-height-normal);
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
   cursor: pointer;
   user-select: none;
-  background-color: var(--chatooly-color-background);
-  color: var(--chatooly-color-text);
-  border: var(--chatooly-border-width) solid var(--chatooly-color-border);
-  border-radius: var(--chatooly-border-radius);
-  transition: all var(--chatooly-transition-normal);
+  background-color: var(--chatooly-color-primary);
+  color: var(--chatooly-color-background);
+  border: none;
+  border-radius: var(--chatooly-border-radius-sm);
+  transition: all var(--chatooly-transition-fast);
+  outline: none;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 button:hover,
 .btn:hover {
-  background-color: var(--chatooly-color-surface-hover);
-  transform: none;
-  box-shadow: none;
+  background-color: var(--chatooly-color-primary-hover);
 }
 
 button:active,
 .btn:active {
-  background-color: var(--chatooly-color-surface-active);
-  transform: none;
-  box-shadow: none;
+  background-color: var(--chatooly-color-primary-active);
 }
 
 button:focus,
 .btn:focus {
   outline: none;
-  box-shadow: var(--chatooly-shadow-focus);
+  border-color: var(--chatooly-color-primary-active);
 }
 
 button:disabled,

@@ -3,67 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatooly CDN - POC Version</title>
+    <title>Chatooly CDN - Animation & Export Library</title>
+    
+    <!-- Use Chatooly CDN CSS -->
+    <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css">
+    
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            line-height: 1.6;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 40px 20px;
-            background: #f8f9fa;
         }
         .container {
-            background: white;
+            background: var(--bg-primary);
             padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color);
         }
         h1 {
-            color: #2c3e50;
+            color: var(--text-primary);
             margin-bottom: 30px;
         }
+        h2 {
+            color: var(--text-primary);
+            margin-top: 30px;
+        }
+        p, li {
+            color: var(--text-secondary);
+        }
         .usage-example {
-            background: #f8f9fa;
+            background: var(--bg-secondary);
             padding: 20px;
             border-radius: 8px;
-            border-left: 4px solid #007bff;
+            border-left: 4px solid var(--accent-primary);
             margin: 20px 0;
+        }
+        .usage-example h3 {
+            color: var(--text-primary);
+            margin-top: 0;
+        }
+        .usage-example pre {
+            background: var(--bg-tertiary);
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
         }
         .test-links {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
             margin: 30px 0;
         }
         .test-link {
             display: block;
             padding: 15px 20px;
-            background: #007bff;
+            background: var(--accent-primary);
             color: white;
             text-decoration: none;
             border-radius: 8px;
             text-align: center;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
         .test-link:hover {
-            background: #0056b3;
+            background: var(--accent-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .test-link small {
+            opacity: 0.9;
+            display: block;
+            margin-top: 5px;
         }
         .cdn-url {
-            background: #f8f9fa;
+            background: var(--bg-secondary);
             padding: 15px;
             border-radius: 8px;
-            font-family: 'Monaco', 'Menlo', monospace;
+            font-family: 'Courier New', monospace;
             font-size: 14px;
-            border: 1px solid #e9ecef;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        ul {
+            color: var(--text-secondary);
+        }
+        a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+        a:hover {
+            color: var(--accent-secondary);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📥 Chatooly CDN - POC Version</h1>
+        <h1>🎬 Chatooly CDN - Animation & Export Library</h1>
         
-        <p>Minimal JavaScript library for PNG export and publishing functionality. Supports p5.js, Three.js, and DOM-based design tools.</p>
+        <p>JavaScript library for static PNG export and animation recording functionality. Supports p5.js, Three.js, Canvas animations, and DOM-based design tools with CCapture.js integration.</p>
         
         <h2>🚀 CDN Usage</h2>
         <div class="cdn-url">
@@ -83,31 +122,23 @@
 &lt;/script&gt;</code></pre>
         </div>
         
-        <h2>🧪 Test Examples</h2>
+        <h2>🧪 CCapture Animation Tests</h2>
         <div class="test-links">
-            <a href="tests/test-p5.html" class="test-link">
-                🎨 p5.js Test<br>
-                <small>Animated canvas export</small>
+            <a href="tests/test-ccapture-canvas.html" class="test-link" style="background: #28a745;">
+                🎬 Canvas Animation Test<br>
+                <small>Comprehensive CCapture integration</small>
             </a>
-            <a href="tests/test-three.html" class="test-link">
-                🎮 Three.js Test<br>
-                <small>3D scene export</small>
+            <a href="tests/test-ccapture-p5.html" class="test-link">
+                🎨 p5.js Animation Test<br>
+                <small>Flow field particles export</small>
             </a>
-            <a href="tests/test-dom.html" class="test-link">
-                🌈 DOM Test<br>
-                <small>Gradient tool export</small>
+            <a href="tests/test-ccapture-threejs.html" class="test-link">
+                🌟 Three.js Animation Test<br>
+                <small>3D spheres with orbital motion</small>
             </a>
-            <a href="tests/test-performance.html" class="test-link">
-                📊 Performance Test<br>
-                <small>Speed & size metrics</small>
-            </a>
-            <a href="tests/test-compatibility.html" class="test-link">
-                🌐 Compatibility Test<br>
-                <small>Browser support check</small>
-            </a>
-            <a href="tests/test-comprehensive.html" class="test-link" style="background: #28a745;">
-                🧪 Comprehensive Test<br>
-                <small>Full functionality suite</small>
+            <a href="tests/test-container.html" class="test-link" style="background: #6c757d;">
+                🧪 Container Structure Test<br>
+                <small>CDN detection verification</small>
             </a>
         </div>
         
@@ -120,16 +151,18 @@
         
         <h2>✨ Features</h2>
         <ul>
-            <li><strong>Smart Export Detection</strong> - Automatically finds canvas or DOM elements</li>
-            <li><strong>High-Resolution Export</strong> - 1x, 2x, 4x scaling with quality optimization</li>
-            <li><strong>Framework Support</strong> - p5.js, Three.js, vanilla DOM</li>
-            <li><strong>Development Mode</strong> - Publishing functionality for tool creators</li>
-            <li><strong>Performance Optimized</strong> - 7.9KB minified, reliable CDN fallbacks</li>
+            <li><strong>Animation Export</strong> - CCapture.js integration for PNG sequence recording</li>
+            <li><strong>Smart Animation Detection</strong> - Automatically detects p5.js, Three.js, and Canvas animations</li>
+            <li><strong>Static PNG Export</strong> - High-resolution 1x, 2x, 4x scaling with quality optimization</li>
+            <li><strong>Framework Support</strong> - p5.js draw() loops, Three.js render loops, requestAnimationFrame</li>
+            <li><strong>Progressive Enhancement</strong> - Animation export appears only for animated tools</li>
+            <li><strong>Non-Breaking Integration</strong> - Existing tools continue working with new capabilities</li>
+            <li><strong>Performance Optimized</strong> - Dynamic CCapture loading, minimal overhead</li>
             <li><strong>Browser Compatible</strong> - Tested on Chrome 90+, Firefox 88+, Safari 14+, Edge 90+</li>
-            <li><strong>Production Ready</strong> - GitHub Pages CDN with monitoring tools</li>
+            <li><strong>Production Ready</strong> - GitHub Pages CDN with comprehensive testing</li>
         </ul>
         
-        <p><small>🤖 Generated with Claude Code - POC Version 1.0.0</small></p>
+        <p><small>🎬 CCapture Animation Integration Complete - v2.0.0</small></p>
     </div>
 </body>
 </html>

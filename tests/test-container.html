@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Container Structure Test</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #2b2b2b;
+            color: white;
+        }
+        
+        #chatooly-container {
+            border: 2px solid #00ff00;
+            padding: 20px;
+            margin: 20px 0;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        #chatooly-canvas {
+            border: 2px solid #0099ff;
+            background: #000;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .status {
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Container Structure Test</h1>
+    
+    <div class="status">
+        This test verifies the Chatooly CDN can properly detect the required container structure.
+    </div>
+    
+    <!-- CORRECT Chatooly structure -->
+    <div id="chatooly-container">
+        <p>✅ This is the chatooly-container (green border)</p>
+        <canvas id="chatooly-canvas" width="400" height="200">
+            Your browser doesn't support canvas.
+        </canvas>
+        <p>✅ Canvas with id="chatooly-canvas" (blue border)</p>
+    </div>
+    
+    <div class="status" id="status">Loading Chatooly CDN...</div>
+    
+    <button onclick="testDetection()">🔍 Test Container Detection</button>
+    
+    <!-- Load local CDN for testing -->
+    <script src="../js/core.js"></script>
+    
+    <script>
+        function testDetection() {
+            const container = document.getElementById('chatooly-container');
+            const canvas = document.getElementById('chatooly-canvas');
+            
+            let status = '🧪 Container Detection Test Results:\n\n';
+            
+            if (container) {
+                status += '✅ chatooly-container found\n';
+            } else {
+                status += '❌ chatooly-container NOT found\n';
+            }
+            
+            if (canvas) {
+                status += '✅ chatooly-canvas found\n';
+            } else {
+                status += '❌ chatooly-canvas NOT found\n';
+            }
+            
+            if (window.Chatooly) {
+                status += '✅ Chatooly CDN loaded\n';
+                
+                if (window.Chatooly.animation) {
+                    status += '✅ Animation module loaded\n';
+                } else {
+                    status += '❌ Animation module missing\n';
+                }
+            } else {
+                status += '❌ Chatooly CDN not loaded\n';
+            }
+            
+            document.getElementById('status').innerHTML = status.replace(/\n/g, '<br>');
+        }
+        
+        // Auto-test after CDN loads
+        setTimeout(() => {
+            testDetection();
+        }, 1000);
+    </script>
+</body>
+</html>
