@@ -268,29 +268,37 @@
         
         // Inject button CSS styles with dark theme
         _injectButtonCSS: function() {
-            // Check if styles already exist
-            if (document.getElementById('chatooly-button-styles')) {
-                return;
-            }
+            // Always remove existing styles to ensure we get the latest
+            const existingStyles = document.querySelectorAll('#chatooly-button-styles, #chatooly-new-button-styles');
+            existingStyles.forEach(s => s.remove());
             
             const style = document.createElement('style');
-            style.id = 'chatooly-button-styles';
+            style.id = 'chatooly-new-button-styles';
             style.textContent = `
-                /* Minimized Floating Button */
+                /* Hide old button styles completely */
+                #chatooly-export-btn .chatooly-btn-main {
+                    display: none !important;
+                }
+                
+                /* Minimized Floating Button - Override any cached styles */
                 #chatooly-export-btn .chatooly-minimized-btn {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: var(--chatooly-spacing-2, 8px);
-                    background: var(--chatooly-color-surface, #ffffff);
-                    border: var(--chatooly-border-width-thin, 1px) solid var(--chatooly-color-border, #e5e7eb);
-                    border-radius: var(--chatooly-border-radius-lg, 12px);
-                    box-shadow: var(--chatooly-shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.15));
-                    padding: var(--chatooly-spacing-3, 12px) var(--chatooly-spacing-4, 16px);
-                    cursor: pointer;
-                    transition: all var(--chatooly-transition-normal, 0.2s ease);
-                    min-width: 120px;
-                    font-family: var(--chatooly-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    gap: var(--chatooly-spacing-2, 8px) !important;
+                    background: var(--chatooly-color-surface, #ffffff) !important;
+                    border: var(--chatooly-border-width-thin, 1px) solid var(--chatooly-color-border, #e5e7eb) !important;
+                    border-radius: var(--chatooly-border-radius-lg, 12px) !important;
+                    box-shadow: var(--chatooly-shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.15)) !important;
+                    padding: var(--chatooly-spacing-3, 12px) var(--chatooly-spacing-4, 16px) !important;
+                    cursor: pointer !important;
+                    transition: all var(--chatooly-transition-normal, 0.2s ease) !important;
+                    min-width: 120px !important;
+                    font-family: var(--chatooly-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif) !important;
+                    /* Hide any old button styles */
+                    flex-direction: row !important;
+                    height: auto !important;
+                    width: auto !important;
                 }
                 
                 #chatooly-export-btn .chatooly-minimized-btn:hover {
