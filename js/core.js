@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-09-14T16:33:46.328Z
+ * Built: 2025-09-14T16:46:10.357Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -4971,32 +4971,32 @@ Chatooly.canvasZoom = {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: var(--chatooly-spacing-2);
-                    background: var(--chatooly-color-surface);
-                    border: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
-                    border-radius: var(--chatooly-border-radius-lg);
-                    box-shadow: var(--chatooly-shadow-lg);
-                    padding: var(--chatooly-spacing-3) var(--chatooly-spacing-4);
+                    gap: var(--chatooly-spacing-2, 8px);
+                    background: var(--chatooly-color-surface, #ffffff);
+                    border: var(--chatooly-border-width-thin, 1px) solid var(--chatooly-color-border, #e5e7eb);
+                    border-radius: var(--chatooly-border-radius-lg, 12px);
+                    box-shadow: var(--chatooly-shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.15));
+                    padding: var(--chatooly-spacing-3, 12px) var(--chatooly-spacing-4, 16px);
                     cursor: pointer;
-                    transition: all var(--chatooly-transition-normal);
+                    transition: all var(--chatooly-transition-normal, 0.2s ease);
                     min-width: 120px;
-                    font-family: var(--chatooly-font-family);
+                    font-family: var(--chatooly-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
                 }
                 
                 #chatooly-export-btn .chatooly-minimized-btn:hover {
-                    background: var(--chatooly-color-surface-hover);
+                    background: var(--chatooly-color-surface-hover, #f9fafb);
                     transform: translateY(-2px);
-                    box-shadow: var(--chatooly-shadow-xl);
+                    box-shadow: var(--chatooly-shadow-xl, 0 20px 40px rgba(0, 0, 0, 0.2));
                 }
                 
                 #chatooly-export-btn .chatooly-minimized-icon {
-                    font-size: var(--chatooly-font-size-md);
+                    font-size: var(--chatooly-font-size-md, 14px);
                 }
                 
                 #chatooly-export-btn .chatooly-minimized-label {
-                    font-size: var(--chatooly-font-size-sm);
-                    color: var(--chatooly-color-text-muted);
-                    font-weight: var(--chatooly-font-weight-semibold);
+                    font-size: var(--chatooly-font-size-sm, 12px);
+                    color: var(--chatooly-color-text-muted, #6b7280);
+                    font-weight: var(--chatooly-font-weight-semibold, 600);
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
                 }
