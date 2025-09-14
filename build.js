@@ -19,7 +19,8 @@ const config = {
         'canvas-three.js',    // Three.js exporters - depends on utils
         'dom-export.js',      // DOM export - depends on utils
         'export-png.js',      // PNG orchestrator - depends on canvas exporters + dom-export
-        'animation-export.js', // Animation export - depends on utils
+        'animation-export.js', // Animation export (render service) - depends on utils
+        'animation-mediarecorder.js', // MediaRecorder API client-side animation - depends on utils
         'canvas-area.js',     // Canvas area container - depends on utils
         'canvas-resizer.js',  // Canvas resizing - depends on utils, canvas-area
         'canvas-zoom.js',     // Canvas zoom functionality - depends on utils, canvas-area

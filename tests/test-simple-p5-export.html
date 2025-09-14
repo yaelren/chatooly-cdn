@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple p5.js Export Test - Chatooly CDN</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        #controls { 
+            margin-bottom: 20px; 
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        button { 
+            margin: 5px; 
+            padding: 12px 24px; 
+            font-size: 16px; 
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .primary-btn {
+            background: #007acc;
+            color: white;
+        }
+        .primary-btn:hover {
+            background: #005a9e;
+        }
+        .secondary-btn {
+            background: #333;
+            color: white;
+        }
+        .secondary-btn:hover {
+            background: #555;
+        }
+        .danger-btn {
+            background: #ff4444;
+            color: white;
+        }
+        .danger-btn:hover {
+            background: #cc3333;
+        }
+        #status { 
+            margin-top: 20px; 
+            padding: 15px; 
+            background: #2a2a2a; 
+            border-radius: 8px; 
+            border-left: 4px solid #007acc;
+            font-family: monospace;
+        }
+        #canvas-container {
+            border: 2px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .info-panel {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .info-panel h3 {
+            margin-top: 0;
+            color: #007acc;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎬 Simple p5.js Export Test - Chatooly CDN</h1>
+    
+    <div id="controls">
+        <button class="primary-btn" onclick="startRecording()">🎬 Start Recording</button>
+        <button class="danger-btn" onclick="stopRecording()">🛑 Stop Recording</button>
+        <button class="secondary-btn" onclick="clearCanvas()">🧹 Clear Canvas</button>
+        <button class="secondary-btn" onclick="toggleAnimation()">⏯️ Toggle Animation</button>
+    </div>
+    
+    <div id="status">Ready to test p5.js export...</div>
+    
+    <div id="canvas-container"></div>
+    
+    <div class="info-panel">
+        <h3>📋 Test Information</h3>
+        <p><strong>Library:</strong> CCapture.js (same as test-manual-p5.html)</p>
+        <p><strong>Format:</strong> WebM video export</p>
+        <p><strong>Frame Rate:</strong> 30 FPS</p>
+        <p><strong>Canvas Size:</strong> 400x400 pixels</p>
+        <p><strong>Animation:</strong> Rotating circle with trail effect</p>
+    </div>
+    
+    <!-- Load p5.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    
+    <!-- Load CCapture.js (same as test-manual-p5.html) -->
+    <script src="https://cdn.jsdelivr.net/npm/ccapture.js@1.1.0/build/CCapture.all.min.js"></script>
+    
+    <script>
+        // Global variables
+        let capturer = null;
+        let isRecording = false;
+        let isAnimating = true;
+        let angle = 0;
+        let trailPoints = [];
+        let maxTrailLength = 50;
+
+        // Simple p5.js setup
+        function setup() {
+            let canvas = createCanvas(400, 400);
+            canvas.parent('canvas-container');
+            updateStatus('✅ Canvas created (400x400)');
+            
+            // Initialize CCapture with WebM format (same as test-manual-p5.html)
+            try {
+                capturer = new CCapture({ 
+                    format: 'webm', 
+                    framerate: 30,
+                    verbose: true,
+                    name: 'p5-animation'
+                });
+                updateStatus('✅ CCapture initialized with WebM format');
+            } catch (error) {
+                updateStatus('❌ CCapture failed: ' + error.message);
+            }
+        }
+        
+        // Simple animation with trail effect
+        function draw() {
+            if (!isAnimating) return;
+            
+            // Clear background with slight transparency for trail effect
+            background(20, 20, 20, 30);
+            
+            // Calculate circle position
+            let centerX = width/2;
+            let centerY = height/2;
+            let radius = 80;
+            let x = centerX + cos(angle) * radius;
+            let y = centerY + sin(angle) * radius;
+            
+            // Add point to trail
+            trailPoints.push({x: x, y: y, angle: angle});
+            if (trailPoints.length > maxTrailLength) {
+                trailPoints.shift();
+            }
+            
+            // Draw trail
+            for (let i = 0; i < trailPoints.length; i++) {
+                let point = trailPoints[i];
+                let alpha = map(i, 0, trailPoints.length, 50, 255);
+                let size = map(i, 0, trailPoints.length, 5, 30);
+                
+                fill(100 + sin(point.angle) * 100, 150, 255, alpha);
+                noStroke();
+                ellipse(point.x, point.y, size, size);
+            }
+            
+            // Draw main circle
+            fill(255, 100, 100);
+            noStroke();
+            ellipse(x, y, 40, 40);
+            
+            // Draw center point
+            fill(255);
+            ellipse(centerX, centerY, 10, 10);
+            
+            // Show info
+            fill(255);
+            textAlign(LEFT);
+            textSize(12);
+            text(`Frame: ${frameCount}`, 10, 20);
+            text(`Recording: ${isRecording}`, 10, 35);
+            text(`Angle: ${angle.toFixed(2)}`, 10, 50);
+            
+            // Increment angle
+            angle += 0.05;
+            
+            // Capture frames when recording (same method as test-manual-p5.html)
+            if (capturer && isRecording) {
+                capturer.capture(canvas.elt);
+            }
+        }
+        
+        // Recording functions (based on test-manual-p5.html)
+        function startRecording() {
+            if (isRecording) {
+                updateStatus('⚠️ Already recording!');
+                return;
+            }
+            
+            if (!capturer) {
+                updateStatus('❌ CCapture not initialized');
+                return;
+            }
+            
+            console.log('🎬 Starting recording...');
+            isRecording = true;
+            
+            try {
+                capturer.start();
+                updateStatus('🎬 Recording started - capturing frames...');
+            } catch (error) {
+                console.error('❌ Failed to start:', error);
+                updateStatus('❌ Failed to start: ' + error.message);
+                isRecording = false;
+            }
+        }
+        
+        function stopRecording() {
+            if (!isRecording) {
+                updateStatus('⚠️ Not currently recording!');
+                return;
+            }
+            
+            console.log('🛑 Stopping recording...');
+            isRecording = false;
+            
+            try {
+                capturer.stop();
+                capturer.save();
+                
+                // Create a new CCapture instance for next recording
+                capturer = new CCapture({ 
+                    format: 'webm', 
+                    framerate: 30,
+                    verbose: true,
+                    name: 'p5-animation'
+                });
+                
+                updateStatus('✅ Recording saved as WebM - ready for next recording');
+            } catch (error) {
+                console.error('❌ Failed to stop:', error);
+                updateStatus('❌ Failed to stop: ' + error.message);
+            }
+        }
+        
+        function clearCanvas() {
+            background(20, 20, 20);
+            trailPoints = [];
+            angle = 0;
+            updateStatus('🧹 Canvas cleared');
+        }
+        
+        function toggleAnimation() {
+            isAnimating = !isAnimating;
+            updateStatus(`⏯️ Animation ${isAnimating ? 'started' : 'paused'}`);
+        }
+        
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+            console.log(message);
+        }
+        
+        // Auto-start animation
+        window.addEventListener('load', () => {
+            updateStatus('🚀 Ready to test p5.js + CCapture export!');
+        });
+    </script>
+</body>
+</html>

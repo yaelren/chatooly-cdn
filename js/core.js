@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-09-14T10:02:32.096Z
+ * Built: 2025-09-14T15:32:04.261Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -1848,6 +1848,625 @@ if (typeof module !== 'undefined' && module.exports) {
 } else {
     window.AnimationExporter = AnimationExporter;
 }
+
+
+    // ===== ANIMATION-MEDIARECORDER MODULE =====
+    
+/**
+     * Chatooly CDN - MediaRecorder Animation Module
+     * Client-side animation recording using MediaRecorder API
+     * Replaces CCAPTURE functionality with native browser APIs
+     * 
+     */
+
+    Chatooly.animationMediaRecorder = {
+        // Animation state management
+        mediaRecorder: null,
+        recordedChunks: [],
+        isRecording: false,
+        recordingState: 'idle', // idle, starting, recording, stopping
+        toolInfo: null,
+        recordingCanvas: null,
+        recordingCtx: null,
+        drawingInterval: null,
+        currentFileExtension: 'mp4',
+        
+        // Initialize animation detection and export capabilities
+        init: function() {
+            this.toolInfo = this.detectToolType();
+            console.log('🎬 MediaRecorder Animation module initialized:', this.toolInfo);
+        },
+        
+        // Smart tool type detection (same as CCAPTURE module)
+        detectToolType: function() {
+            const canvas = document.getElementById('chatooly-canvas');
+            if (!canvas) {
+                return { type: 'static', framework: 'none', reason: 'No chatooly-canvas found' };
+            }
+            
+            // p5.js detection
+            if (window.p5 && typeof window.setup === 'function' && typeof window.draw === 'function') {
+                return { 
+                    type: 'animated', 
+                    framework: 'p5js',
+                    canvas: canvas,
+                    reason: 'p5.js globals and draw() function detected'
+                };
+            }
+            
+            // Three.js detection
+            if (window.THREE) {
+                return { 
+                    type: 'animated', 
+                    framework: 'threejs',
+                    canvas: canvas,
+                    reason: 'THREE.js library detected'
+                };
+            }
+            
+            // Canvas API animation detection
+            if (canvas && canvas.getContext) {
+                // Look for common animation patterns
+                const hasRequestAnimationFrame = window.requestAnimationFrame && 
+                    document.body.innerHTML.includes('requestAnimationFrame');
+                
+                if (hasRequestAnimationFrame) {
+                    return { 
+                        type: 'animated', 
+                        framework: 'canvas',
+                        canvas: canvas,
+                        reason: 'Canvas with requestAnimationFrame detected'
+                    };
+                }
+            }
+            
+            return { 
+                type: 'static', 
+                framework: 'none',
+                canvas: canvas,
+                reason: 'No animation framework detected'
+            };
+        },
+        
+        // Show animation export dialog
+        showExportDialog: function() {
+            if (this.recordingState !== 'idle') {
+                alert('Animation recording already in progress!');
+                return;
+            }
+            
+            // Re-detect tool type in case it changed
+            this.toolInfo = this.detectToolType();
+            
+            // Create export dialog
+            const dialog = this.createExportDialog();
+            document.body.appendChild(dialog);
+            
+            // Show with animation
+            setTimeout(() => dialog.classList.add('show'), 10);
+        },
+        
+        // Create export dialog HTML
+        createExportDialog: function() {
+            const dialog = document.createElement('div');
+            dialog.className = 'chatooly-modal-overlay';
+            dialog.innerHTML = `
+                <div class="chatooly-modal">
+                    <h3>🎬 Animation Export</h3>
+                    <div class="chatooly-modal-content">
+                        <div class="chatooly-form-group">
+                            <label for="anim-duration">Duration (seconds)</label>
+                            <input type="number" id="anim-duration" value="5" min="1" max="30" step="0.5">
+                            <small>How long to record the animation</small>
+                        </div>
+                        
+                        <div class="chatooly-form-group">
+                            <label for="anim-fps">Frame Rate (FPS)</label>
+                            <select id="anim-fps">
+                                <option value="24">24 FPS (cinematic)</option>
+                                <option value="30" selected>30 FPS (standard)</option>
+                                <option value="60">60 FPS (smooth)</option>
+                            </select>
+                            <small>Higher FPS = smoother but larger files</small>
+                        </div>
+                        
+                        <div class="chatooly-form-group">
+                            <label for="anim-format">Video Format</label>
+                            <select id="anim-format">
+                                <option value="mp4" selected>MP4 (H.264) - Best compatibility</option>
+                                <option value="webm-vp9">WebM (VP9) - Smaller files</option>
+                                <option value="webm-vp8">WebM (VP8) - Faster encoding</option>
+                                <option value="webm-h264">WebM (H.264) - Chrome only</option>
+                                <option value="mkv">MKV (Matroska) - Chrome only</option>
+                                <option value="auto">Auto-detect best format</option>
+                            </select>
+                            <small>MP4 works everywhere, WebM is smaller, Auto finds best option</small>
+                        </div>
+                        
+                        <div class="chatooly-p-3" style="background: rgba(102, 126, 234, 0.05); border: 1px solid rgba(102, 126, 234, 0.1); border-radius: 8px; margin-top: 16px;">
+                            <div class="chatooly-text-small chatooly-text-muted">
+                                <strong style="color: #4a5568;">Detected:</strong> ${this.toolInfo.framework} animation<br>
+                                <strong style="color: #4a5568;">Export:</strong> MP4/WebM/MKV video (MediaRecorder API)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chatooly-modal-actions">
+                        <button type="button" class="chatooly-btn chatooly-btn-secondary" onclick="Chatooly.animationMediaRecorder.closeExportDialog()">Cancel</button>
+                        <button type="button" class="chatooly-btn chatooly-btn-primary" onclick="Chatooly.animationMediaRecorder.startRecording()">Start Recording</button>
+                    </div>
+                </div>
+            `;
+            
+            return dialog;
+        },
+        
+        // Close export dialog
+        closeExportDialog: function() {
+            const dialog = document.querySelector('.chatooly-modal-overlay');
+            if (dialog) {
+                dialog.remove();
+            }
+        },
+        
+        // Start recording
+        startRecording: function() {
+            const duration = parseFloat(document.getElementById('anim-duration').value);
+            const fps = parseInt(document.getElementById('anim-fps').value);
+            const format = document.getElementById('anim-format').value;
+            
+            console.log(`🎬 Starting ${duration}s recording at ${fps} FPS in ${format} format`);
+            
+            try {
+                this.initializeMediaRecorder(fps, format);
+                this.beginRecording(duration);
+            } catch (error) {
+                console.error('Failed to start MediaRecorder:', error);
+                alert('Failed to start recording. Please try again.');
+            }
+        },
+        
+        // Initialize MediaRecorder with settings
+        initializeMediaRecorder: function(fps, format) {
+            const canvas = this.toolInfo.canvas;
+            if (!canvas) {
+                throw new Error('No canvas found for recording');
+            }
+            
+            // Create recording canvas
+            this.recordingCanvas = document.createElement('canvas');
+            this.recordingCtx = this.recordingCanvas.getContext('2d');
+            
+            // Set canvas size to match source canvas with 2x scale for quality
+            const scaleFactor = 2;
+            this.recordingCanvas.width = canvas.width * scaleFactor;
+            this.recordingCanvas.height = canvas.height * scaleFactor;
+            this.recordingCtx.scale(scaleFactor, scaleFactor);
+            
+            // Get stream from canvas at specified fps
+            const stream = this.recordingCanvas.captureStream(fps);
+            
+            // Smart codec selection based on user choice
+            let mimeType, fileExtension;
+            
+            if (format === 'auto') {
+                // Auto-detect best available format (priority order)
+                const formatPriority = [
+                    { mime: 'video/mp4;codecs=avc1.42E01E', ext: 'mp4', name: 'MP4 H.264' },
+                    { mime: 'video/webm;codecs=vp9', ext: 'webm', name: 'WebM VP9' },
+                    { mime: 'video/webm;codecs=vp8', ext: 'webm', name: 'WebM VP8' },
+                    { mime: 'video/webm', ext: 'webm', name: 'WebM Default' },
+                    { mime: 'video/mp4', ext: 'mp4', name: 'MP4 Default' }
+                ];
+                
+                for (const fmt of formatPriority) {
+                    if (MediaRecorder.isTypeSupported(fmt.mime)) {
+                        mimeType = fmt.mime;
+                        fileExtension = fmt.ext;
+                        console.log(`Auto-detected best format: ${fmt.name} (${fmt.mime})`);
+                        break;
+                    }
+                }
+                
+                if (!mimeType) {
+                    throw new Error('No supported video formats found in this browser');
+                }
+                
+            } else if (format === 'mp4') {
+                // Try MP4 codecs first
+                const compatibleMP4Codecs = [
+                    'video/mp4;codecs=avc1.42E01E',
+                    'video/mp4;codecs=avc1.42001E',
+                    'video/mp4;codecs=h264,aac',
+                    'video/mp4;codecs=h264',
+                    'video/mp4'
+                ];
+                
+                for (const codec of compatibleMP4Codecs) {
+                    if (MediaRecorder.isTypeSupported(codec)) {
+                        mimeType = codec;
+                        fileExtension = 'mp4';
+                        console.log(`Using MP4 codec: ${codec}`);
+                        break;
+                    }
+                }
+                
+                if (!mimeType) {
+                    throw new Error('MP4 format not supported in this browser');
+                }
+                
+            } else if (format === 'webm-vp9') {
+                // Try WebM VP9 codecs
+                const webmVP9Codecs = [
+                    'video/webm;codecs=vp9,opus',
+                    'video/webm;codecs=vp9',
+                    'video/webm'
+                ];
+                
+                for (const codec of webmVP9Codecs) {
+                    if (MediaRecorder.isTypeSupported(codec)) {
+                        mimeType = codec;
+                        fileExtension = 'webm';
+                        console.log(`Using WebM VP9 codec: ${codec}`);
+                        break;
+                    }
+                }
+                
+                if (!mimeType) {
+                    throw new Error('WebM VP9 format not supported in this browser');
+                }
+                
+            } else if (format === 'webm-vp8') {
+                // Try WebM VP8 codecs
+                const webmVP8Codecs = [
+                    'video/webm;codecs=vp8,opus',
+                    'video/webm;codecs=vp8',
+                    'video/webm'
+                ];
+                
+                for (const codec of webmVP8Codecs) {
+                    if (MediaRecorder.isTypeSupported(codec)) {
+                        mimeType = codec;
+                        fileExtension = 'webm';
+                        console.log(`Using WebM VP8 codec: ${codec}`);
+                        break;
+                    }
+                }
+                
+                if (!mimeType) {
+                    throw new Error('WebM VP8 format not supported in this browser');
+                }
+                
+            } else if (format === 'webm-h264') {
+                // Try WebM H.264 codecs (Chrome only)
+                const webmH264Codecs = [
+                    'video/webm;codecs=h264,opus',
+                    'video/webm;codecs=h264',
+                    'video/webm'
+                ];
+                
+                for (const codec of webmH264Codecs) {
+                    if (MediaRecorder.isTypeSupported(codec)) {
+                        mimeType = codec;
+                        fileExtension = 'webm';
+                        console.log(`Using WebM H.264 codec: ${codec}`);
+                        break;
+                    }
+                }
+                
+                if (!mimeType) {
+                    throw new Error('WebM H.264 format not supported in this browser');
+                }
+                
+            } else if (format === 'mkv') {
+                // Try MKV/Matroska codecs (Chrome only)
+                const mkvCodecs = [
+                    'video/x-matroska;codecs=avc1',
+                    'video/x-matroska'
+                ];
+                
+                for (const codec of mkvCodecs) {
+                    if (MediaRecorder.isTypeSupported(codec)) {
+                        mimeType = codec;
+                        fileExtension = 'mkv';
+                        console.log(`Using MKV codec: ${codec}`);
+                        break;
+                    }
+                }
+                
+                if (!mimeType) {
+                    throw new Error('MKV format not supported in this browser');
+                }
+            }
+            
+            this.currentFileExtension = fileExtension;
+            
+            // Setup MediaRecorder
+            const recordingOptions = {
+                mimeType: mimeType,
+                videoBitsPerSecond: 6000000 // 6 Mbps
+            };
+            
+            this.mediaRecorder = new MediaRecorder(stream, recordingOptions);
+            this.recordedChunks = [];
+            
+            // Handle data available
+            this.mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    this.recordedChunks.push(event.data);
+                }
+            };
+            
+            // Handle recording stop
+            this.mediaRecorder.onstop = () => {
+                this.saveRecording();
+                this.cleanup();
+            };
+            
+            console.log('📹 MediaRecorder initialized:', {
+                format: fileExtension,
+                framerate: fps,
+                canvas: canvas,
+                mimeType: mimeType
+            });
+        },
+        
+        // Begin the recording process
+        beginRecording: function(duration) {
+            if (!this.mediaRecorder) {
+                console.error('MediaRecorder not initialized');
+                return;
+            }
+            
+            this.recordingState = 'starting';
+            this.isRecording = true;
+            
+            // Start recording
+            this.mediaRecorder.start();
+            
+            // Update UI to show recording state
+            this.updateRecordingUI();
+            
+            // Set up frame capture based on framework
+            this.setupFrameCapture();
+            
+            // Set up automatic stop after duration
+            setTimeout(() => {
+                this.stopRecording();
+            }, duration * 1000);
+            
+            console.log('🎬 Recording started');
+        },
+        
+        // Set up frame capture based on detected framework
+        setupFrameCapture: function() {
+            const framework = this.toolInfo.framework;
+            
+            if (framework === 'p5js') {
+                this.setupP5Capture();
+            } else if (framework === 'threejs') {
+                this.setupThreeJSCapture();
+            } else if (framework === 'canvas') {
+                this.setupCanvasCapture();
+            } else {
+                console.warn('Unknown framework, using generic capture');
+                this.setupGenericCapture();
+            }
+        },
+        
+        // Setup capture for p5.js
+        setupP5Capture: function() {
+            console.log('🎯 Setting up p5.js MediaRecorder capture');
+            
+            // Start canvas drawing loop at 60fps
+            this.drawingInterval = setInterval(() => {
+                this.captureCanvasToRecordingCanvas();
+            }, 1000 / 60); // 60 FPS
+            
+            // Store cleanup function
+            this.cleanupCapture = () => {
+                if (this.drawingInterval) {
+                    clearInterval(this.drawingInterval);
+                    this.drawingInterval = null;
+                }
+            };
+        },
+        
+        // Setup capture for Three.js
+        setupThreeJSCapture: function() {
+            console.log('🎯 Setting up Three.js MediaRecorder capture');
+            
+            // Start canvas drawing loop at 60fps
+            this.drawingInterval = setInterval(() => {
+                this.captureCanvasToRecordingCanvas();
+            }, 1000 / 60); // 60 FPS
+            
+            // Store cleanup function
+            this.cleanupCapture = () => {
+                if (this.drawingInterval) {
+                    clearInterval(this.drawingInterval);
+                    this.drawingInterval = null;
+                }
+            };
+        },
+        
+        // Setup capture for Canvas API
+        setupCanvasCapture: function() {
+            console.log('🎯 Setting up Canvas API MediaRecorder capture');
+            
+            // Start canvas drawing loop at 60fps
+            this.drawingInterval = setInterval(() => {
+                this.captureCanvasToRecordingCanvas();
+            }, 1000 / 60); // 60 FPS
+            
+            // Store cleanup function
+            this.cleanupCapture = () => {
+                if (this.drawingInterval) {
+                    clearInterval(this.drawingInterval);
+                    this.drawingInterval = null;
+                }
+            };
+        },
+        
+        // Generic capture setup
+        setupGenericCapture: function() {
+            console.log('🎯 Setting up generic MediaRecorder capture');
+            
+            // Use a polling approach for unknown frameworks
+            this.drawingInterval = setInterval(() => {
+                this.captureCanvasToRecordingCanvas();
+            }, 1000 / 30); // 30 FPS polling
+            
+            // Store cleanup function
+            this.cleanupCapture = () => {
+                if (this.drawingInterval) {
+                    clearInterval(this.drawingInterval);
+                    this.drawingInterval = null;
+                }
+            };
+        },
+        
+        // Capture canvas to recording canvas (unified approach)
+        captureCanvasToRecordingCanvas: function() {
+            try {
+                const sourceCanvas = this.toolInfo.canvas;
+                if (!sourceCanvas) return;
+                
+                // Clear recording canvas with background color
+                this.recordingCtx.fillStyle = '#1a1a1a';
+                this.recordingCtx.fillRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+                
+                // Draw source canvas to recording canvas
+                if (sourceCanvas.width > 0 && sourceCanvas.height > 0) {
+                    this.recordingCtx.drawImage(sourceCanvas, 0, 0, sourceCanvas.width, sourceCanvas.height);
+                }
+                
+            } catch (error) {
+                console.error('❌ Error capturing canvas:', error);
+            }
+        },
+        
+        // Stop recording and download
+        stopRecording: function() {
+            if (!this.mediaRecorder || !this.isRecording) {
+                return;
+            }
+            
+            this.recordingState = 'stopping';
+            console.log('🛑 Stopping recording...');
+            
+            // Stop recording
+            this.mediaRecorder.stop();
+        },
+        
+        // Save the recorded animation
+        saveRecording: function() {
+            try {
+                // Create blob with correct MIME type
+                let blobMimeType;
+                if (this.currentFileExtension === 'mp4') {
+                    blobMimeType = 'video/mp4';
+                } else if (this.currentFileExtension === 'webm') {
+                    blobMimeType = 'video/webm';
+                } else if (this.currentFileExtension === 'mkv') {
+                    blobMimeType = 'video/x-matroska';
+                } else {
+                    blobMimeType = 'video/webm'; // fallback
+                }
+                
+                const blob = new Blob(this.recordedChunks, { type: blobMimeType });
+                
+                // Create download link
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `animation-${Date.now()}.${this.currentFileExtension}`;
+                
+                // Trigger download
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                // Clean up
+                URL.revokeObjectURL(url);
+                this.recordedChunks = [];
+                
+                console.log(`✅ Animation saved as ${this.currentFileExtension.toUpperCase()}`);
+                
+            } catch (error) {
+                console.error('❌ Error saving recording:', error);
+                alert('Error saving recording: ' + error.message);
+            }
+        },
+        
+        // Clean up after recording
+        cleanup: function() {
+            // Stop frame capture
+            if (this.cleanupCapture) {
+                this.cleanupCapture();
+                this.cleanupCapture = null;
+            }
+            
+            this.mediaRecorder = null;
+            this.isRecording = false;
+            this.recordingState = 'idle';
+            this.recordingCanvas = null;
+            this.recordingCtx = null;
+            
+            // Reset UI
+            this.resetRecordingUI();
+            this.closeExportDialog();
+            
+            console.log('🧹 Recording cleanup completed');
+        },
+        
+        // Update UI during recording
+        updateRecordingUI: function() {
+            const startBtn = document.querySelector('.chatooly-btn-primary');
+            if (startBtn) {
+                startBtn.textContent = 'Recording...';
+                startBtn.disabled = true;
+                startBtn.style.opacity = '0.6';
+            }
+            
+            // Add recording indicator
+            const indicator = document.createElement('div');
+            indicator.className = 'recording-indicator';
+            indicator.innerHTML = '🔴 Recording...';
+            indicator.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ff4444;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: 600;
+                z-index: 100000;
+                animation: pulse 1s infinite;
+            `;
+            document.body.appendChild(indicator);
+        },
+        
+        // Reset UI after recording
+        resetRecordingUI: function() {
+            const startBtn = document.querySelector('.chatooly-btn-primary');
+            if (startBtn) {
+                startBtn.textContent = 'Start Recording';
+                startBtn.disabled = false;
+                startBtn.style.opacity = '1';
+            }
+            
+            // Remove recording indicator
+            const indicator = document.querySelector('.recording-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+    };
+
+
 
 
     // ===== CANVAS-AREA MODULE =====
@@ -4113,9 +4732,8 @@ Chatooly.canvasZoom = {
                     
                     <div class="chatooly-menu-section">
                         <h4>🎬 Animations</h4>
-                        <button onclick="Chatooly.ui.exportAnimation()">📦 PNG Sequence</button>
-                        <button disabled style="opacity: 0.5;">🎥 WebM Video (Soon)</button>
-                        <button disabled style="opacity: 0.5;">🎬 MOV Video (Soon)</button>
+                        <button onclick="Chatooly.animationMediaRecorder.showExportDialog()">🎥 Video Export</button>
+                        <button disabled style="opacity: 0.5;">📱 Mobile Optimized (Soon)</button>
                     </div>
                     
                     <div class="chatooly-menu-section">
@@ -4540,26 +5158,7 @@ Chatooly.canvasZoom = {
             }
         },
         
-        // Animation export function
-        exportAnimation: function() {
-            // Initialize animation exporter if not already done
-            if (!window.chatoolyAnimationExporter) {
-                window.chatoolyAnimationExporter = new AnimationExporter({
-                    renderServiceUrl: Chatooly.config.renderServiceUrl || 'https://chatooly-render-service.onrender.com',
-                    maxDuration: Chatooly.config.maxAnimationDuration || 15,
-                    defaultDuration: Chatooly.config.defaultAnimationDuration || 5
-                });
-            }
-            
-            // Hide menu after action
-            const menu = document.querySelector('.chatooly-btn-menu');
-            if (menu && this._hideMenu) {
-                this._hideMenu(menu);
-            }
-            
-            // Start export process
-            window.chatoolyAnimationExporter.exportAnimation();
-        }
+        
     };
     
 

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<!--
+    Chatooly Tool Template - Three.js MediaRecorder Test
+    Author: Yael Renous - Studio Video
+    
+    🤖 AI AGENTS: Before modifying this file, ALWAYS check:
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/variables.css
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/base.css
+    - Ensure CDN script tag remains: https://yaelren.github.io/chatooly-cdn/js/core.min.js
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ========== EDIT THIS: Your Tool Name ========== -->
+    <title>Three.js MediaRecorder Test - Chatooly</title>
+    
+    <!-- ========== DO NOT EDIT: Required CDN Styles ========== -->
+    <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css">
+    
+    <!-- Load Three.js for 3D graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div class="chatooly-app-container">
+        <!-- Left Panel: Tool Controls -->
+        <div class="chatooly-controls-panel">
+            <!-- ========== EDIT THIS: Your Tool Title ========== -->
+            <div class="chatooly-controls-header">
+                <h1>Three.js MediaRecorder Test</h1>
+                <p>Rotating 3D spheres with orbital motion - Test MediaRecorder video export</p>
+            </div>
+            
+            <div class="chatooly-controls-content">
+                <!-- ========== EDIT BELOW: Add Your Tool Controls Here ========== -->
+                
+                <!-- Animation controls -->
+                <div class="chatooly-control-group">
+                    <label for="sphere-count">Sphere Count</label>
+                    <input type="range" id="sphere-count" min="3" max="20" value="8">
+                    <span id="sphere-count-value">8</span>
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <label for="rotation-speed">Rotation Speed</label>
+                    <input type="range" id="rotation-speed" min="0.005" max="0.05" step="0.005" value="0.02">
+                    <span id="rotation-speed-value">0.02</span>
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <label for="orbit-radius">Orbit Radius</label>
+                    <input type="range" id="orbit-radius" min="1" max="4" step="0.1" value="2.5">
+                    <span id="orbit-radius-value">2.5</span>
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <label for="sphere-size">Sphere Size</label>
+                    <input type="range" id="sphere-size" min="0.1" max="0.8" step="0.05" value="0.3">
+                    <span id="sphere-size-value">0.3</span>
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <label for="background-color">Background Color</label>
+                    <input type="color" id="background-color" value="#1a1a1a">
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <button id="reset-animation">🔄 Reset Animation</button>
+                    <button id="toggle-animation">⏯️ Toggle Animation</button>
+                </div>
+                
+                <!-- ========== END EDIT SECTION ========== -->
+            </div>
+        </div>
+        
+        <!-- Right Panel: Preview/Canvas Area -->
+        <div class="chatooly-preview-panel">
+            <!-- ========== DO NOT EDIT: Required Export Container ========== -->
+            <div id="chatooly-container">
+                <!-- ========== EDIT BELOW: Add Your Visual Output Here ========== -->
+                <!-- This content will be exported as PNG/Animation -->
+                <!-- IMPORTANT: Your main canvas MUST have id="chatooly-canvas" -->
+                <!-- For animations: CDN automatically detects canvas animations and provides export options -->
+                <canvas id="chatooly-canvas"></canvas>
+                <!-- ========== END EDIT SECTION ========== -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- ========== DO NOT EDIT: Chatooly CDN v2.0 Integration ========== -->
+    <!-- This script automatically provides: Dark theme styling + Static/Animation export functionality -->
+    <!-- Animation support: Detects p5.js, Three.js, Canvas animations and provides MediaRecorder export -->
+    <script src="../js/core.min.js"></script>
+    
+    <!-- ========== DO NOT EDIT: Chatooly Configuration ========== -->
+    <script>
+        window.ChatoolyConfig = {
+            name: "Three.js MediaRecorder Test",
+            category: "test",
+            tags: ["three.js", "3d", "animation", "spheres", "mediarecorder"],
+            description: "Rotating 3D spheres with orbital motion - Test MediaRecorder video export",
+            author: "Yael Renous",
+            version: "1.0.0",
+            resolution: 2,
+            buttonPosition: "bottom-right"
+        };
+    </script>
+    
+    <!-- ========== DO NOT EDIT: Your Tool Logic ========== -->
+    <script>
+        // Global variables
+        let scene, camera, renderer;
+        let spheres = [];
+        let isAnimating = true;
+        let animationId = null;
+        
+        // Initialize Three.js scene
+        function initThreeJS() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a1a);
+            
+            // Create camera
+            camera = new THREE.PerspectiveCamera(75, 800 / 600, 0.1, 1000);
+            camera.position.z = 5;
+            
+            // Create renderer - CRITICAL: Must include preserveDrawingBuffer for exports
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: document.getElementById('chatooly-canvas'),
+                antialias: true,
+                preserveDrawingBuffer: true  // ← REQUIRED FOR EXPORTS
+            });
+            renderer.setSize(800, 600);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            
+            // Add lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // Initialize spheres
+            createSpheres();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Start animation loop
+            animate();
+            
+            console.log('✅ Three.js MediaRecorder test initialized');
+        }
+        
+        // Create animated spheres
+        function createSpheres() {
+            // Clear existing spheres
+            spheres.forEach(sphere => {
+                scene.remove(sphere);
+            });
+            spheres = [];
+            
+            const count = parseInt(document.getElementById('sphere-count').value);
+            const orbitRadius = parseFloat(document.getElementById('orbit-radius').value);
+            const sphereSize = parseFloat(document.getElementById('sphere-size').value);
+            
+            const geometry = new THREE.SphereGeometry(sphereSize, 32, 32);
+            
+            // Create spheres in orbit
+            for (let i = 0; i < count; i++) {
+                const material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color().setHSL(i / count, 0.8, 0.6)
+                });
+                
+                const sphere = new THREE.Mesh(geometry, material);
+                
+                // Position spheres in orbit
+                const angle = (i / count) * Math.PI * 2;
+                sphere.position.x = Math.cos(angle) * orbitRadius;
+                sphere.position.z = Math.sin(angle) * orbitRadius;
+                sphere.position.y = Math.sin(i) * 0.5;
+                
+                // Add rotation properties
+                sphere.userData = {
+                    originalAngle: angle,
+                    speed: 0.01 + (i * 0.005),
+                    orbitRadius: orbitRadius,
+                    phase: i * 0.5
+                };
+                
+                spheres.push(sphere);
+                scene.add(sphere);
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            if (!isAnimating) {
+                animationId = requestAnimationFrame(animate);
+                return;
+            }
+            
+            // Rotate spheres around their orbits
+            spheres.forEach((sphere, index) => {
+                const userData = sphere.userData;
+                const rotationSpeed = parseFloat(document.getElementById('rotation-speed').value);
+                
+                userData.originalAngle += userData.speed * rotationSpeed * 10;
+                
+                // Update position
+                sphere.position.x = Math.cos(userData.originalAngle) * userData.orbitRadius;
+                sphere.position.z = Math.sin(userData.originalAngle) * userData.orbitRadius;
+                sphere.position.y = Math.sin(userData.originalAngle * 2 + userData.phase) * 0.5;
+                
+                // Rotate sphere on its own axis
+                sphere.rotation.x += 0.01;
+                sphere.rotation.y += 0.02;
+            });
+            
+            // Render the scene
+            renderer.render(scene, camera);
+            
+            // Continue animation
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Sphere count
+            document.getElementById('sphere-count').addEventListener('input', (e) => {
+                document.getElementById('sphere-count-value').textContent = e.target.value;
+                createSpheres();
+            });
+            
+            // Rotation speed
+            document.getElementById('rotation-speed').addEventListener('input', (e) => {
+                document.getElementById('rotation-speed-value').textContent = e.target.value;
+            });
+            
+            // Orbit radius
+            document.getElementById('orbit-radius').addEventListener('input', (e) => {
+                document.getElementById('orbit-radius-value').textContent = e.target.value;
+                createSpheres();
+            });
+            
+            // Sphere size
+            document.getElementById('sphere-size').addEventListener('input', (e) => {
+                document.getElementById('sphere-size-value').textContent = e.target.value;
+                createSpheres();
+            });
+            
+            // Background color
+            document.getElementById('background-color').addEventListener('change', (e) => {
+                scene.background = new THREE.Color(e.target.value);
+            });
+            
+            // Reset animation
+            document.getElementById('reset-animation').addEventListener('click', () => {
+                createSpheres();
+            });
+            
+            // Toggle animation
+            document.getElementById('toggle-animation').addEventListener('click', () => {
+                isAnimating = !isAnimating;
+                document.getElementById('toggle-animation').textContent = 
+                    isAnimating ? '⏸️ Pause Animation' : '▶️ Resume Animation';
+            });
+        }
+        
+        // High-resolution export function
+        window.renderHighResolution = function(targetCanvas, scale) {
+            const ctx = targetCanvas.getContext('2d');
+            const targetWidth = 800 * scale;
+            const targetHeight = 600 * scale;
+            
+            // Create temporary renderer for high-res export
+            const tempRenderer = new THREE.WebGLRenderer({ 
+                canvas: targetCanvas,
+                antialias: true,
+                preserveDrawingBuffer: true
+            });
+            tempRenderer.setSize(targetWidth, targetHeight);
+            tempRenderer.setPixelRatio(1); // Use 1 for consistent results
+            
+            // Create temporary camera with same settings
+            const tempCamera = new THREE.PerspectiveCamera(75, targetWidth / targetHeight, 0.1, 1000);
+            tempCamera.position.copy(camera.position);
+            tempCamera.rotation.copy(camera.rotation);
+            
+            // Render at high resolution
+            tempRenderer.render(scene, tempCamera);
+            
+            // Clean up
+            tempRenderer.dispose();
+            
+            console.log(`High-res export completed at ${scale}x resolution`);
+        };
+        
+        // Auto-start
+        window.addEventListener('load', () => {
+            console.log('🚀 Three.js MediaRecorder test ready!');
+            initThreeJS();
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (renderer && camera) {
+                camera.aspect = 800 / 600;
+                camera.updateProjectionMatrix();
+                renderer.setSize(800, 600);
+            }
+        });
+    </script>
+</body>
+</html>

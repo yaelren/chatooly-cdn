@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<!--
+    Chatooly Tool Template - Canvas MediaRecorder Test
+    Author: Yael Renous - Studio Video
+    
+    🤖 AI AGENTS: Before modifying this file, ALWAYS check:
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/variables.css
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/base.css
+    - Ensure CDN script tag remains: https://yaelren.github.io/chatooly-cdn/js/core.min.js
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ========== EDIT THIS: Your Tool Name ========== -->
+    <title>Canvas MediaRecorder Test - Chatooly</title>
+    
+    <!-- ========== DO NOT EDIT: Required CDN Styles ========== -->
+    <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css">
+</head>
+<body>
+    <div class="chatooly-app-container">
+        <!-- Left Panel: Tool Controls -->
+        <div class="chatooly-controls-panel">
+            <!-- ========== EDIT THIS: Your Tool Title ========== -->
+            <div class="chatooly-controls-header">
+                <h1>Canvas MediaRecorder Test</h1>
+                <p>Bouncing balls with physics - Test MediaRecorder video export</p>
+            </div>
+            
+            <div class="chatooly-controls-content">
+                <!-- ========== EDIT BELOW: Add Your Tool Controls Here ========== -->
+                
+                <!-- Animation controls -->
+                <div class="chatooly-control-group">
+                    <label for="ball-count">Ball Count</label>
+                    <input type="range" id="ball-count" min="3" max="25" value="8">
+                    <span id="ball-count-value">8</span>
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <label for="gravity">Gravity</label>
+                    <input type="range" id="gravity" min="0.1" max="1.0" step="0.1" value="0.3">
+                    <span id="gravity-value">0.3</span>
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <label for="bounce-damping">Bounce Damping</label>
+                    <input type="range" id="bounce-damping" min="0.5" max="1.0" step="0.05" value="0.8">
+                    <span id="bounce-damping-value">0.8</span>
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <label for="ball-size">Ball Size</label>
+                    <input type="range" id="ball-size" min="10" max="50" value="25">
+                    <span id="ball-size-value">25</span>
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <label for="background-color">Background Color</label>
+                    <input type="color" id="background-color" value="#1a1a1a">
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <button id="reset-animation">🔄 Reset Animation</button>
+                    <button id="toggle-animation">⏯️ Toggle Animation</button>
+                </div>
+                
+                <!-- ========== END EDIT SECTION ========== -->
+            </div>
+        </div>
+        
+        <!-- Right Panel: Preview/Canvas Area -->
+        <div class="chatooly-preview-panel">
+            <!-- ========== DO NOT EDIT: Required Export Container ========== -->
+            <div id="chatooly-container">
+                <!-- ========== EDIT BELOW: Add Your Visual Output Here ========== -->
+                <!-- This content will be exported as PNG/Animation -->
+                <!-- IMPORTANT: Your main canvas MUST have id="chatooly-canvas" -->
+                <!-- For animations: CDN automatically detects canvas animations and provides export options -->
+                <canvas id="chatooly-canvas" width="800" height="600"></canvas>
+                <!-- ========== END EDIT SECTION ========== -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- ========== DO NOT EDIT: Chatooly CDN v2.0 Integration ========== -->
+    <!-- This script automatically provides: Dark theme styling + Static/Animation export functionality -->
+    <!-- Animation support: Detects p5.js, Three.js, Canvas animations and provides MediaRecorder export -->
+    <script src="../js/core.min.js"></script>
+    
+    <!-- ========== DO NOT EDIT: Chatooly Configuration ========== -->
+    <script>
+        window.ChatoolyConfig = {
+            name: "Canvas MediaRecorder Test",
+            category: "test",
+            tags: ["canvas", "animation", "physics", "balls", "mediarecorder"],
+            description: "Bouncing balls with physics - Test MediaRecorder video export",
+            author: "Yael Renous",
+            version: "1.0.0",
+            resolution: 2,
+            buttonPosition: "bottom-right"
+        };
+    </script>
+    
+    <!-- ========== DO NOT EDIT: Your Tool Logic ========== -->
+    <script>
+        // Global variables
+        let canvas, ctx;
+        let balls = [];
+        let isAnimating = true;
+        let animationId = null;
+        let backgroundColor = '#1a1a1a';
+        
+        // Ball class
+        class Ball {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 8;
+                this.vy = (Math.random() - 0.5) * 8;
+                this.radius = parseInt(document.getElementById('ball-size').value);
+                this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                this.trail = [];
+                this.maxTrailLength = 10;
+            }
+            
+            update() {
+                // Apply gravity
+                const gravity = parseFloat(document.getElementById('gravity').value);
+                this.vy += gravity;
+                
+                // Update position
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // Add to trail
+                this.trail.push({x: this.x, y: this.y});
+                if (this.trail.length > this.maxTrailLength) {
+                    this.trail.shift();
+                }
+                
+                // Bounce off walls
+                const damping = parseFloat(document.getElementById('bounce-damping').value);
+                
+                if (this.x - this.radius < 0 || this.x + this.radius > canvas.width) {
+                    this.vx *= -damping;
+                    this.x = this.x - this.radius < 0 ? this.radius : canvas.width - this.radius;
+                }
+                
+                if (this.y - this.radius < 0 || this.y + this.radius > canvas.height) {
+                    this.vy *= -damping;
+                    this.y = this.y - this.radius < 0 ? this.radius : canvas.height - this.radius;
+                }
+                
+                // Update radius if changed
+                this.radius = parseInt(document.getElementById('ball-size').value);
+            }
+            
+            draw() {
+                // Draw trail
+                for (let i = 0; i < this.trail.length; i++) {
+                    const point = this.trail[i];
+                    const alpha = (i / this.trail.length) * 0.5;
+                    const trailRadius = (this.radius * i) / this.trail.length;
+                    
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, trailRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Draw main ball
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Add highlight
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.beginPath();
+                ctx.arc(this.x - this.radius * 0.3, this.y - this.radius * 0.3, this.radius * 0.3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // Initialize canvas
+        function initCanvas() {
+            canvas = document.getElementById('chatooly-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // Initialize balls
+            createBalls();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Start animation loop
+            animate();
+            
+            console.log('✅ Canvas MediaRecorder test initialized');
+        }
+        
+        // Create balls
+        function createBalls() {
+            balls = [];
+            const count = parseInt(document.getElementById('ball-count').value);
+            
+            for (let i = 0; i < count; i++) {
+                const x = Math.random() * (canvas.width - 100) + 50;
+                const y = Math.random() * (canvas.height - 100) + 50;
+                balls.push(new Ball(x, y));
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            if (!isAnimating) {
+                animationId = requestAnimationFrame(animate);
+                return;
+            }
+            
+            // Clear canvas
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Update and draw balls
+            balls.forEach(ball => {
+                ball.update();
+                ball.draw();
+            });
+            
+            // Show info
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '14px monospace';
+            ctx.fillText(`Frame: ${Math.floor(performance.now() / 16)}`, 10, 20);
+            ctx.fillText(`Balls: ${balls.length}`, 10, 40);
+            ctx.fillText(`Animating: ${isAnimating}`, 10, 60);
+            
+            // Continue animation
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Ball count
+            document.getElementById('ball-count').addEventListener('input', (e) => {
+                document.getElementById('ball-count-value').textContent = e.target.value;
+                createBalls();
+            });
+            
+            // Gravity
+            document.getElementById('gravity').addEventListener('input', (e) => {
+                document.getElementById('gravity-value').textContent = e.target.value;
+            });
+            
+            // Bounce damping
+            document.getElementById('bounce-damping').addEventListener('input', (e) => {
+                document.getElementById('bounce-damping-value').textContent = e.target.value;
+            });
+            
+            // Ball size
+            document.getElementById('ball-size').addEventListener('input', (e) => {
+                document.getElementById('ball-size-value').textContent = e.target.value;
+            });
+            
+            // Background color
+            document.getElementById('background-color').addEventListener('change', (e) => {
+                backgroundColor = e.target.value;
+            });
+            
+            // Reset animation
+            document.getElementById('reset-animation').addEventListener('click', () => {
+                createBalls();
+            });
+            
+            // Toggle animation
+            document.getElementById('toggle-animation').addEventListener('click', () => {
+                isAnimating = !isAnimating;
+                document.getElementById('toggle-animation').textContent = 
+                    isAnimating ? '⏸️ Pause Animation' : '▶️ Resume Animation';
+            });
+        }
+        
+        // High-resolution export function
+        window.renderHighResolution = function(targetCanvas, scale) {
+            const targetCtx = targetCanvas.getContext('2d');
+            const targetWidth = canvas.width * scale;
+            const targetHeight = canvas.height * scale;
+            
+            targetCanvas.width = targetWidth;
+            targetCanvas.height = targetHeight;
+            
+            // Clear canvas
+            targetCtx.fillStyle = backgroundColor;
+            targetCtx.fillRect(0, 0, targetWidth, targetHeight);
+            
+            // Scale context
+            targetCtx.scale(scale, scale);
+            
+            // Re-create balls at high resolution
+            const scaledBalls = [];
+            const count = parseInt(document.getElementById('ball-count').value);
+            
+            for (let i = 0; i < count; i++) {
+                const x = Math.random() * (canvas.width - 100) + 50;
+                const y = Math.random() * (canvas.height - 100) + 50;
+                const ball = new Ball(x, y);
+                ball.radius *= scale;
+                scaledBalls.push(ball);
+            }
+            
+            // Draw balls at high resolution
+            scaledBalls.forEach(ball => {
+                targetCtx.fillStyle = ball.color;
+                targetCtx.beginPath();
+                targetCtx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                targetCtx.fill();
+                
+                // Add highlight
+                targetCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                targetCtx.beginPath();
+                targetCtx.arc(ball.x - ball.radius * 0.3, ball.y - ball.radius * 0.3, ball.radius * 0.3, 0, Math.PI * 2);
+                targetCtx.fill();
+            });
+            
+            console.log(`High-res export completed at ${scale}x resolution`);
+        };
+        
+        // Auto-start
+        window.addEventListener('load', () => {
+            console.log('🚀 Canvas MediaRecorder test ready!');
+            initCanvas();
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Canvas size is fixed, no resize needed
+        });
+    </script>
+</body>
+</html>

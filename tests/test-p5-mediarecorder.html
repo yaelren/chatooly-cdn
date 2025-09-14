@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html>
+<!--
+    Chatooly Tool Template - p5.js MediaRecorder Test
+    Author: Yael Renous - Studio Video
+    
+    🤖 AI AGENTS: Before modifying this file, ALWAYS check:
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/variables.css
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/components.css
+    - https://raw.githubusercontent.com/yaelren/chatooly-cdn/main/css/base.css
+    - Ensure CDN script tag remains: https://yaelren.github.io/chatooly-cdn/js/core.min.js
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ========== EDIT THIS: Your Tool Name ========== -->
+    <title>p5.js MediaRecorder Test - Chatooly</title>
+    
+    <!-- ========== DO NOT EDIT: Required CDN Styles ========== -->
+    <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css">
+    
+    <!-- Load p5.js for creative coding -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+</head>
+<body>
+    <div class="chatooly-app-container">
+        <!-- Left Panel: Tool Controls -->
+        <div class="chatooly-controls-panel">
+            <!-- ========== EDIT THIS: Your Tool Title ========== -->
+            <div class="chatooly-controls-header">
+                <h1>p5.js MediaRecorder Test</h1>
+                <p>Rotating particles with trail effect - Test MediaRecorder video export</p>
+            </div>
+            
+            <div class="chatooly-controls-content">
+                <!-- ========== EDIT BELOW: Add Your Tool Controls Here ========== -->
+                
+                <!-- Animation controls -->
+                <div class="chatooly-control-group">
+                    <label for="particle-count">Particle Count</label>
+                    <input type="range" id="particle-count" min="5" max="50" value="20">
+                    <span id="particle-count-value">20</span>
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <label for="rotation-speed">Rotation Speed</label>
+                    <input type="range" id="rotation-speed" min="0.01" max="0.1" step="0.01" value="0.05">
+                    <span id="rotation-speed-value">0.05</span>
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <label for="trail-length">Trail Length</label>
+                    <input type="range" id="trail-length" min="10" max="100" value="50">
+                    <span id="trail-length-value">50</span>
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <label for="background-color">Background Color</label>
+                    <input type="color" id="background-color" value="#1a1a1a">
+                </div>
+                
+                <div class="chatooly-control-group">
+                    <button id="reset-animation">🔄 Reset Animation</button>
+                    <button id="toggle-animation">⏯️ Toggle Animation</button>
+                </div>
+                
+                <!-- ========== END EDIT SECTION ========== -->
+            </div>
+        </div>
+        
+        <!-- Right Panel: Preview/Canvas Area -->
+        <div class="chatooly-preview-panel">
+            <!-- ========== DO NOT EDIT: Required Export Container ========== -->
+            <div id="chatooly-container">
+                <!-- ========== EDIT BELOW: Add Your Visual Output Here ========== -->
+                <!-- This content will be exported as PNG/Animation -->
+                <!-- IMPORTANT: Your main canvas MUST have id="chatooly-canvas" -->
+                <!-- For animations: CDN automatically detects canvas animations and provides export options -->
+                <canvas id="chatooly-canvas"></canvas>
+                <!-- ========== END EDIT SECTION ========== -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- ========== DO NOT EDIT: Chatooly CDN v2.0 Integration ========== -->
+    <!-- This script automatically provides: Dark theme styling + Static/Animation export functionality -->
+    <!-- Animation support: Detects p5.js, Three.js, Canvas animations and provides MediaRecorder export -->
+    <script src="https://yaelren.github.io/chatooly-cdn/js/core.min.js"></script>
+    
+    <!-- ========== DO NOT EDIT: Chatooly Configuration ========== -->
+    <script>
+        window.ChatoolyConfig = {
+            name: "p5.js MediaRecorder Test",
+            category: "test",
+            tags: ["p5.js", "animation", "particles", "mediarecorder"],
+            description: "Rotating particles with trail effect - Test MediaRecorder video export",
+            author: "Yael Renous",
+            version: "1.0.0",
+            resolution: 2,
+            buttonPosition: "bottom-right"
+        };
+    </script>
+    
+    <!-- ========== DO NOT EDIT: Your Tool Logic ========== -->
+    <script>
+        // Global variables
+        let particles = [];
+        let angle = 0;
+        let isAnimating = true;
+        let backgroundColor = '#1a1a1a';
+        
+        // p5.js setup
+        function setup() {
+            let canvas = createCanvas(800, 600);
+            canvas.parent('chatooly-canvas'); // CRITICAL: Connect to export system
+            
+            // Initialize particles
+            initializeParticles();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            console.log('✅ p5.js MediaRecorder test initialized');
+        }
+        
+        // p5.js draw loop
+        function draw() {
+            if (!isAnimating) return;
+            
+            // Clear background with slight transparency for trail effect
+            background(backgroundColor + '30'); // Add transparency for trail
+            
+            // Update and draw particles
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            
+            // Increment angle
+            angle += parseFloat(document.getElementById('rotation-speed').value);
+            
+            // Show info
+            fill(255);
+            textAlign(LEFT);
+            textSize(12);
+            text(`Frame: ${frameCount}`, 10, 20);
+            text(`Particles: ${particles.length}`, 10, 35);
+            text(`Angle: ${angle.toFixed(2)}`, 10, 50);
+            text(`Animating: ${isAnimating}`, 10, 65);
+        }
+        
+        // Initialize particles
+        function initializeParticles() {
+            particles = [];
+            const count = parseInt(document.getElementById('particle-count').value);
+            
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(i));
+            }
+        }
+        
+        // Particle class
+        class Particle {
+            constructor(index) {
+                this.index = index;
+                this.trail = [];
+                this.maxTrailLength = parseInt(document.getElementById('trail-length').value);
+                this.radius = 80 + (index * 20);
+                this.speed = 0.01 + (index * 0.005);
+                this.phase = index * 0.5;
+                this.color = color(
+                    100 + sin(index) * 100,
+                    150 + cos(index) * 100,
+                    255
+                );
+            }
+            
+            update() {
+                // Calculate position
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const x = centerX + cos(angle * this.speed + this.phase) * this.radius;
+                const y = centerY + sin(angle * this.speed + this.phase) * this.radius;
+                
+                // Add to trail
+                this.trail.push({x: x, y: y});
+                if (this.trail.length > this.maxTrailLength) {
+                    this.trail.shift();
+                }
+            }
+            
+            draw() {
+                // Draw trail
+                for (let i = 0; i < this.trail.length; i++) {
+                    const point = this.trail[i];
+                    const alpha = map(i, 0, this.trail.length, 50, 255);
+                    const size = map(i, 0, this.trail.length, 5, 30);
+                    
+                    fill(red(this.color), green(this.color), blue(this.color), alpha);
+                    noStroke();
+                    ellipse(point.x, point.y, size, size);
+                }
+                
+                // Draw main particle
+                fill(this.color);
+                noStroke();
+                const currentPoint = this.trail[this.trail.length - 1];
+                if (currentPoint) {
+                    ellipse(currentPoint.x, currentPoint.y, 40, 40);
+                }
+            }
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Particle count
+            document.getElementById('particle-count').addEventListener('input', (e) => {
+                document.getElementById('particle-count-value').textContent = e.target.value;
+                initializeParticles();
+            });
+            
+            // Rotation speed
+            document.getElementById('rotation-speed').addEventListener('input', (e) => {
+                document.getElementById('rotation-speed-value').textContent = e.target.value;
+            });
+            
+            // Trail length
+            document.getElementById('trail-length').addEventListener('input', (e) => {
+                document.getElementById('trail-length-value').textContent = e.target.value;
+                particles.forEach(particle => {
+                    particle.maxTrailLength = parseInt(e.target.value);
+                });
+            });
+            
+            // Background color
+            document.getElementById('background-color').addEventListener('change', (e) => {
+                backgroundColor = e.target.value;
+            });
+            
+            // Reset animation
+            document.getElementById('reset-animation').addEventListener('click', () => {
+                angle = 0;
+                initializeParticles();
+            });
+            
+            // Toggle animation
+            document.getElementById('toggle-animation').addEventListener('click', () => {
+                isAnimating = !isAnimating;
+                document.getElementById('toggle-animation').textContent = 
+                    isAnimating ? '⏸️ Pause Animation' : '▶️ Resume Animation';
+            });
+        }
+        
+        // High-resolution export function
+        window.renderHighResolution = function(targetCanvas, scale) {
+            const ctx = targetCanvas.getContext('2d');
+            targetCanvas.width = width * scale;
+            targetCanvas.height = height * scale;
+            
+            // Clear canvas
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, targetCanvas.width, targetCanvas.height);
+            
+            // Scale context
+            ctx.scale(scale, scale);
+            
+            // Re-run particle system at high resolution
+            const scaledAngle = angle;
+            const scaledParticles = [];
+            
+            // Create scaled particles
+            const count = parseInt(document.getElementById('particle-count').value);
+            for (let i = 0; i < count; i++) {
+                const particle = new Particle(i);
+                particle.radius *= scale;
+                scaledParticles.push(particle);
+            }
+            
+            // Draw particles at high resolution
+            scaledParticles.forEach(particle => {
+                // Calculate position
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const x = centerX + Math.cos(scaledAngle * particle.speed + particle.phase) * particle.radius;
+                const y = centerY + Math.sin(scaledAngle * particle.speed + particle.phase) * particle.radius;
+                
+                // Draw particle
+                ctx.fillStyle = `hsl(${120 + Math.sin(i) * 100}, 70%, 60%)`;
+                ctx.beginPath();
+                ctx.arc(x, y, 20 * scale, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            console.log(`High-res export completed at ${scale}x resolution`);
+        };
+        
+        // Auto-start
+        window.addEventListener('load', () => {
+            console.log('🚀 p5.js MediaRecorder test ready!');
+        });
+    </script>
+</body>
+</html>

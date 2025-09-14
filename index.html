@@ -6,7 +6,7 @@
     <title>Chatooly CDN - Animation & Export Library</title>
     
     <!-- Use Chatooly CDN CSS -->
-    <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css">
+    <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css?v=2.0.1">
     
     <style>
         body {
@@ -102,7 +102,7 @@
     <div class="container">
         <h1>🎬 Chatooly CDN - Animation & Export Library</h1>
         
-        <p>JavaScript library for static PNG export and animation recording functionality. Supports p5.js, Three.js, Canvas animations, and DOM-based design tools with CCapture.js integration.</p>
+        <p>JavaScript library for static PNG export and animation recording functionality. Supports p5.js, Three.js, Canvas animations, and DOM-based design tools with MediaRecorder API integration.</p>
         
         <h2>🚀 CDN Usage</h2>
         <div class="cdn-url">
@@ -122,19 +122,19 @@
 &lt;/script&gt;</code></pre>
         </div>
         
-        <h2>🧪 CCapture Animation Tests</h2>
+        <h2>🧪 MediaRecorder Animation Tests</h2>
         <div class="test-links">
-            <a href="tests/test-ccapture-canvas.html" class="test-link" style="background: #28a745;">
-                🎬 Canvas Animation Test<br>
-                <small>Comprehensive CCapture integration</small>
+            <a href="tests/test-p5-mediarecorder.html" class="test-link" style="background: #28a745;">
+                🎨 p5.js MediaRecorder Test<br>
+                <small>Rotating particles with trail effect</small>
             </a>
-            <a href="tests/test-ccapture-p5.html" class="test-link">
-                🎨 p5.js Animation Test<br>
-                <small>Flow field particles export</small>
-            </a>
-            <a href="tests/test-ccapture-threejs.html" class="test-link">
-                🌟 Three.js Animation Test<br>
+            <a href="tests/test-threejs-mediarecorder-template.html" class="test-link">
+                🌟 Three.js MediaRecorder Test<br>
                 <small>3D spheres with orbital motion</small>
+            </a>
+            <a href="tests/test-canvas-mediarecorder-template.html" class="test-link" style="background: #17a2b8;">
+                🎬 Canvas MediaRecorder Test<br>
+                <small>Bouncing balls with physics</small>
             </a>
             <a href="tests/test-container.html" class="test-link" style="background: #6c757d;">
                 🧪 Container Structure Test<br>
@@ -151,18 +151,19 @@
         
         <h2>✨ Features</h2>
         <ul>
-            <li><strong>Animation Export</strong> - CCapture.js integration for PNG sequence recording</li>
+            <li><strong>Video Animation Export</strong> - MediaRecorder API integration for MP4/WebM/MKV video recording</li>
             <li><strong>Smart Animation Detection</strong> - Automatically detects p5.js, Three.js, and Canvas animations</li>
             <li><strong>Static PNG Export</strong> - High-resolution 1x, 2x, 4x scaling with quality optimization</li>
             <li><strong>Framework Support</strong> - p5.js draw() loops, Three.js render loops, requestAnimationFrame</li>
+            <li><strong>Multiple Video Formats</strong> - MP4 (H.264), WebM (VP8/VP9), MKV (Matroska), Auto-detection</li>
             <li><strong>Progressive Enhancement</strong> - Animation export appears only for animated tools</li>
             <li><strong>Non-Breaking Integration</strong> - Existing tools continue working with new capabilities</li>
-            <li><strong>Performance Optimized</strong> - Dynamic CCapture loading, minimal overhead</li>
+            <li><strong>Performance Optimized</strong> - Native browser APIs, minimal overhead</li>
             <li><strong>Browser Compatible</strong> - Tested on Chrome 90+, Firefox 88+, Safari 14+, Edge 90+</li>
             <li><strong>Production Ready</strong> - GitHub Pages CDN with comprehensive testing</li>
         </ul>
         
-        <p><small>🎬 CCapture Animation Integration Complete - v2.0.0</small></p>
+        <p><small>🎬 MediaRecorder Animation Integration Complete - v2.0.0</small></p>
     </div>
 </body>
 </html>

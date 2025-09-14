@@ -25,6 +25,13 @@
                 this.ui.createExportButton();
             }
             
+            // Initialize animation module
+            if (this.animation && this.animation.init) {
+                setTimeout(() => {
+                    this.animation.init();
+                }, 100);
+            }
+            
             // Log development mode
             if (this.utils && this.utils.logDevelopmentMode) {
                 this.utils.logDevelopmentMode();
