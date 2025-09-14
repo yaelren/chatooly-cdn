@@ -56,7 +56,7 @@
             border-left: 4px solid #007acc;
             font-family: monospace;
         }
-        #canvas-container {
+        #chatooly-container {
             border: 2px solid #333;
             border-radius: 8px;
             overflow: hidden;
@@ -86,7 +86,9 @@
     
     <div id="status">Ready to test p5.js export...</div>
     
-    <div id="canvas-container"></div>
+    <div id="chatooly-container">
+        <canvas id="chatooly-canvas"></canvas>
+    </div>
     
     <div class="info-panel">
         <h3>📋 Test Information</h3>
@@ -115,7 +117,7 @@
         // Simple p5.js setup
         function setup() {
             let canvas = createCanvas(400, 400);
-            canvas.parent('canvas-container');
+            canvas.parent('chatooly-container');
             updateStatus('✅ Canvas created (400x400)');
             
             // Initialize CCapture with WebM format (same as test-manual-p5.html)

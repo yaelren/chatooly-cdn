@@ -32,6 +32,13 @@
                 }, 100);
             }
             
+            // Initialize animation media recorder
+            if (this.animationMediaRecorder && this.animationMediaRecorder.init) {
+                setTimeout(() => {
+                    this.animationMediaRecorder.init();
+                }, 200);
+            }
+            
             // Log development mode
             if (this.utils && this.utils.logDevelopmentMode) {
                 this.utils.logDevelopmentMode();

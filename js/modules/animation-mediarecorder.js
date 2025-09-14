@@ -574,28 +574,44 @@
         updateRecordingUI: function() {
             const startBtn = document.querySelector('.chatooly-btn-primary');
             if (startBtn) {
-                startBtn.textContent = 'Recording...';
+                startBtn.textContent = 'Exporting...';
                 startBtn.disabled = true;
                 startBtn.style.opacity = '0.6';
             }
             
-            // Add recording indicator
+            // Add recording indicator with Chatooly CSS styling
             const indicator = document.createElement('div');
-            indicator.className = 'recording-indicator';
-            indicator.innerHTML = '🔴 Recording...';
+            indicator.className = 'chatooly-export-indicator';
+            indicator.innerHTML = '📤 Exporting...';
             indicator.style.cssText = `
                 position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #ff4444;
-                color: white;
-                padding: 8px 16px;
-                border-radius: 20px;
-                font-size: 14px;
-                font-weight: 600;
+                top: var(--chatooly-spacing-4, 20px);
+                right: var(--chatooly-spacing-4, 20px);
+                background: var(--chatooly-color-primary, #007acc);
+                color: var(--chatooly-color-text-inverse, white);
+                padding: var(--chatooly-spacing-3, 12px) var(--chatooly-spacing-4, 16px);
+                border-radius: var(--chatooly-border-radius-lg, 20px);
+                font-size: var(--chatooly-font-size-sm, 14px);
+                font-weight: var(--chatooly-font-weight-semibold, 600);
+                font-family: var(--chatooly-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+                box-shadow: var(--chatooly-shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.15));
                 z-index: 100000;
-                animation: pulse 1s infinite;
+                animation: chatooly-pulse 1.5s ease-in-out infinite;
             `;
+            
+            // Add pulse animation keyframes if not already added
+            if (!document.querySelector('#chatooly-export-animation')) {
+                const style = document.createElement('style');
+                style.id = 'chatooly-export-animation';
+                style.textContent = `
+                    @keyframes chatooly-pulse {
+                        0%, 100% { opacity: 1; transform: scale(1); }
+                        50% { opacity: 0.8; transform: scale(1.05); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
             document.body.appendChild(indicator);
         },
         
@@ -603,13 +619,13 @@
         resetRecordingUI: function() {
             const startBtn = document.querySelector('.chatooly-btn-primary');
             if (startBtn) {
-                startBtn.textContent = 'Start Recording';
+                startBtn.textContent = 'Export';
                 startBtn.disabled = false;
                 startBtn.style.opacity = '1';
             }
             
-            // Remove recording indicator
-            const indicator = document.querySelector('.recording-indicator');
+            // Remove export indicator
+            const indicator = document.querySelector('.chatooly-export-indicator');
             if (indicator) {
                 indicator.remove();
             }
