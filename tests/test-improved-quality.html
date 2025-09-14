@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improved MediaRecorder Quality Test - Chatooly</title>
+    
+    <!-- Chatooly CDN Styles -->
+    <link rel="stylesheet" href="../css/unified.min.css">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        #chatooly-canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .test-info {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎬 Improved MediaRecorder Quality Test</h1>
+        <p>High-resolution gradient animation with fine details - Test improved quality settings</p>
+        
+        <div id="chatooly-canvas"></div>
+        
+        <div class="test-info">
+            <h3>Quality Improvements:</h3>
+            <ul>
+                <li>✅ Increased canvas scale factor from 2x to 3x</li>
+                <li>✅ Added quality presets (High: 12 Mbps, Medium: 8 Mbps, Standard: 6 Mbps, Low: 3 Mbps)</li>
+                <li>✅ Custom bitrate option (1-50 Mbps)</li>
+                <li>✅ Enhanced canvas rendering with high-quality image smoothing</li>
+                <li>✅ Pixel-perfect alignment to reduce color smearing</li>
+                <li>✅ Better composite operations for color preservation</li>
+                <li>✅ Audio bitrate optimization (128 kbps)</li>
+            </ul>
+            
+            <p><strong>Test this:</strong> Export the animation and compare quality at different settings. 
+            High quality should show much sharper gradients and reduced color banding.</p>
+        </div>
+    </div>
+
+    <!-- Animation support: Detects p5.js, Three.js, Canvas animations and provides MediaRecorder export -->
+    <script src="../js/core.min.js"></script>
+    
+    <!-- ========== DO NOT EDIT: Chatooly Configuration ========== -->
+    <script>
+        window.ChatoolyConfig = {
+            name: "Improved MediaRecorder Quality Test",
+            category: "test",
+            tags: ["canvas", "animation", "quality", "mediarecorder"],
+            description: "High-resolution gradient animation with fine details - Test improved quality settings",
+            author: "Yael Renous",
+            version: "1.0.0",
+            resolution: 2,
+            buttonPosition: "bottom-right"
+        };
+    </script>
+    
+    <!-- ========== DO NOT EDIT: Your Tool Logic ========== -->
+    <script>
+        // Canvas and animation variables
+        let canvas, ctx;
+        let animationFrame;
+        let time = 0;
+        let isAnimating = true;
+        
+        // Initialize the canvas and animation
+        function init() {
+            // Create canvas
+            canvas = document.createElement('canvas');
+            canvas.id = 'chatooly-canvas'; // CRITICAL: Connect to export system
+            canvas.width = 800;
+            canvas.height = 600;
+            
+            // Get context and setup
+            ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            // Add to DOM
+            const container = document.getElementById('chatooly-canvas');
+            container.appendChild(canvas);
+            
+            // Start animation
+            animate();
+            
+            console.log('✅ Improved quality test initialized');
+        }
+        
+        // Animation loop with high-detail gradients
+        function animate() {
+            if (!isAnimating) return;
+            
+            // Clear canvas
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Create complex gradient patterns that show quality differences
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Rotating gradient circles
+            for (let i = 0; i < 8; i++) {
+                const angle = (time * 0.01) + (i * Math.PI / 4);
+                const x = centerX + Math.cos(angle) * 150;
+                const y = centerY + Math.sin(angle) * 150;
+                
+                // Create radial gradient
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, 80);
+                const hue = (time * 0.5 + i * 45) % 360;
+                gradient.addColorStop(0, `hsla(${hue}, 100%, 70%, 0.8)`);
+                gradient.addColorStop(0.5, `hsla(${hue + 60}, 80%, 50%, 0.6)`);
+                gradient.addColorStop(1, `hsla(${hue + 120}, 60%, 30%, 0.2)`);
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(x, y, 80, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Fine detail lines that show compression artifacts
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 50; i++) {
+                const angle = (time * 0.02) + (i * Math.PI / 25);
+                const startX = centerX + Math.cos(angle) * 50;
+                const startY = centerY + Math.sin(angle) * 50;
+                const endX = centerX + Math.cos(angle) * 250;
+                const endY = centerY + Math.sin(angle) * 250;
+                
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            }
+            
+            // Text overlay to test text quality
+            ctx.fillStyle = 'white';
+            ctx.font = '24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Quality Test - Fine Details', centerX, 50);
+            
+            ctx.font = '14px Arial';
+            ctx.fillText(`Frame: ${Math.floor(time / 16)}`, centerX, canvas.height - 30);
+            
+            time++;
+            animationFrame = requestAnimationFrame(animate);
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // Initialize Chatooly
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.Chatooly && window.ChatoolyConfig) {
+                Chatooly.init(ChatoolyConfig);
+                console.log('🚀 Improved quality test ready!');
+            }
+        });
+    </script>
+</body>
+</html>

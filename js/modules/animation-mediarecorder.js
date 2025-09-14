@@ -78,84 +78,11 @@
             };
         },
         
-        // Show animation export dialog
+        // Show animation export dialog (moved to UI module)
         showExportDialog: function() {
-            if (this.recordingState !== 'idle') {
-                alert('Animation recording already in progress!');
-                return;
-            }
-            
-            // Re-detect tool type in case it changed
-            this.toolInfo = this.detectToolType();
-            
-            // Create export dialog
-            const dialog = this.createExportDialog();
-            document.body.appendChild(dialog);
-            
-            // Show with animation
-            setTimeout(() => dialog.classList.add('show'), 10);
-        },
-        
-        // Create export dialog HTML
-        createExportDialog: function() {
-            const dialog = document.createElement('div');
-            dialog.className = 'chatooly-modal-overlay';
-            dialog.innerHTML = `
-                <div class="chatooly-modal">
-                    <h3>🎬 Animation Export</h3>
-                    <div class="chatooly-modal-content">
-                        <div class="chatooly-form-group">
-                            <label for="anim-duration">Duration (seconds)</label>
-                            <input type="number" id="anim-duration" value="5" min="1" max="30" step="0.5">
-                            <small>How long to record the animation</small>
-                        </div>
-                        
-                        <div class="chatooly-form-group">
-                            <label for="anim-fps">Frame Rate (FPS)</label>
-                            <select id="anim-fps">
-                                <option value="24">24 FPS (cinematic)</option>
-                                <option value="30" selected>30 FPS (standard)</option>
-                                <option value="60">60 FPS (smooth)</option>
-                            </select>
-                            <small>Higher FPS = smoother but larger files</small>
-                        </div>
-                        
-                        <div class="chatooly-form-group">
-                            <label for="anim-format">Video Format</label>
-                            <select id="anim-format">
-                                <option value="mp4" selected>MP4 (H.264) - Best compatibility</option>
-                                <option value="webm-vp9">WebM (VP9) - Smaller files</option>
-                                <option value="webm-vp8">WebM (VP8) - Faster encoding</option>
-                                <option value="webm-h264">WebM (H.264) - Chrome only</option>
-                                <option value="mkv">MKV (Matroska) - Chrome only</option>
-                                <option value="auto">Auto-detect best format</option>
-                            </select>
-                            <small>MP4 works everywhere, WebM is smaller, Auto finds best option</small>
-                        </div>
-                        
-                        <div class="chatooly-p-3" style="background: rgba(102, 126, 234, 0.05); border: 1px solid rgba(102, 126, 234, 0.1); border-radius: 8px; margin-top: 16px;">
-                            <div class="chatooly-text-small chatooly-text-muted">
-                                <strong style="color: #4a5568;">Detected:</strong> ${this.toolInfo.framework} animation<br>
-                                <strong style="color: #4a5568;">Export:</strong> MP4/WebM/MKV video (MediaRecorder API)
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="chatooly-modal-actions">
-                        <button type="button" class="chatooly-btn chatooly-btn-secondary" onclick="Chatooly.animationMediaRecorder.closeExportDialog()">Cancel</button>
-                        <button type="button" class="chatooly-btn chatooly-btn-primary" onclick="Chatooly.animationMediaRecorder.startRecording()">Start Recording</button>
-                    </div>
-                </div>
-            `;
-            
-            return dialog;
-        },
-        
-        // Close export dialog
-        closeExportDialog: function() {
-            const dialog = document.querySelector('.chatooly-modal-overlay');
-            if (dialog) {
-                dialog.remove();
+            // Delegate to UI module
+            if (Chatooly.ui && Chatooly.ui.showVideoExportDialog) {
+                Chatooly.ui.showVideoExportDialog();
             }
         },
         
@@ -165,10 +92,17 @@
             const fps = parseInt(document.getElementById('anim-fps').value);
             const format = document.getElementById('anim-format').value;
             
-            console.log(`🎬 Starting ${duration}s recording at ${fps} FPS in ${format} format`);
+            // Get quality settings with fallbacks
+            const qualityElement = document.getElementById('anim-quality');
+            const quality = qualityElement ? qualityElement.value : 'medium';
+            
+            const bitrateElement = document.getElementById('anim-bitrate');
+            const customBitrate = bitrateElement ? parseFloat(bitrateElement.value) : 8;
+            
+            console.log(`🎬 Starting ${duration}s recording at ${fps} FPS in ${format} format with ${quality} quality`);
             
             try {
-                this.initializeMediaRecorder(fps, format);
+                this.initializeMediaRecorder(fps, format, quality, customBitrate);
                 this.beginRecording(duration);
             } catch (error) {
                 console.error('Failed to start MediaRecorder:', error);
@@ -177,7 +111,7 @@
         },
         
         // Initialize MediaRecorder with settings
-        initializeMediaRecorder: function(fps, format) {
+        initializeMediaRecorder: function(fps, format, quality, customBitrate) {
             const canvas = this.toolInfo.canvas;
             if (!canvas) {
                 throw new Error('No canvas found for recording');
@@ -187,11 +121,20 @@
             this.recordingCanvas = document.createElement('canvas');
             this.recordingCtx = this.recordingCanvas.getContext('2d');
             
-            // Set canvas size to match source canvas with 2x scale for quality
-            const scaleFactor = 2;
+            // Set canvas size to match source canvas with higher scale for quality
+            const scaleFactor = 3; // Increased scale for better quality
             this.recordingCanvas.width = canvas.width * scaleFactor;
             this.recordingCanvas.height = canvas.height * scaleFactor;
             this.recordingCtx.scale(scaleFactor, scaleFactor);
+            
+            // Configure high-quality rendering settings
+            this.recordingCtx.imageSmoothingEnabled = false; // Disable smoothing to prevent blur
+            this.recordingCtx.globalCompositeOperation = 'source-over';
+            
+            // Set pixel-perfect rendering
+            this.recordingCanvas.style.imageRendering = 'pixelated';
+            this.recordingCanvas.style.imageRendering = '-moz-crisp-edges';
+            this.recordingCanvas.style.imageRendering = 'crisp-edges';
             
             // Get stream from canvas at specified fps
             const stream = this.recordingCanvas.captureStream(fps);
@@ -331,10 +274,32 @@
             
             this.currentFileExtension = fileExtension;
             
+            // Calculate bitrate based on quality setting
+            let bitrate;
+            switch (quality) {
+                case 'high':
+                    bitrate = 12000000; // 12 Mbps
+                    break;
+                case 'medium':
+                    bitrate = 8000000; // 8 Mbps
+                    break;
+                case 'standard':
+                    bitrate = 6000000; // 6 Mbps
+                    break;
+                case 'low':
+                    bitrate = 3000000; // 3 Mbps
+                    break;
+                case 'custom':
+                    bitrate = (customBitrate || 8) * 1000000; // Convert Mbps to bps
+                    break;
+                default:
+                    bitrate = 8000000; // Default to 8 Mbps
+            }
+            
             // Setup MediaRecorder
             const recordingOptions = {
                 mimeType: mimeType,
-                videoBitsPerSecond: 6000000 // 6 Mbps
+                videoBitsPerSecond: bitrate
             };
             
             this.mediaRecorder = new MediaRecorder(stream, recordingOptions);
@@ -357,7 +322,10 @@
                 format: fileExtension,
                 framerate: fps,
                 canvas: canvas,
-                mimeType: mimeType
+                mimeType: mimeType,
+                videoBitrate: bitrate,
+                quality: quality,
+                scaleFactor: 3
             });
         },
         
@@ -482,14 +450,32 @@
                 const sourceCanvas = this.toolInfo.canvas;
                 if (!sourceCanvas) return;
                 
-                // Clear recording canvas with background color
+                // Save current context state
+                this.recordingCtx.save();
+                
+                // Reset any transformations to ensure clean capture
+                this.recordingCtx.setTransform(3, 0, 0, 3, 0, 0); // Apply scale directly
+                
+                // Clear recording canvas with exact background color
                 this.recordingCtx.fillStyle = '#1a1a1a';
                 this.recordingCtx.fillRect(0, 0, sourceCanvas.width, sourceCanvas.height);
                 
-                // Draw source canvas to recording canvas
+                // Configure for pixel-perfect capture
+                this.recordingCtx.imageSmoothingEnabled = false;
+                this.recordingCtx.globalCompositeOperation = 'source-over';
+                
+                // Draw source canvas with exact pixel mapping
                 if (sourceCanvas.width > 0 && sourceCanvas.height > 0) {
-                    this.recordingCtx.drawImage(sourceCanvas, 0, 0, sourceCanvas.width, sourceCanvas.height);
+                    // Use integer coordinates and exact dimensions
+                    this.recordingCtx.drawImage(
+                        sourceCanvas,
+                        0, 0, sourceCanvas.width, sourceCanvas.height,  // source
+                        0, 0, sourceCanvas.width, sourceCanvas.height   // destination
+                    );
                 }
+                
+                // Restore context state
+                this.recordingCtx.restore();
                 
             } catch (error) {
                 console.error('❌ Error capturing canvas:', error);

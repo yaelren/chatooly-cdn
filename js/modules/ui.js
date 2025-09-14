@@ -162,9 +162,9 @@
                                         <h4 class="chatooly-section-title">Video Format</h4>
                                         <div class="chatooly-form-group">
                                             <select id="chatooly-video-format" class="chatooly-text-input">
-                                                <option value="mp4" selected>MP4 (H.264) - Best compatibility</option>
-                                                <option value="webm-vp9">WebM (VP9) - Smaller files</option>
-                                                <option value="webm-vp8">WebM (VP8) - Faster encoding</option>
+                                                <option value="webm-vp9" selected>WebM (VP9) - Best quality</option>
+                                                <option value="webm-vp8">WebM (VP8) - Good quality</option>
+                                                <option value="mp4">MP4 (H.264) - Best compatibility</option>
                                                 <option value="webm-h264">WebM (H.264) - Chrome only</option>
                                                 <option value="mkv">MKV (Matroska) - Chrome only</option>
                                                 <option value="auto">Auto-detect best format</option>
@@ -174,11 +174,21 @@
                                     </div>
                                     
                                     <div class="chatooly-settings-section">
-                                        <div class="chatooly-info-box">
-                                            <div class="chatooly-text-small chatooly-text-muted">
-                                                <strong>Detected:</strong> ${this.toolInfo?.framework || 'Canvas'} animation<br>
-                                                <strong>Export:</strong> MP4/WebM/MKV video (MediaRecorder API)
-                                            </div>
+                                        <h4 class="chatooly-section-title">Video Quality</h4>
+                                        <div class="chatooly-form-group">
+                                            <select id="anim-quality" class="chatooly-text-input">
+                                                <option value="high">High Quality (12 Mbps)</option>
+                                                <option value="medium" selected>Medium Quality (8 Mbps)</option>
+                                                <option value="standard">Standard Quality (6 Mbps)</option>
+                                                <option value="low">Low Quality (3 Mbps)</option>
+                                                <option value="custom">Custom Bitrate</option>
+                                            </select>
+                                            <small>Higher quality = larger files but better visuals</small>
+                                        </div>
+                                        
+                                        <div class="chatooly-form-group" id="custom-bitrate-group" style="display: none;">
+                                            <input type="number" id="anim-bitrate" value="8" min="1" max="50" step="0.5" class="chatooly-text-input" placeholder="Custom bitrate (Mbps)">
+                                            <small>1-50 Mbps range, higher = better quality</small>
                                         </div>
                                     </div>
                                     
@@ -876,6 +886,19 @@
                 });
             }
             
+            // Quality dropdown event listener
+            const qualitySelect = button.querySelector('#anim-quality');
+            const customBitrateGroup = button.querySelector('#custom-bitrate-group');
+            if (qualitySelect && customBitrateGroup) {
+                qualitySelect.addEventListener('change', function() {
+                    if (this.value === 'custom') {
+                        customBitrateGroup.style.display = 'block';
+                    } else {
+                        customBitrateGroup.style.display = 'none';
+                    }
+                });
+            }
+            
             // Publish button
             const publishBtn = button.querySelector('.chatooly-publish-btn');
             if (publishBtn) {
@@ -1030,9 +1053,11 @@
             const duration = parseFloat(document.querySelector('#chatooly-video-duration')?.value || 5);
             const fps = parseInt(document.querySelector('#chatooly-video-fps')?.value || 30);
             const format = document.querySelector('#chatooly-video-format')?.value || 'mp4';
+            const quality = document.querySelector('#anim-quality')?.value || 'medium';
+            const customBitrate = parseFloat(document.querySelector('#anim-bitrate')?.value || 8);
             
             if (Chatooly.animationMediaRecorder) {
-                // Re-detect tool type in case it changed (same as showExportDialog does)
+                // Re-detect tool type in case it changed
                 Chatooly.animationMediaRecorder.toolInfo = Chatooly.animationMediaRecorder.detectToolType();
                 
                 // Check if we have a valid canvas
@@ -1063,6 +1088,20 @@
                 tempFormat.appendChild(formatOption);
                 document.body.appendChild(tempFormat);
                 
+                // Add quality controls with actual values from UI
+                const tempQuality = document.createElement('select');
+                tempQuality.id = 'anim-quality';
+                const qualityOption = document.createElement('option');
+                qualityOption.value = quality;
+                qualityOption.selected = true;
+                tempQuality.appendChild(qualityOption);
+                document.body.appendChild(tempQuality);
+                
+                const tempBitrate = document.createElement('input');
+                tempBitrate.id = 'anim-bitrate';
+                tempBitrate.value = customBitrate;
+                document.body.appendChild(tempBitrate);
+                
                 // Start recording using the existing method
                 Chatooly.animationMediaRecorder.startRecording();
                 
@@ -1071,6 +1110,8 @@
                     tempDuration.remove();
                     tempFps.remove();
                     tempFormat.remove();
+                    tempQuality.remove();
+                    tempBitrate.remove();
                 }, 100);
             }
             
