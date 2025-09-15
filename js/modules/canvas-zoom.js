@@ -30,14 +30,12 @@
         
         // Initialize zoom functionality
         init: function() {
-            console.log('Chatooly: Initializing canvas zoom');
             // Wait for canvas area to be ready
             if (Chatooly.canvasArea && Chatooly.canvasArea.canvasElement) {
                 this.setCanvasArea(Chatooly.canvasArea.areaContainer, Chatooly.canvasArea.canvasElement);
             } else if (this.findCanvas()) {
                 this.setupCanvasForZoom();
                 this.setupZoomControls();
-                console.log('Chatooly: Canvas zoom ready (legacy mode)');
             }
         },
         
@@ -47,7 +45,6 @@
             this.canvasElement = canvasElement;
             this.setupCanvasForZoom();
             this.setupZoomControls();
-            console.log('Chatooly: Canvas zoom ready with canvas area');
         },
         
         // Find canvas - check canvas area first, then fallback
@@ -58,7 +55,6 @@
                 this.canvasArea = canvasArea;
                 this.canvasElement = canvasArea.querySelector('canvas');
                 if (this.canvasElement) {
-                    console.log('Chatooly: Found canvas in canvas area');
                     return true;
                 }
             }
@@ -67,7 +63,6 @@
             const target = Chatooly.utils.detectExportTarget();
             if (target && target.element && target.element.tagName === 'CANVAS') {
                 this.canvasElement = target.element;
-                console.log(`Chatooly: Using canvas for zoom:`, this.canvasElement.id || 'unnamed');
                 return true;
             }
             
@@ -98,7 +93,6 @@
                 document.body.style.overflow = 'auto';
             }
             
-            console.log(`Chatooly: Canvas zoom setup - ${this.baseWidth}x${this.baseHeight}`);
         },
         
         // Setup zoom control event listeners
@@ -180,7 +174,6 @@
             // Touch/trackpad support
             this.setupTouchControls();
             
-            console.log('Chatooly: Zoom controls active');
         },
         
         // Touch and trackpad zoom
@@ -261,7 +254,6 @@
             this.updateBodySize();
             this.showZoomIndicator();
             
-            console.log(`Chatooly: Zoom: ${(this.currentZoom * 100).toFixed(0)}%`);
         },
         
         // Reset zoom and pan
@@ -280,7 +272,6 @@
                 }, 50);
             }
             
-            console.log('Chatooly: Zoom reset to 100% and centered');
         },
         
         // Apply zoom and pan transform
@@ -431,7 +422,6 @@
             }
             
             this.resizeTimeout = setTimeout(() => {
-                console.log(`Chatooly: Canvas resized to ${width}x${height} - updating zoom`);
                 this.baseWidth = width;
                 this.baseHeight = height;
                 this.centerX = width / 2;
@@ -448,7 +438,6 @@
         
         // Reinitialize for new canvas
         reinitialize: function() {
-            console.log('Chatooly: Reinitializing zoom for new canvas');
             this.currentZoom = 1.0;
             this.panX = 0;
             this.panY = 0;

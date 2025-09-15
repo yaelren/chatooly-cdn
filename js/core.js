@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-09-14T17:23:06.143Z
+ * Built: 2025-09-15T08:30:45.588Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -1018,838 +1018,6 @@
 
 
 
-    // ===== ANIMATION-EXPORT MODULE =====
-    
-/*
- * Chatooly CDN - Animation Export Module
- * Handles exporting animations to render service
- */
-
-class AnimationExporter {
-    constructor(config = {}) {
-        this.renderServiceUrl = config.renderServiceUrl || 'https://chatooly-render-service.onrender.com';
-        this.maxDuration = config.maxDuration || 15;
-        this.defaultDuration = config.defaultDuration || 5;
-        this.timeout = config.timeout || 300000; // 5 minutes
-        
-        // Library CDN URLs for inlining
-        this.libraryUrls = {
-            'three': 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js',
-            'p5': 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js',
-            'gsap': 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js'
-        };
-        
-        // Cache for downloaded libraries
-        this.libraryCache = new Map();
-    }
-
-    /**
-     * Main export function
-     */
-    async exportAnimation(options = {}) {
-        try {
-            // Show export dialog to get user preferences
-            const exportConfig = await this.showExportDialog(options);
-            if (!exportConfig) return; // User cancelled
-
-            // Show progress modal
-            this.showProgressModal();
-            this.updateProgress(0, 0, 0, 'Preparing animation...');
-
-            // Capture and prepare HTML
-            this.updateProgress(10, 0, 0, 'Capturing canvas and inlining libraries...');
-            const { html, metadata } = await this.captureAnimationHTML(exportConfig);
-            
-            this.updateProgress(30, 0, 0, 'Submitting to render service...');
-
-            // Submit to render service
-            const downloadUrl = await this.submitRenderJob(html, exportConfig, metadata);
-
-            // Trigger download
-            this.downloadFile(downloadUrl);
-
-            // Hide progress modal
-            this.hideProgressModal();
-
-        } catch (error) {
-            console.error('Animation export failed:', error);
-            this.hideProgressModal();
-            this.showError(error.message);
-        }
-    }
-
-    /**
-     * Capture current page as animation-ready HTML
-     */
-    async captureAnimationHTML(config) {
-        console.log('🔧 DEBUG: Starting captureAnimationHTML with config:', config);
-        
-        // Get canvas and container
-        const canvas = document.getElementById('chatooly-canvas');
-        const container = document.getElementById('chatooly-container');
-        
-        // Check what's actually in the DOM
-        const allCanvases = document.querySelectorAll('canvas');
-        const allContainers = document.querySelectorAll('[id*="container"]');
-        
-        console.log('🔧 DEBUG: DOM Analysis:', {
-            targetCanvas: canvas ? `${canvas.width}x${canvas.height}` : 'NOT FOUND',
-            targetContainer: container ? 'FOUND' : 'NOT FOUND',
-            allCanvasCount: allCanvases.length,
-            allCanvases: Array.from(allCanvases).map(c => ({
-                id: c.id,
-                class: c.className,
-                width: c.width,
-                height: c.height,
-                parent: c.parentElement?.id || c.parentElement?.className
-            })),
-            allContainers: Array.from(allContainers).map(c => ({
-                id: c.id,
-                class: c.className,
-                children: c.children.length
-            }))
-        });
-        
-        // If no canvas with chatooly-canvas ID, try to find the actual canvas
-        let actualCanvas = canvas;
-        if (!actualCanvas && allCanvases.length > 0) {
-            // Use the first canvas or the largest one
-            actualCanvas = Array.from(allCanvases).reduce((largest, current) => {
-                const largestSize = (largest.width || 0) * (largest.height || 0);
-                const currentSize = current.width * current.height;
-                return currentSize > largestSize ? current : largest;
-            });
-            console.log('🔧 DEBUG: Using alternative canvas:', {
-                id: actualCanvas.id,
-                class: actualCanvas.className,
-                size: `${actualCanvas.width}x${actualCanvas.height}`
-            });
-        }
-        
-        if (!actualCanvas) {
-            throw new Error('No canvas found on the page');
-        }
-
-        // Auto-detect transparency
-        const isTransparent = config.transparent !== undefined ? 
-            config.transparent : 
-            this.detectCanvasTransparency(actualCanvas, container);
-
-        // Get canvas dimensions
-        const width = actualCanvas.width || 800;
-        const height = actualCanvas.height || 600;
-
-        console.log('🔧 DEBUG: Canvas info:', { 
-            width, 
-            height, 
-            isTransparent,
-            canvasId: actualCanvas.id,
-            canvasClass: actualCanvas.className
-        });
-
-        // Build minimal HTML focusing only on the canvas
-        const minimalHTML = this.buildMinimalHTML(actualCanvas, container, width, height, isTransparent);
-        
-        console.log('🔧 DEBUG: Minimal HTML generated:', {
-            size: minimalHTML.length,
-            preview: minimalHTML.slice(0, 500) + '...'
-        });
-
-        // Inline external libraries
-        const inlinedHTML = await this.inlineExternalLibraries(minimalHTML);
-        
-        console.log('🔧 DEBUG: After inlining libraries:', {
-            size: inlinedHTML.length,
-            sizeIncrease: inlinedHTML.length - minimalHTML.length
-        });
-
-        // Compress HTML
-        const compressedHTML = this.compressHTML(inlinedHTML);
-        
-        console.log('🔧 DEBUG: After compression:', {
-            size: compressedHTML.length,
-            compressionRatio: Math.round((1 - compressedHTML.length / inlinedHTML.length) * 100) + '%'
-        });
-
-        // Add render service integration script
-        const finalHTML = this.addRenderServiceIntegration(compressedHTML, {
-            canvasId: 'chatooly-canvas',
-            transparent: isTransparent
-        });
-
-        console.log('🔧 DEBUG: Final HTML ready:', {
-            size: finalHTML.length,
-            preview: finalHTML.slice(0, 300) + '...'
-        });
-
-        return {
-            html: finalHTML,
-            metadata: {
-                width,
-                height,
-                transparent: isTransparent,
-                originalSize: minimalHTML.length,
-                compressedSize: finalHTML.length
-            }
-        };
-    }
-
-    /**
-     * Detect if canvas has transparent background
-     */
-    detectCanvasTransparency(canvas, container) {
-        try {
-            // Check CSS backgrounds
-            if (container) {
-                const containerBg = getComputedStyle(container).backgroundColor;
-                if (containerBg === 'transparent' || containerBg === 'rgba(0, 0, 0, 0)') {
-                    return true;
-                }
-            }
-
-            const canvasBg = getComputedStyle(canvas).backgroundColor;
-            if (canvasBg === 'transparent' || canvasBg === 'rgba(0, 0, 0, 0)') {
-                return true;
-            }
-
-            // Sample canvas pixels for transparency
-            const ctx = canvas.getContext('2d');
-            const imageData = ctx.getImageData(0, 0, 1, 1);
-            const alpha = imageData.data[3];
-            return alpha < 255;
-        } catch (e) {
-            console.warn('Could not detect transparency:', e);
-            return false; // Fallback to opaque
-        }
-    }
-
-    /**
-     * Build minimal HTML with only canvas element and necessary scripts
-     */
-    buildMinimalHTML(canvas, container, width, height, isTransparent) {
-        console.log('🔧 DEBUG: buildMinimalHTML starting with:', { 
-            width, 
-            height, 
-            isTransparent,
-            originalCanvasId: canvas.id,
-            originalCanvasClass: canvas.className
-        });
-        
-        // Create a truly minimal container with ONLY the canvas
-        const minimalContainer = document.createElement('div');
-        minimalContainer.id = 'chatooly-container';
-        
-        // Create a new canvas (cloning doesn't preserve drawn content!)
-        const canvasClone = document.createElement('canvas');
-        canvasClone.id = canvas.id || 'chatooly-canvas';
-        canvasClone.width = width;
-        canvasClone.height = height;
-        
-        // Try to capture current canvas state as image data
-        let canvasDataUrl = '';
-        try {
-            canvasDataUrl = canvas.toDataURL('image/png');
-            console.log('🔧 DEBUG: Captured canvas state as data URL (length:', canvasDataUrl.length, ')');
-        } catch (e) {
-            console.log('🔧 DEBUG: Could not capture canvas state:', e.message);
-        }
-        
-        minimalContainer.appendChild(canvasClone);
-        
-        console.log('🔧 DEBUG: Created minimal container with canvas:', {
-            canvasId: canvasClone.id,
-            canvasWidth: canvasClone.width,
-            canvasHeight: canvasClone.height,
-            hasDataUrl: !!canvasDataUrl
-        });
-        console.log('🔧 DEBUG: Minimal container HTML:', minimalContainer.outerHTML.slice(0, 500) + '...');
-        
-        // Include essential scripts: external libraries + minimal inline animation code
-        const essentialScripts = [];
-        
-        // 1. Include essential external animation libraries
-        const externalScripts = Array.from(document.querySelectorAll('script[src]'));
-        console.log('🔧 DEBUG: Found total external scripts:', externalScripts.length);
-        
-        for (const script of externalScripts) {
-            const src = script.src;
-            // Include known animation libraries AND tool-specific main.js
-            if (src && (
-                src.includes('three.min.js') || 
-                src.includes('p5.min.js') || 
-                src.includes('gsap') ||
-                src.includes('animation-library') ||
-                src.includes('matter.js') ||
-                src.includes('anime.js') ||
-                src.includes('/main.js') || // Include tool's main.js
-                src.includes('/app.js') ||   // Common app script names
-                src.includes('/script.js')   // Common script names
-            )) {
-                essentialScripts.push(`<script src="${src}"></script>`);
-                console.log('🔧 DEBUG: Including script:', src);
-            } else {
-                console.log('🔧 DEBUG: Skipping external script:', src);
-            }
-        }
-        
-        // 2. Include ONLY animation-related inline scripts (not UI scripts)
-        const inlineScripts = Array.from(document.querySelectorAll('script:not([src])'));
-        console.log('🔧 DEBUG: Found inline scripts:', inlineScripts.length);
-        
-        for (const script of inlineScripts) {
-            const content = script.innerHTML;
-            // Include if it contains animation keywords but NOT UI keywords
-            const hasAnimation = content.includes('animate') || 
-                                  content.includes('draw') || 
-                                  content.includes('render') ||
-                                  content.includes('requestAnimationFrame') ||
-                                  content.includes('canvas') ||
-                                  content.includes('ctx.') ||
-                                  content.includes('context.');
-            
-            const hasUI = content.includes('chatooly-controls') ||
-                         content.includes('sidebar') ||
-                         content.includes('dialog') ||
-                         content.includes('modal') ||
-                         content.includes('button') ||
-                         content.includes('menu') ||
-                         content.length > 5000; // Skip very large UI scripts
-            
-            if (hasAnimation && !hasUI) {
-                essentialScripts.push(`<script>${content}</script>`);
-                console.log('🔧 DEBUG: Including animation script (length:', content.length, ')');
-            } else {
-                console.log('🔧 DEBUG: Skipping inline script (UI or large:', content.length, ')');
-            }
-        }
-        
-        // Add initialization script to ensure canvas gets drawn
-        const initScript = `<script>
-// Wait for scripts to load then initialize
-window.addEventListener('load', function() {
-    console.log('Initializing canvas for render...');
-    
-    // Call any initialization functions that might exist
-    if (typeof init === 'function') init();
-    if (typeof setup === 'function') setup();
-    if (typeof start === 'function') start();
-    if (typeof main === 'function') main();
-    
-    // Trigger a draw/render if functions exist
-    if (typeof draw === 'function') draw();
-    if (typeof render === 'function') render();
-    if (typeof animate === 'function') animate();
-    
-    // For sticker-maker specific initialization
-    if (typeof initStickers === 'function') initStickers();
-    if (typeof loadStickers === 'function') loadStickers();
-    
-    console.log('Canvas initialization attempted');
-});
-</script>`;
-        
-        essentialScripts.push(initScript);
-        
-        const scripts = essentialScripts.join('\n');
-        console.log('🔧 DEBUG: Final script count:', essentialScripts.length);
-        
-        // NO external styles - only our minimal canvas styles
-        const styles = '';
-        console.log('🔧 DEBUG: Skipping all external styles to ensure minimal HTML');
-        
-        // Build minimal HTML with only canvas, no UI
-        return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animation Export</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            overflow: hidden;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: ${isTransparent ? 'transparent' : '#000'};
-        }
-        #chatooly-container {
-            width: ${width}px;
-            height: ${height}px;
-            position: relative;
-        }
-        #chatooly-canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-    </style>
-    ${styles}
-</head>
-<body>
-    ${minimalContainer.outerHTML}
-    ${scripts}
-</body>
-</html>`;
-    }
-
-    /**
-     * Fetch and inline external libraries
-     */
-    async inlineExternalLibraries(html) {
-        try {
-            // Find all external script tags that we can inline
-            const scriptPatterns = [
-                {
-                    pattern: /https:\/\/cdn\.jsdelivr\.net\/npm\/three@[\d.]+\/build\/three\.min\.js/g,
-                    library: 'three'
-                },
-                {
-                    pattern: /https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/p5\.js\/[\d.]+\/p5\.min\.js/g,
-                    library: 'p5'
-                },
-                {
-                    pattern: /https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/gsap\/[\d.]+\/gsap\.min\.js/g,
-                    library: 'gsap'
-                }
-            ];
-
-            // Process each library pattern
-            for (const { pattern, library } of scriptPatterns) {
-                const matches = html.match(pattern);
-                if (matches) {
-                    console.log(`Found ${library} library, inlining...`);
-                    
-                    // Get library content (with caching)
-                    const libraryContent = await this.fetchLibrary(library);
-                    
-                    // Replace script tags with inlined content
-                    html = html.replace(
-                        new RegExp(`<script src="${pattern.source}"><\/script>`, 'g'),
-                        `<script>/* Inlined ${library} library */\n${libraryContent}</script>`
-                    );
-                }
-            }
-
-            return html;
-        } catch (error) {
-            console.warn('Failed to inline libraries, using original HTML:', error);
-            return html; // Fallback to original HTML
-        }
-    }
-
-    /**
-     * Fetch library content with caching
-     */
-    async fetchLibrary(libraryName) {
-        // Check cache first
-        if (this.libraryCache.has(libraryName)) {
-            console.log(`Using cached ${libraryName} library`);
-            return this.libraryCache.get(libraryName);
-        }
-
-        const url = this.libraryUrls[libraryName];
-        if (!url) {
-            throw new Error(`Unknown library: ${libraryName}`);
-        }
-
-        console.log(`Fetching ${libraryName} from ${url}...`);
-        
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch ${libraryName}: ${response.status}`);
-            }
-            
-            const content = await response.text();
-            
-            // Cache the content
-            this.libraryCache.set(libraryName, content);
-            
-            console.log(`Successfully fetched ${libraryName} (${Math.round(content.length / 1024)}KB)`);
-            return content;
-        } catch (error) {
-            console.error(`Error fetching ${libraryName}:`, error);
-            throw error;
-        }
-    }
-
-    /**
-     * Compress HTML by removing unnecessary content
-     */
-    compressHTML(html) {
-        return html
-            // Remove HTML comments
-            .replace(/<!--[\s\S]*?-->/g, '')
-            // Remove excessive whitespace
-            .replace(/\s+/g, ' ')
-            // Remove whitespace between tags
-            .replace(/>\s+</g, '><')
-            // Remove empty lines
-            .replace(/^\s*\n/gm, '')
-            .trim();
-    }
-
-    /**
-     * Add render service integration hooks to HTML
-     */
-    addRenderServiceIntegration(html, config) {
-        // Inject render service integration script before closing body tag
-        const integrationScript = `
-<script>
-// Chatooly Render Service Integration
-(function() {
-    let animationStartTime = Date.now();
-    
-    // Override requestAnimationFrame for time control
-    const originalRAF = window.requestAnimationFrame;
-    let isControlledByRenderService = false;
-    
-    window.setAnimationTime = function(time) {
-        isControlledByRenderService = true;
-        animationStartTime = Date.now() - (time * 1000);
-        
-        // Trigger any existing animation loops
-        if (window.updateAnimation) {
-            window.updateAnimation(time);
-        }
-        
-        // Trigger RAF callbacks with controlled time
-        if (window.rafCallbacks && window.rafCallbacks.length > 0) {
-            window.rafCallbacks.forEach(callback => {
-                callback(time * 1000); // Convert to milliseconds
-            });
-        }
-    };
-    
-    // Store RAF callbacks for controlled playback
-    window.rafCallbacks = [];
-    window.requestAnimationFrame = function(callback) {
-        if (isControlledByRenderService) {
-            window.rafCallbacks.push(callback);
-            return Date.now(); // Return dummy timestamp
-        } else {
-            return originalRAF.call(window, callback);
-        }
-    };
-    
-    console.log('Chatooly Render Service integration loaded');
-})();
-</script>
-</body>`;
-
-        return html.replace('</body>', integrationScript);
-    }
-
-    /**
-     * Submit render job to service
-     */
-    async submitRenderJob(html, config, metadata) {
-        const payload = {
-            html: html,
-            duration: config.duration,
-            fps: 30, // Fixed for MVP
-            width: metadata.width,
-            height: metadata.height,
-            resolution: 1, // Fixed for MVP
-            transparent: metadata.transparent,
-            toolName: 'chatooly-cdn',
-            exportFormat: config.format,
-            videoQuality: 'high',
-            animationSpeed: 1,
-            perfectLoop: false,
-            naturalPeriod: null
-        };
-
-        console.log('🔧 DEBUG: Submitting render job:', {
-            format: payload.exportFormat,
-            duration: payload.duration,
-            size: `${metadata.width}x${metadata.height}`,
-            transparent: payload.transparent,
-            htmlSize: `${Math.round(html.length / 1024)}KB`
-        });
-
-        // First, send to debug endpoint for inspection
-        try {
-            console.log('🔧 DEBUG: Sending HTML to debug endpoint...');
-            const debugResponse = await fetch(`${this.renderServiceUrl}/debug/html`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    html: html, 
-                    metadata: { ...metadata, config }
-                })
-            });
-            
-            if (debugResponse.ok) {
-                const debugResult = await debugResponse.json();
-                console.log('🔧 DEBUG: HTML stored for inspection:', {
-                    debugId: debugResult.debugId,
-                    previewUrl: `${this.renderServiceUrl}${debugResult.previewUrl}`,
-                    infoUrl: `${this.renderServiceUrl}/debug/info/${debugResult.debugId}`
-                });
-                console.log('🔧 DEBUG: You can inspect the HTML at:', `${this.renderServiceUrl}${debugResult.previewUrl}`);
-            }
-        } catch (debugError) {
-            console.warn('🔧 DEBUG: Failed to store HTML for debugging:', debugError.message);
-        }
-
-        // Submit job
-        const response = await fetch(`${this.renderServiceUrl}/render`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
-            throw new Error(error.error || `Render service error: ${response.status}`);
-        }
-
-        const { jobId, totalFrames } = await response.json();
-        console.log(`Render job created: ${jobId} (${totalFrames} frames)`);
-
-        // Poll for completion
-        return this.pollJobStatus(jobId);
-    }
-
-    /**
-     * Poll render job status until completion
-     */
-    async pollJobStatus(jobId) {
-        const pollInterval = 1000; // 1 second
-        const maxAttempts = this.timeout / pollInterval;
-        
-        for (let i = 0; i < maxAttempts; i++) {
-            const response = await fetch(`${this.renderServiceUrl}/status/${jobId}`);
-            const status = await response.json();
-            
-            // Update progress
-            this.updateProgress(status.progress || 0, status.currentFrame || 0, status.totalFrames || 0);
-            
-            if (status.status === 'completed') {
-                console.log('Render completed:', status);
-                return `${this.renderServiceUrl}/download/${jobId}`;
-            }
-            
-            if (status.status === 'failed') {
-                throw new Error(status.error || 'Rendering failed');
-            }
-            
-            // Wait before next poll
-            await new Promise(resolve => setTimeout(resolve, pollInterval));
-        }
-        
-        throw new Error('Render timeout - job took too long to complete');
-    }
-
-    /**
-     * Show export configuration dialog
-     */
-    async showExportDialog(initialOptions = {}) {
-        return new Promise((resolve) => {
-            const modal = this.createExportModal(initialOptions, resolve);
-            document.body.appendChild(modal);
-        });
-    }
-
-    /**
-     * Create export dialog modal
-     */
-    createExportModal(initialOptions, onComplete) {
-        const modal = document.createElement('div');
-        modal.id = 'chatooly-export-modal';
-        modal.className = 'chatooly-modal-overlay';
-        modal.innerHTML = `
-            <div class="chatooly-modal">
-                <h3>Export Animation</h3>
-                <div class="chatooly-modal-content">
-                    <div class="chatooly-form-group">
-                        <label for="export-duration">Duration (seconds)</label>
-                        <input type="number" id="export-duration" min="1" max="${this.maxDuration}" value="${initialOptions.duration || this.defaultDuration}" />
-                        <small>Maximum: ${this.maxDuration} seconds</small>
-                    </div>
-                    
-                    <div class="chatooly-form-group">
-                        <label for="export-format">Format</label>
-                        <select id="export-format">
-                            <option value="zip" selected>PNG Sequence (.zip)</option>
-                            <option value="webm" disabled>WebM Video (Coming Soon)</option>
-                            <option value="mov" disabled>MOV Video (Coming Soon)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="chatooly-form-group">
-                        <label>
-                            <input type="checkbox" id="export-transparent" ${initialOptions.transparent !== false ? 'checked' : ''} />
-                            Transparent Background
-                        </label>
-                        <small>Auto-detected from canvas</small>
-                    </div>
-                </div>
-                
-                <div class="chatooly-modal-actions">
-                    <button type="button" class="chatooly-btn chatooly-btn-secondary" id="export-cancel-btn">Cancel</button>
-                    <button type="button" class="chatooly-btn chatooly-btn-primary" id="export-confirm-btn">Export</button>
-                </div>
-            </div>
-        `;
-
-        // Add event handlers after modal is created
-        const cancelBtn = modal.querySelector('#export-cancel-btn');
-        const confirmBtn = modal.querySelector('#export-confirm-btn');
-        
-        cancelBtn.addEventListener('click', () => {
-            modal.remove();
-            onComplete(null);
-        });
-
-        confirmBtn.addEventListener('click', () => {
-            const durationInput = modal.querySelector('#export-duration');
-            const formatInput = modal.querySelector('#export-format');
-            const transparentInput = modal.querySelector('#export-transparent');
-            
-            if (!durationInput || !formatInput || !transparentInput) {
-                console.error('Export form inputs not found');
-                return;
-            }
-            
-            const config = {
-                duration: parseInt(durationInput.value) || 5,
-                format: formatInput.value || 'zip',
-                transparent: transparentInput.checked
-            };
-            
-            modal.remove();
-            onComplete(config);
-        });
-
-        // Position modal as centered popup with small background area
-        modal.style.setProperty('position', 'fixed', 'important');
-        modal.style.setProperty('top', '50%', 'important');
-        modal.style.setProperty('left', '50%', 'important');
-        modal.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
-        modal.style.setProperty('z-index', '999999', 'important');
-        modal.style.setProperty('background', 'rgba(0, 0, 0, 0.9)', 'important');
-        modal.style.setProperty('padding', '40px', 'important');
-        modal.style.setProperty('border-radius', '0px', 'important');
-        
-        return modal;
-    }
-
-    /**
-     * Show progress modal
-     */
-    showProgressModal() {
-        const modal = document.createElement('div');
-        modal.id = 'chatooly-progress-modal';
-        modal.className = 'chatooly-modal-overlay';
-        modal.innerHTML = `
-            <div class="chatooly-modal">
-                <h3>Exporting Animation...</h3>
-                <div class="chatooly-progress-container">
-                    <div class="chatooly-progress-bar">
-                        <div class="chatooly-progress-fill" style="width: 0%"></div>
-                    </div>
-                    <div class="chatooly-progress-text">Preparing...</div>
-                </div>
-                <div class="chatooly-modal-actions">
-                    <button type="button" class="chatooly-btn chatooly-btn-secondary" id="progress-cancel-btn">Cancel</button>
-                </div>
-            </div>
-        `;
-        
-        // Apply same background styling as export modal
-        modal.style.setProperty('position', 'fixed', 'important');
-        modal.style.setProperty('top', '50%', 'important');
-        modal.style.setProperty('left', '50%', 'important');
-        modal.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
-        modal.style.setProperty('z-index', '999999', 'important');
-        modal.style.setProperty('background', 'rgba(0, 0, 0, 0.9)', 'important');
-        modal.style.setProperty('padding', '40px', 'important');
-        modal.style.setProperty('border-radius', '0px', 'important');
-        
-        document.body.appendChild(modal);
-        
-        // Add cancel button handler
-        const cancelBtn = modal.querySelector('#progress-cancel-btn');
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', () => {
-                modal.remove();
-                // Could add job cancellation logic here in the future
-            });
-        }
-    }
-
-    /**
-     * Update progress display
-     */
-    updateProgress(percentage, currentFrame, totalFrames, statusMessage) {
-        const modal = document.getElementById('chatooly-progress-modal');
-        if (!modal) return;
-
-        const progressFill = modal.querySelector('.chatooly-progress-fill');
-        const progressText = modal.querySelector('.chatooly-progress-text');
-
-        if (progressFill && progressText) {
-            progressFill.style.width = percentage + '%';
-            
-            if (statusMessage) {
-                progressText.textContent = statusMessage;
-            } else if (currentFrame && totalFrames) {
-                progressText.textContent = `Frame ${currentFrame}/${totalFrames} (${Math.round(percentage)}%)`;
-            } else {
-                progressText.textContent = `${Math.round(percentage)}%`;
-            }
-        }
-    }
-
-    /**
-     * Hide progress modal
-     */
-    hideProgressModal() {
-        const modal = document.getElementById('chatooly-progress-modal');
-        if (modal) {
-            modal.remove();
-        }
-    }
-
-    /**
-     * Show error message
-     */
-    showError(message) {
-        alert(`Export failed: ${message}\n\nPlease try again or contact support if the problem persists.`);
-    }
-
-    /**
-     * Trigger file download
-     */
-    downloadFile(url) {
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `chatooly-animation-${Date.now()}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-}
-
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = AnimationExporter;
-} else {
-    window.AnimationExporter = AnimationExporter;
-}
-
-
     // ===== ANIMATION-MEDIARECORDER MODULE =====
     
 
@@ -1931,9 +1099,13 @@ if (typeof module !== 'undefined' && module.exports) {
         
         // Show animation export dialog (moved to UI module)
         showExportDialog: function() {
-            // Delegate to UI module
+            // Delegate to UI module if available, otherwise start recording directly
             if (Chatooly.ui && Chatooly.ui.showVideoExportDialog) {
                 Chatooly.ui.showVideoExportDialog();
+            } else {
+                // No dialog available, start recording with default settings
+                console.log('No export dialog available, starting recording with defaults');
+                this.startRecording();
             }
         },
         
@@ -1972,11 +1144,9 @@ if (typeof module !== 'undefined' && module.exports) {
             this.recordingCanvas = document.createElement('canvas');
             this.recordingCtx = this.recordingCanvas.getContext('2d');
             
-            // Set canvas size to match source canvas with higher scale for quality
-            const scaleFactor = 3; // Increased scale for better quality
-            this.recordingCanvas.width = canvas.width * scaleFactor;
-            this.recordingCanvas.height = canvas.height * scaleFactor;
-            this.recordingCtx.scale(scaleFactor, scaleFactor);
+            // Set canvas size to match source canvas exactly (1:1 ratio for best quality)
+            this.recordingCanvas.width = canvas.width;
+            this.recordingCanvas.height = canvas.height;
             
             // Configure high-quality rendering settings
             this.recordingCtx.imageSmoothingEnabled = false; // Disable smoothing to prevent blur
@@ -2176,7 +1346,7 @@ if (typeof module !== 'undefined' && module.exports) {
                 mimeType: mimeType,
                 videoBitrate: bitrate,
                 quality: quality,
-                scaleFactor: 3
+                scaleFactor: 1
             });
         },
         
@@ -2305,7 +1475,7 @@ if (typeof module !== 'undefined' && module.exports) {
                 this.recordingCtx.save();
                 
                 // Reset any transformations to ensure clean capture
-                this.recordingCtx.setTransform(3, 0, 0, 3, 0, 0); // Apply scale directly
+                this.recordingCtx.setTransform(1, 0, 0, 1, 0, 0); // 1:1 pixel mapping
                 
                 // Clear recording canvas with exact background color
                 this.recordingCtx.fillStyle = '#1a1a1a';
@@ -2402,7 +1572,6 @@ if (typeof module !== 'undefined' && module.exports) {
             
             // Reset UI
             this.resetRecordingUI();
-            this.closeExportDialog();
             
             console.log('🧹 Recording cleanup completed');
         },
@@ -3481,7 +2650,16 @@ Chatooly.canvasResizer = {
         
         // Trigger redraw for various frameworks
         _triggerRedraw: function() {
-            // p5.js
+            // p5.js - trigger resizeCanvas if available
+            if (window.resizeCanvas && typeof window.resizeCanvas === 'function') {
+                // Get current canvas dimensions
+                const target = Chatooly.utils.detectExportTarget();
+                if (target.element && target.type === 'canvas') {
+                    window.resizeCanvas(target.element.width, target.element.height);
+                }
+            }
+            
+            // p5.js - trigger redraw
             if (window.redraw && typeof window.redraw === 'function') {
                 window.redraw();
             }
@@ -3631,14 +2809,12 @@ Chatooly.canvasZoom = {
         
         // Initialize zoom functionality
         init: function() {
-            console.log('Chatooly: Initializing canvas zoom');
             // Wait for canvas area to be ready
             if (Chatooly.canvasArea && Chatooly.canvasArea.canvasElement) {
                 this.setCanvasArea(Chatooly.canvasArea.areaContainer, Chatooly.canvasArea.canvasElement);
             } else if (this.findCanvas()) {
                 this.setupCanvasForZoom();
                 this.setupZoomControls();
-                console.log('Chatooly: Canvas zoom ready (legacy mode)');
             }
         },
         
@@ -3648,7 +2824,6 @@ Chatooly.canvasZoom = {
             this.canvasElement = canvasElement;
             this.setupCanvasForZoom();
             this.setupZoomControls();
-            console.log('Chatooly: Canvas zoom ready with canvas area');
         },
         
         // Find canvas - check canvas area first, then fallback
@@ -3659,7 +2834,6 @@ Chatooly.canvasZoom = {
                 this.canvasArea = canvasArea;
                 this.canvasElement = canvasArea.querySelector('canvas');
                 if (this.canvasElement) {
-                    console.log('Chatooly: Found canvas in canvas area');
                     return true;
                 }
             }
@@ -3668,7 +2842,6 @@ Chatooly.canvasZoom = {
             const target = Chatooly.utils.detectExportTarget();
             if (target && target.element && target.element.tagName === 'CANVAS') {
                 this.canvasElement = target.element;
-                console.log(`Chatooly: Using canvas for zoom:`, this.canvasElement.id || 'unnamed');
                 return true;
             }
             
@@ -3699,7 +2872,6 @@ Chatooly.canvasZoom = {
                 document.body.style.overflow = 'auto';
             }
             
-            console.log(`Chatooly: Canvas zoom setup - ${this.baseWidth}x${this.baseHeight}`);
         },
         
         // Setup zoom control event listeners
@@ -3781,7 +2953,6 @@ Chatooly.canvasZoom = {
             // Touch/trackpad support
             this.setupTouchControls();
             
-            console.log('Chatooly: Zoom controls active');
         },
         
         // Touch and trackpad zoom
@@ -3862,7 +3033,6 @@ Chatooly.canvasZoom = {
             this.updateBodySize();
             this.showZoomIndicator();
             
-            console.log(`Chatooly: Zoom: ${(this.currentZoom * 100).toFixed(0)}%`);
         },
         
         // Reset zoom and pan
@@ -3881,7 +3051,6 @@ Chatooly.canvasZoom = {
                 }, 50);
             }
             
-            console.log('Chatooly: Zoom reset to 100% and centered');
         },
         
         // Apply zoom and pan transform
@@ -4032,7 +3201,6 @@ Chatooly.canvasZoom = {
             }
             
             this.resizeTimeout = setTimeout(() => {
-                console.log(`Chatooly: Canvas resized to ${width}x${height} - updating zoom`);
                 this.baseWidth = width;
                 this.baseHeight = height;
                 this.centerX = width / 2;
@@ -4049,7 +3217,6 @@ Chatooly.canvasZoom = {
         
         // Reinitialize for new canvas
         reinitialize: function() {
-            console.log('Chatooly: Reinitializing zoom for new canvas');
             this.currentZoom = 1.0;
             this.panX = 0;
             this.panY = 0;

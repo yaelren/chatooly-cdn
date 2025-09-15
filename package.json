@@ -7,9 +7,10 @@
     "build": "node build.js",
     "build:js": "node build.js js",
     "build:css": "node build.js css",
-    "dev": "python3 -m http.server 8000",
-    "test": "open http://localhost:8000/tests/test-comprehensive.html",
-    "test:canvas-area": "open http://localhost:8000/test-canvas-area.html"
+    "dev": "echo '🚀 Starting Chatooly CDN dev server...' && echo '📡 Server will be available at: http://localhost:8000' && echo '🛑 Press Ctrl+C to stop the server' && echo '' && python3 -m http.server 8000 --bind localhost",
+    "test": "echo '🌐 Opening test page...' && open http://localhost:8000/tests/test-comprehensive.html",
+    "test:canvas-area": "echo '🌐 Opening canvas area test...' && open http://localhost:8000/test-canvas-area.html",
+    "test:p5": "echo '🌐 Opening p5.js MediaRecorder test...' && open http://localhost:8000/tests/test-p5-mediarecorder.html"
   },
   "repository": {
     "type": "git",

@@ -77,9 +77,9 @@
             <div id="chatooly-container">
                 <!-- ========== EDIT BELOW: Add Your Visual Output Here ========== -->
                 <!-- This content will be exported as PNG/Animation -->
-                <!-- IMPORTANT: Your main canvas MUST have id="chatooly-canvas" -->
+                <!-- IMPORTANT: p5.js will create canvas with id="chatooly-canvas" automatically -->
                 <!-- For animations: CDN automatically detects canvas animations and provides export options -->
-                <canvas id="chatooly-canvas"></canvas>
+                <!-- Canvas will be created by p5.js setup() function -->
                 <!-- ========== END EDIT SECTION ========== -->
             </div>
         </div>
@@ -114,8 +114,19 @@
         
         // p5.js setup
         function setup() {
-            let canvas = createCanvas(800, 600);
-            canvas.parent('chatooly-canvas'); // CRITICAL: Connect to export system
+            // Get container dimensions for responsive canvas
+            const container = document.getElementById('chatooly-container');
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            
+            // Create canvas that fills the container
+            let canvas = createCanvas(containerWidth, containerHeight);
+            canvas.parent('chatooly-container'); // Parent to the container div
+            canvas.id('chatooly-canvas'); // CRITICAL: Set ID for export system
+            
+            // Ensure canvas fills container properly
+            canvas.style('width', '100%');
+            canvas.style('height', '100%');
             
             // Initialize particles
             initializeParticles();
@@ -296,6 +307,25 @@
             
             console.log(`High-res export completed at ${scale}x resolution`);
         };
+        
+        // Handle window resize
+        function windowResized() {
+            const container = document.getElementById('chatooly-container');
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            resizeCanvas(containerWidth, containerHeight);
+        }
+        
+        // Listen for chatooly canvas resize events
+        document.addEventListener('chatooly:canvas-resized', function(event) {
+            const detail = event.detail;
+            console.log('🎨 Chatooly canvas resized:', detail);
+            
+            // Update p5.js canvas to match chatooly's canvas dimensions
+            if (detail.canvas && detail.canvas.width && detail.canvas.height) {
+                resizeCanvas(detail.canvas.width, detail.canvas.height);
+            }
+        });
         
         // Auto-start
         window.addEventListener('load', () => {

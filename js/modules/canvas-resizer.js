@@ -373,7 +373,16 @@
         
         // Trigger redraw for various frameworks
         _triggerRedraw: function() {
-            // p5.js
+            // p5.js - trigger resizeCanvas if available
+            if (window.resizeCanvas && typeof window.resizeCanvas === 'function') {
+                // Get current canvas dimensions
+                const target = Chatooly.utils.detectExportTarget();
+                if (target.element && target.type === 'canvas') {
+                    window.resizeCanvas(target.element.width, target.element.height);
+                }
+            }
+            
+            // p5.js - trigger redraw
             if (window.redraw && typeof window.redraw === 'function') {
                 window.redraw();
             }

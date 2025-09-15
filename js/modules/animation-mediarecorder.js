@@ -80,9 +80,13 @@
         
         // Show animation export dialog (moved to UI module)
         showExportDialog: function() {
-            // Delegate to UI module
+            // Delegate to UI module if available, otherwise start recording directly
             if (Chatooly.ui && Chatooly.ui.showVideoExportDialog) {
                 Chatooly.ui.showVideoExportDialog();
+            } else {
+                // No dialog available, start recording with default settings
+                console.log('No export dialog available, starting recording with defaults');
+                this.startRecording();
             }
         },
         
@@ -121,11 +125,9 @@
             this.recordingCanvas = document.createElement('canvas');
             this.recordingCtx = this.recordingCanvas.getContext('2d');
             
-            // Set canvas size to match source canvas with higher scale for quality
-            const scaleFactor = 3; // Increased scale for better quality
-            this.recordingCanvas.width = canvas.width * scaleFactor;
-            this.recordingCanvas.height = canvas.height * scaleFactor;
-            this.recordingCtx.scale(scaleFactor, scaleFactor);
+            // Set canvas size to match source canvas exactly (1:1 ratio for best quality)
+            this.recordingCanvas.width = canvas.width;
+            this.recordingCanvas.height = canvas.height;
             
             // Configure high-quality rendering settings
             this.recordingCtx.imageSmoothingEnabled = false; // Disable smoothing to prevent blur
@@ -325,7 +327,7 @@
                 mimeType: mimeType,
                 videoBitrate: bitrate,
                 quality: quality,
-                scaleFactor: 3
+                scaleFactor: 1
             });
         },
         
@@ -454,7 +456,7 @@
                 this.recordingCtx.save();
                 
                 // Reset any transformations to ensure clean capture
-                this.recordingCtx.setTransform(3, 0, 0, 3, 0, 0); // Apply scale directly
+                this.recordingCtx.setTransform(1, 0, 0, 1, 0, 0); // 1:1 pixel mapping
                 
                 // Clear recording canvas with exact background color
                 this.recordingCtx.fillStyle = '#1a1a1a';
@@ -551,7 +553,6 @@
             
             // Reset UI
             this.resetRecordingUI();
-            this.closeExportDialog();
             
             console.log('🧹 Recording cleanup completed');
         },
