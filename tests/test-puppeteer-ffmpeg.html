@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatooly CDN - Puppeteer FFmpeg Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        
+        .test-section h2 {
+            color: #555;
+            margin-top: 0;
+        }
+        
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+        }
+        
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .warning {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .success {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .error {
+            background: #ffebee;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #f44336;
+        }
+        
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #1976d2;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        
+        .status.loading {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
+        .status.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Chatooly CDN - Puppeteer FFmpeg Test</h1>
+        
+        <div class="info">
+            <strong>Test Environment:</strong> This page tests the new Puppeteer FFmpeg export module without interfering with the existing MediaRecorder functionality.
+        </div>
+        
+        <div class="warning">
+            <strong>⚠️ Experimental Feature:</strong> This requires a server running with Puppeteer and FFmpeg. The module will gracefully handle connection failures.
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Test Canvas</h2>
+            <div class="canvas-container">
+                <canvas id="chatooly-canvas" width="400" height="300"></canvas>
+            </div>
+            <p>This canvas will be used for testing the high-resolution export functionality.</p>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔧 Module Status</h2>
+            <div id="module-status" class="status">Checking module status...</div>
+            <button onclick="checkModuleStatus()">Refresh Status</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>🌐 Connection Test</h2>
+            <div id="connection-status" class="status">Not tested</div>
+            <button onclick="testConnection()">Test Server Connection</button>
+            <input type="text" id="server-endpoint" value="/api/puppeteer-export" placeholder="Server endpoint" style="margin-left: 10px; padding: 8px;">
+        </div>
+        
+        <div class="test-section">
+            <h2>📤 Export Test</h2>
+            <div id="export-status" class="status">Ready to test</div>
+            <div>
+                <label>Format: </label>
+                <select id="export-format">
+                    <option value="png-sequence">PNG Sequence</option>
+                    <option value="mp4">MP4 Video</option>
+                    <option value="webm">WebM Video</option>
+                </select>
+                
+                <label style="margin-left: 20px;">Resolution: </label>
+                <select id="export-resolution">
+                    <option value="2">2x</option>
+                    <option value="4" selected>4x</option>
+                    <option value="6">6x</option>
+                    <option value="8">8x</option>
+                </select>
+                
+                <label style="margin-left: 20px;">Duration: </label>
+                <input type="number" id="export-duration" value="3" min="1" max="10" step="0.5" style="width: 60px;">
+                <span>seconds</span>
+            </div>
+            <br>
+            <button onclick="testExport()">Test High-Res Export</button>
+            <button onclick="testRegularExport()">Test Regular Export</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>📋 Test Results</h2>
+            <div id="test-results">
+                <p>No tests run yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Chatooly CDN -->
+    <script src="js/core.js"></script>
+    
+    <script>
+        // Initialize test canvas with some content
+        function initTestCanvas() {
+            const canvas = document.getElementById('chatooly-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw some test content
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#ff6b6b');
+            gradient.addColorStop(0.5, '#4ecdc4');
+            gradient.addColorStop(1, '#45b7d1');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw some shapes
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(canvas.width/2, canvas.height/2, 50, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw text
+            ctx.fillStyle = '#333';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Test Canvas', canvas.width/2, canvas.height/2 + 80);
+            
+            // Draw timestamp
+            ctx.font = '12px Arial';
+            ctx.fillText(new Date().toLocaleTimeString(), canvas.width/2, canvas.height - 20);
+        }
+        
+        // Check module status
+        function checkModuleStatus() {
+            const statusDiv = document.getElementById('module-status');
+            
+            if (window.Chatooly) {
+                const info = Chatooly.getInfo();
+                const modules = info.modules || [];
+                const hasPuppeteerModule = modules.includes('puppeteer-ffmpeg');
+                
+                if (hasPuppeteerModule) {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = `✅ All modules loaded. Puppeteer FFmpeg: Available`;
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = `❌ Puppeteer FFmpeg module not found. Loaded modules: ${modules.join(', ')}`;
+                }
+            } else {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Chatooly not loaded';
+            }
+        }
+        
+        // Test server connection
+        function testConnection() {
+            const statusDiv = document.getElementById('connection-status');
+            const endpoint = document.getElementById('server-endpoint').value;
+            
+            if (!window.Chatooly || !window.Chatooly.puppeteerFFmpeg) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Puppeteer FFmpeg module not available';
+                return;
+            }
+            
+            statusDiv.className = 'status loading';
+            statusDiv.textContent = '🔄 Testing connection...';
+            
+            Chatooly.puppeteerFFmpeg.testConnection(endpoint)
+                .then(result => {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = `✅ Connection successful! Server: ${result.server || 'Unknown'}`;
+                    addTestResult('Connection Test', 'SUCCESS', `Connected to ${endpoint}`);
+                })
+                .catch(error => {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = `❌ Connection failed: ${error.message}`;
+                    addTestResult('Connection Test', 'FAILED', error.message);
+                });
+        }
+        
+        // Test high-res export
+        function testExport() {
+            const statusDiv = document.getElementById('export-status');
+            const format = document.getElementById('export-format').value;
+            const resolution = parseFloat(document.getElementById('export-resolution').value);
+            const duration = parseFloat(document.getElementById('export-duration').value);
+            const endpoint = document.getElementById('server-endpoint').value;
+            
+            if (!window.Chatooly || !window.Chatooly.puppeteerFFmpeg) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Puppeteer FFmpeg module not available';
+                return;
+            }
+            
+            statusDiv.className = 'status loading';
+            statusDiv.textContent = '🔄 Starting high-res export...';
+            
+            const exportOptions = {
+                format: format,
+                resolution: resolution,
+                duration: duration,
+                fps: 30,
+                serverEndpoint: endpoint,
+                transparent: true,
+                quality: 'high'
+            };
+            
+            Chatooly.puppeteerFFmpeg.export(exportOptions)
+                .then(result => {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = `✅ Export completed! Format: ${result.format}, Resolution: ${result.resolution}`;
+                    addTestResult('High-Res Export', 'SUCCESS', `Format: ${result.format}, Resolution: ${result.resolution}, Files: ${result.files ? result.files.length : 'N/A'}`);
+                })
+                .catch(error => {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = `❌ Export failed: ${error.message}`;
+                    addTestResult('High-Res Export', 'FAILED', error.message);
+                });
+        }
+        
+        // Test regular export (for comparison)
+        function testRegularExport() {
+            const statusDiv = document.getElementById('export-status');
+            
+            if (!window.Chatooly) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Chatooly not available';
+                return;
+            }
+            
+            statusDiv.className = 'status loading';
+            statusDiv.textContent = '🔄 Testing regular PNG export...';
+            
+            try {
+                Chatooly.export('png');
+                statusDiv.className = 'status success';
+                statusDiv.textContent = '✅ Regular export completed!';
+                addTestResult('Regular Export', 'SUCCESS', 'PNG export completed');
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = `❌ Regular export failed: ${error.message}`;
+                addTestResult('Regular Export', 'FAILED', error.message);
+            }
+        }
+        
+        // Add test result
+        function addTestResult(testName, status, details) {
+            const resultsDiv = document.getElementById('test-results');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `status ${status.toLowerCase()}`;
+            resultDiv.innerHTML = `
+                <strong>${testName}</strong> - ${status}<br>
+                <small>${timestamp}: ${details}</small>
+            `;
+            
+            if (resultsDiv.children.length === 0 || resultsDiv.children[0].textContent.includes('No tests')) {
+                resultsDiv.innerHTML = '';
+            }
+            
+            resultsDiv.insertBefore(resultDiv, resultsDiv.firstChild);
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initTestCanvas();
+            checkModuleStatus();
+            
+            // Update canvas content every second
+            setInterval(initTestCanvas, 1000);
+        });
+    </script>
+</body>
+</html>

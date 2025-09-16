@@ -39,6 +39,13 @@
                 }, 200);
             }
             
+            // Initialize puppeteer ffmpeg module (experimental)
+            if (this.puppeteerFFmpeg && this.puppeteerFFmpeg.init) {
+                setTimeout(() => {
+                    this.puppeteerFFmpeg.init();
+                }, 300);
+            }
+            
             // Log development mode
             if (this.utils && this.utils.logDevelopmentMode) {
                 this.utils.logDevelopmentMode();
@@ -109,6 +116,8 @@
             if (this.pngExport) modules.push('export-png');
             if (this.canvasExporters) modules.push('canvas-exporters');
             if (this.domExport) modules.push('dom-export');
+            if (this.animationMediaRecorder) modules.push('animation-mediarecorder');
+            if (this.puppeteerFFmpeg) modules.push('puppeteer-ffmpeg');
             if (this.publish) modules.push('publish');
             if (this.ui) modules.push('ui');
             

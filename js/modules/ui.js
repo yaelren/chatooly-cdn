@@ -115,6 +115,7 @@
                                     <div class="chatooly-export-type-buttons">
                                         <button class="chatooly-export-type-btn active" data-type="image">Image</button>
                                         <button class="chatooly-export-type-btn" data-type="video">Video</button>
+                                        <button class="chatooly-export-type-btn" data-type="highres">High-Res (Experimental)</button>
                                     </div>
                                 </div>
                                 
@@ -194,6 +195,72 @@
                                     
                                     <div class="chatooly-settings-section">
                                         <button class="chatooly-btn-primary chatooly-video-export-btn">Export</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- High-Res Export Options (Experimental) -->
+                                <div class="chatooly-export-options" id="highres-export-options" style="display: none;">
+                                    <div class="chatooly-settings-section">
+                                        <h4 class="chatooly-section-title">High-Resolution Export (Experimental)</h4>
+                                        <p class="chatooly-description">
+                                            Uses Puppeteer + FFmpeg for ultra-high quality exports. 
+                                            Requires server setup and may take longer to process.
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="chatooly-settings-section">
+                                        <h4 class="chatooly-section-title">Export Format</h4>
+                                        <div class="chatooly-form-group">
+                                            <select id="chatooly-highres-format" class="chatooly-text-input">
+                                                <option value="png-sequence">PNG Sequence (transparent)</option>
+                                                <option value="mp4">MP4 Video (H.264)</option>
+                                                <option value="webm">WebM Video (VP9)</option>
+                                            </select>
+                                            <small>PNG sequence for transparency, MP4/WebM for video</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="chatooly-settings-section">
+                                        <h4 class="chatooly-section-title">Resolution Multiplier</h4>
+                                        <div class="chatooly-scale-buttons">
+                                            <button class="chatooly-scale-btn" data-scale="2">2x</button>
+                                            <button class="chatooly-scale-btn active" data-scale="4">4x</button>
+                                            <button class="chatooly-scale-btn" data-scale="6">6x</button>
+                                            <button class="chatooly-scale-btn" data-scale="8">8x</button>
+                                        </div>
+                                        <small>Higher resolution = better quality but larger files</small>
+                                    </div>
+                                    
+                                    <div class="chatooly-settings-section">
+                                        <h4 class="chatooly-section-title">Duration (for video)</h4>
+                                        <div class="chatooly-form-group">
+                                            <input type="number" id="chatooly-highres-duration" value="5" min="1" max="30" step="0.5" class="chatooly-text-input">
+                                            <small>Animation duration in seconds</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="chatooly-settings-section">
+                                        <h4 class="chatooly-section-title">Frame Rate</h4>
+                                        <div class="chatooly-form-group">
+                                            <select id="chatooly-highres-fps" class="chatooly-text-input">
+                                                <option value="24">24 FPS</option>
+                                                <option value="30" selected>30 FPS</option>
+                                                <option value="60">60 FPS</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="chatooly-settings-section">
+                                        <h4 class="chatooly-section-title">Server Endpoint</h4>
+                                        <div class="chatooly-form-group">
+                                            <input type="text" id="chatooly-server-endpoint" value="/api/puppeteer-export" class="chatooly-text-input" placeholder="/api/puppeteer-export">
+                                            <small>Server endpoint for Puppeteer processing</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="chatooly-settings-section">
+                                        <button class="chatooly-btn-primary chatooly-highres-export-btn">Export High-Res</button>
+                                        <button class="chatooly-btn-secondary chatooly-test-connection-btn">Test Connection</button>
                                     </div>
                                 </div>
                             </div>
@@ -857,13 +924,20 @@
                     const exportType = btn.dataset.type;
                     const imageOptions = button.querySelector('#image-export-options');
                     const videoOptions = button.querySelector('#video-export-options');
+                    const highresOptions = button.querySelector('#highres-export-options');
                     
                     if (exportType === 'image') {
                         imageOptions.style.display = 'block';
                         videoOptions.style.display = 'none';
+                        if (highresOptions) highresOptions.style.display = 'none';
                     } else if (exportType === 'video') {
                         imageOptions.style.display = 'none';
                         videoOptions.style.display = 'block';
+                        if (highresOptions) highresOptions.style.display = 'none';
+                    } else if (exportType === 'highres') {
+                        imageOptions.style.display = 'none';
+                        videoOptions.style.display = 'none';
+                        if (highresOptions) highresOptions.style.display = 'block';
                     }
                 });
             });
@@ -883,6 +957,24 @@
                 videoExportBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     this._handleVideoExport();
+                });
+            }
+            
+            // High-res export button
+            const highresExportBtn = button.querySelector('.chatooly-highres-export-btn');
+            if (highresExportBtn) {
+                highresExportBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this._handleHighResExport();
+                });
+            }
+            
+            // Test connection button
+            const testConnectionBtn = button.querySelector('.chatooly-test-connection-btn');
+            if (testConnectionBtn) {
+                testConnectionBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this._handleTestConnection();
                 });
             }
             
@@ -1120,6 +1212,93 @@
             if (panel) {
                 this._hidePanel(panel);
             }
+        },
+        
+        // Handle high-res export from panel
+        _handleHighResExport: function() {
+            if (!Chatooly.puppeteerFFmpeg) {
+                alert('Puppeteer FFmpeg module not loaded. This is an experimental feature.');
+                return;
+            }
+            
+            const format = document.querySelector('#chatooly-highres-format')?.value || 'png-sequence';
+            const resolution = parseFloat(document.querySelector('.chatooly-scale-btn.active')?.dataset.scale || 4);
+            const duration = parseFloat(document.querySelector('#chatooly-highres-duration')?.value || 5);
+            const fps = parseInt(document.querySelector('#chatooly-highres-fps')?.value || 30);
+            const serverEndpoint = document.querySelector('#chatooly-server-endpoint')?.value || '/api/puppeteer-export';
+            
+            const exportOptions = {
+                format: format,
+                resolution: resolution,
+                duration: duration,
+                fps: fps,
+                serverEndpoint: serverEndpoint,
+                transparent: true,
+                quality: 'high'
+            };
+            
+            console.log('🎬 Starting high-res export with options:', exportOptions);
+            
+            // Show loading state
+            const exportBtn = document.querySelector('.chatooly-highres-export-btn');
+            if (exportBtn) {
+                exportBtn.textContent = 'Exporting...';
+                exportBtn.disabled = true;
+            }
+            
+            // Start export
+            Chatooly.puppeteerFFmpeg.export(exportOptions)
+                .then(result => {
+                    console.log('✅ High-res export completed:', result);
+                    alert(`High-res export completed!\nFormat: ${result.format}\nResolution: ${result.resolution}\nFiles: ${result.files ? result.files.length : 'N/A'}`);
+                })
+                .catch(error => {
+                    console.error('❌ High-res export failed:', error);
+                    alert(`High-res export failed: ${error.message}`);
+                })
+                .finally(() => {
+                    // Reset button state
+                    if (exportBtn) {
+                        exportBtn.textContent = 'Export High-Res';
+                        exportBtn.disabled = false;
+                    }
+                });
+            
+            // Hide panel after starting export
+            const panel = document.querySelector('.chatooly-export-panel');
+            if (panel) {
+                this._hidePanel(panel);
+            }
+        },
+        
+        // Handle test connection button
+        _handleTestConnection: function() {
+            if (!Chatooly.puppeteerFFmpeg) {
+                alert('Puppeteer FFmpeg module not loaded.');
+                return;
+            }
+            
+            const serverEndpoint = document.querySelector('#chatooly-server-endpoint')?.value || '/api/puppeteer-export';
+            
+            const testBtn = document.querySelector('.chatooly-test-connection-btn');
+            if (testBtn) {
+                testBtn.textContent = 'Testing...';
+                testBtn.disabled = true;
+            }
+            
+            Chatooly.puppeteerFFmpeg.testConnection(serverEndpoint)
+                .then(result => {
+                    alert(`✅ Connection successful!\nServer: ${result.server || 'Unknown'}\nStatus: ${result.status || 'OK'}`);
+                })
+                .catch(error => {
+                    alert(`❌ Connection failed: ${error.message}\n\nMake sure the server is running and accessible.`);
+                })
+                .finally(() => {
+                    if (testBtn) {
+                        testBtn.textContent = 'Test Connection';
+                        testBtn.disabled = false;
+                    }
+                });
         },
         
         // Toggle panel visibility
