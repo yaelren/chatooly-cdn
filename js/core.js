@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-09-16T13:01:54.689Z
+ * Built: 2025-09-17T12:33:09.654Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -3186,12 +3186,22 @@ Chatooly.canvasZoom = {
                         this.resetZoom();
                     }
                 } else if (e.key === 'r' || e.key === 'R') {
-                    // R key for reset and center (without modifier)
-                    e.preventDefault();
-                    if (Chatooly.canvasArea && Chatooly.canvasArea.resetZoomAndCenter) {
-                        Chatooly.canvasArea.resetZoomAndCenter();
-                    } else {
-                        this.resetZoom();
+                    // R key for reset and center (without modifier) - only if not typing
+                    const activeElement = document.activeElement;
+                    const isTyping = activeElement && (
+                        activeElement.tagName === 'INPUT' ||
+                        activeElement.tagName === 'TEXTAREA' ||
+                        activeElement.contentEditable === 'true' ||
+                        activeElement.isContentEditable
+                    );
+                    
+                    if (!isTyping) {
+                        e.preventDefault();
+                        if (Chatooly.canvasArea && Chatooly.canvasArea.resetZoomAndCenter) {
+                            Chatooly.canvasArea.resetZoomAndCenter();
+                        } else {
+                            this.resetZoom();
+                        }
                     }
                 }
             });

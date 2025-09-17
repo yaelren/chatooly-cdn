@@ -132,12 +132,22 @@
                         this.resetZoom();
                     }
                 } else if (e.key === 'r' || e.key === 'R') {
-                    // R key for reset and center (without modifier)
-                    e.preventDefault();
-                    if (Chatooly.canvasArea && Chatooly.canvasArea.resetZoomAndCenter) {
-                        Chatooly.canvasArea.resetZoomAndCenter();
-                    } else {
-                        this.resetZoom();
+                    // R key for reset and center (without modifier) - only if not typing
+                    const activeElement = document.activeElement;
+                    const isTyping = activeElement && (
+                        activeElement.tagName === 'INPUT' ||
+                        activeElement.tagName === 'TEXTAREA' ||
+                        activeElement.contentEditable === 'true' ||
+                        activeElement.isContentEditable
+                    );
+                    
+                    if (!isTyping) {
+                        e.preventDefault();
+                        if (Chatooly.canvasArea && Chatooly.canvasArea.resetZoomAndCenter) {
+                            Chatooly.canvasArea.resetZoomAndCenter();
+                        } else {
+                            this.resetZoom();
+                        }
                     }
                 }
             });
