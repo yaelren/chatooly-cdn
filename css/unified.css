@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Unified Design System
- * Built: 2025-09-18T14:22:57.099Z
+ * Built: 2025-09-18T14:50:33.142Z
  */
 
 
@@ -35,7 +35,7 @@
   --chatooly-line-height-relaxed: 1.75;
   
   /* ========== Colors ========== */
-  /* Primary Palette - SV Tools inspired dark theme */
+  /* Primary Palette - Chatooly dark theme */
   --chatooly-color-primary: #e5e5e5;
   --chatooly-color-primary-hover: #fff;
   --chatooly-color-primary-active: #888;
@@ -59,7 +59,7 @@
   --chatooly-color-info-hover: #138496;
   --chatooly-color-info-light: #d1ecf1;
   
-  /* Neutral Colors - SV Tools Dark Palette */
+  /* Neutral Colors - Chatooly Dark Palette */
   --chatooly-color-white: #ffffff;
   --chatooly-color-gray-50: #2a2a2a;
   --chatooly-color-gray-100: #1f1f1f;
@@ -73,7 +73,7 @@
   --chatooly-color-gray-900: #e5e5e5;
   --chatooly-color-black: #000000;
 
-  /* Functional Colors - SV Tools Dark Theme */
+  /* Functional Colors - Chatooly Dark Theme */
   --chatooly-color-text: #e5e5e5;
   --chatooly-color-text-muted: #888888;
   --chatooly-color-text-light: #555555;
@@ -93,7 +93,7 @@
   --chatooly-color-border-subtle: #1f1f1f;
   --chatooly-color-border-dark: #333333;
 
-  /* Button Colors - SV Tools style */
+  /* Button Colors - Chatooly style */
   --chatooly-color-button-primary: #1a1a1a;
   --chatooly-color-button-primary-text: #e5e5e5;
   --chatooly-color-button-hover: #222222;
@@ -173,7 +173,7 @@
   --chatooly-z-tooltip: 1070;
   --chatooly-z-notification: 1080;
   
-  /* ========== Layout - SV Tools Style ========== */
+  /* ========== Layout - Chatooly Style ========== */
   --chatooly-sidebar-width: 280px;
   --chatooly-sidebar-collapsed-width: 60px;
   --chatooly-header-height: 57px;
@@ -637,7 +637,7 @@ button:disabled,
   margin-bottom: 0;
 }
 
-/* SV Tools Control Rows */
+/* Chatooly Control Rows */
 .chatooly-control-row {
   display: flex;
   align-items: center;
@@ -1219,7 +1219,7 @@ button:disabled,
   opacity: 1;
 }
 
-/* ========== SV Tools Input Controls ========== */
+/* ========== Chatooly Input Controls ========== */
 .chatooly-input-subtle {
   background-color: var(--chatooly-color-surface-tertiary);
   color: var(--chatooly-color-text);
@@ -1239,7 +1239,7 @@ button:disabled,
   box-shadow: 0 0 0 2px var(--chatooly-color-focus-shadow);
 }
 
-/* SV Tools Frame Size Inputs */
+/* Chatooly Frame Size Inputs */
 .chatooly-size-inputs {
   display: flex;
   align-items: center;
@@ -1265,7 +1265,7 @@ button:disabled,
   box-shadow: 0 0 0 2px var(--chatooly-color-focus-shadow);
 }
 
-/* SV Tools Control Sliders */
+/* Chatooly Control Sliders */
 .chatooly-control-slider {
   flex: 1;
   height: 4px;
@@ -1449,7 +1449,7 @@ button:disabled,
   margin: 0 var(--chatooly-spacing-4);
 }
 
-/* ========== SV Tools Layout Components ========== */
+/* ========== Chatooly Layout Components ========== */
 
 /* Header Styles */
 .chatooly-header {
@@ -1619,6 +1619,63 @@ button:disabled,
 .chatooly-export-btn:hover {
   background-color: var(--chatooly-color-export-hover);
   border-color: var(--chatooly-color-gray-500);
+}
+
+/* ========== App Container Layout (Alternative Structure) ========== */
+/* This provides compatibility for templates using app-container structure */
+
+.chatooly-app-container {
+  display: flex;
+  height: calc(100vh - var(--chatooly-header-height, 60px));
+  background-color: var(--chatooly-color-background);
+  overflow: hidden;
+}
+
+/* Controls Panel (Left Sidebar) */
+.chatooly-controls-panel {
+  width: var(--chatooly-sidebar-width);
+  background-color: var(--chatooly-color-surface);
+  color: var(--chatooly-color-text);
+  padding: 24px var(--chatooly-panel-margin, 20px);
+  overflow-y: auto;
+  border-right: 1px solid var(--chatooly-color-border);
+  box-sizing: border-box;
+}
+
+/* Controls Header */
+.chatooly-controls-header {
+  margin-bottom: 24px;
+}
+
+.chatooly-controls-header h1 {
+  margin: 0 0 8px 0;
+  color: var(--chatooly-color-text-bright);
+  font-weight: var(--chatooly-font-weight-medium);
+  font-size: var(--chatooly-font-size-lg);
+  letter-spacing: 0.02em;
+}
+
+.chatooly-controls-header p {
+  margin: 0;
+  color: var(--chatooly-color-text-light);
+  font-size: var(--chatooly-font-size-sm);
+  line-height: var(--chatooly-line-height-normal);
+}
+
+/* Controls Content */
+.chatooly-controls-content {
+  flex: 1;
+}
+
+/* Preview Panel (Right Side) */
+.chatooly-preview-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--chatooly-color-surface-secondary);
+  padding: 24px;
+  box-sizing: border-box;
 }
 
 

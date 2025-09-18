@@ -27,7 +27,7 @@
   --chatooly-line-height-relaxed: 1.75;
   
   /* ========== Colors ========== */
-  /* Primary Palette - SV Tools inspired dark theme */
+  /* Primary Palette - Chatooly dark theme */
   --chatooly-color-primary: #e5e5e5;
   --chatooly-color-primary-hover: #fff;
   --chatooly-color-primary-active: #888;
@@ -51,7 +51,7 @@
   --chatooly-color-info-hover: #138496;
   --chatooly-color-info-light: #d1ecf1;
   
-  /* Neutral Colors - SV Tools Dark Palette */
+  /* Neutral Colors - Chatooly Dark Palette */
   --chatooly-color-white: #ffffff;
   --chatooly-color-gray-50: #2a2a2a;
   --chatooly-color-gray-100: #1f1f1f;
@@ -65,7 +65,7 @@
   --chatooly-color-gray-900: #e5e5e5;
   --chatooly-color-black: #000000;
 
-  /* Functional Colors - SV Tools Dark Theme */
+  /* Functional Colors - Chatooly Dark Theme */
   --chatooly-color-text: #e5e5e5;
   --chatooly-color-text-muted: #888888;
   --chatooly-color-text-light: #555555;
@@ -85,7 +85,7 @@
   --chatooly-color-border-subtle: #1f1f1f;
   --chatooly-color-border-dark: #333333;
 
-  /* Button Colors - SV Tools style */
+  /* Button Colors - Chatooly style */
   --chatooly-color-button-primary: #1a1a1a;
   --chatooly-color-button-primary-text: #e5e5e5;
   --chatooly-color-button-hover: #222222;
@@ -165,7 +165,7 @@
   --chatooly-z-tooltip: 1070;
   --chatooly-z-notification: 1080;
   
-  /* ========== Layout - SV Tools Style ========== */
+  /* ========== Layout - Chatooly Style ========== */
   --chatooly-sidebar-width: 280px;
   --chatooly-sidebar-collapsed-width: 60px;
   --chatooly-header-height: 57px;
