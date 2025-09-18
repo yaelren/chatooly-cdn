@@ -40,16 +40,19 @@
   margin-bottom: 0;
 }
 
-/* Control rows inspired by svgallery */
+/* SV Tools Control Rows */
 .chatooly-control-row {
   display: flex;
   align-items: center;
   margin-bottom: 12px;
   font-size: var(--chatooly-font-size-sm);
+  width: 100%;
+  max-width: var(--chatooly-panel-content-width);
+  box-sizing: border-box;
 }
 
 .chatooly-control-row label {
-  min-width: 80px;
+  min-width: 60px;
   color: var(--chatooly-color-text);
   font-weight: var(--chatooly-font-weight-normal);
   text-transform: none;
@@ -58,11 +61,11 @@
 }
 
 .chatooly-control-row span {
-  color: var(--chatooly-color-text-muted);
-  font-size: var(--chatooly-font-size-xs);
+  color: var(--chatooly-color-text-light);
+  font-size: var(--chatooly-font-size-sm);
   margin-left: 8px;
-  min-width: 40px;
-  text-align: right;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 /* ========== Modal Components ========== */
@@ -619,71 +622,100 @@
   opacity: 1;
 }
 
-/* ========== SVGallery-Inspired Input Controls ========== */
+/* ========== SV Tools Input Controls ========== */
 .chatooly-input-subtle {
-  background-color: var(--chatooly-color-surface-hover);
+  background-color: var(--chatooly-color-surface-tertiary);
   color: var(--chatooly-color-text);
   border: 1px solid var(--chatooly-color-border);
   padding: 6px 8px;
-  border-radius: var(--chatooly-border-radius-sm);
+  border-radius: 2px;
   font-size: var(--chatooly-font-size-xs);
   width: 70px;
   text-align: center;
-  transition: all var(--chatooly-transition-fast);
+  transition: all 0.15s ease;
   outline: none;
 }
 
 .chatooly-input-subtle:focus {
-  border-color: var(--chatooly-color-border-dark);
-  background-color: var(--chatooly-color-surface-active);
+  border-color: var(--chatooly-color-focus);
+  background-color: var(--chatooly-color-surface-hover);
+  box-shadow: 0 0 0 2px var(--chatooly-color-focus-shadow);
 }
 
-/* Control Sliders */
+/* SV Tools Frame Size Inputs */
+.chatooly-size-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.chatooly-size-inputs input {
+  flex: 1;
+  min-width: 70px;
+  background-color: var(--chatooly-color-surface-tertiary);
+  border: 1px solid var(--chatooly-color-border);
+  color: var(--chatooly-color-text);
+  padding: 6px 8px;
+  border-radius: 2px;
+  font-size: var(--chatooly-font-size-sm);
+}
+
+.chatooly-size-inputs input:focus {
+  outline: none;
+  border-color: var(--chatooly-color-focus);
+  box-shadow: 0 0 0 2px var(--chatooly-color-focus-shadow);
+}
+
+/* SV Tools Control Sliders */
 .chatooly-control-slider {
   flex: 1;
   height: 4px;
-  background: var(--chatooly-color-surface-hover);
-  border-radius: var(--chatooly-border-radius-sm);
+  background: var(--chatooly-color-border);
+  border-radius: 2px;
   outline: none;
   appearance: none;
-  margin: 0 8px;
+  margin: 8px 0;
   cursor: pointer;
+  -webkit-appearance: none;
 }
 
 .chatooly-control-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
   appearance: none;
-  width: 14px;
-  height: 14px;
-  background: var(--chatooly-color-primary);
-  border-radius: var(--chatooly-border-radius-full);
+  width: 16px;
+  height: 16px;
+  background: var(--chatooly-color-text-light);
+  border-radius: 50%;
   cursor: pointer;
-  transition: all var(--chatooly-transition-fast);
+  transition: all 0.15s ease;
 }
 
 .chatooly-control-slider::-webkit-slider-thumb:hover {
-  background: var(--chatooly-color-primary-hover);
+  background: var(--chatooly-color-text-bright);
   transform: scale(1.1);
 }
 
 .chatooly-control-slider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  background: var(--chatooly-color-primary);
-  border-radius: var(--chatooly-border-radius-full);
+  width: 16px;
+  height: 16px;
+  background: var(--chatooly-color-text-light);
+  border-radius: 50%;
   border: none;
   cursor: pointer;
-  transition: all var(--chatooly-transition-fast);
+  transition: all 0.15s ease;
 }
 
 .chatooly-control-slider::-moz-range-thumb:hover {
-  background: var(--chatooly-color-primary-hover);
+  background: var(--chatooly-color-text-bright);
   transform: scale(1.1);
 }
 
 .chatooly-control-slider::-moz-range-track {
   height: 4px;
-  background: var(--chatooly-color-surface-hover);
-  border-radius: var(--chatooly-border-radius-sm);
+  background: var(--chatooly-color-border);
+  border-radius: 2px;
   border: none;
 }
 
@@ -818,4 +850,176 @@
   height: 100%;
   background: var(--chatooly-color-border);
   margin: 0 var(--chatooly-spacing-4);
+}
+
+/* ========== SV Tools Layout Components ========== */
+
+/* Header Styles */
+.chatooly-header {
+  background: var(--chatooly-color-surface-secondary);
+  border-bottom: 1px solid var(--chatooly-color-border);
+  padding: 16px 24px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--chatooly-header-height);
+  box-sizing: border-box;
+}
+
+.chatooly-header-title {
+  font-size: var(--chatooly-font-size-md);
+  color: var(--chatooly-color-text-bright);
+  letter-spacing: 0.02em;
+  font-weight: var(--chatooly-font-weight-medium);
+}
+
+.chatooly-header-credit {
+  font-size: var(--chatooly-font-size-xs);
+  color: var(--chatooly-color-text-bright);
+  letter-spacing: 0.02em;
+  font-weight: var(--chatooly-font-weight-normal);
+  opacity: 1;
+}
+
+/* Main Container Layout */
+.chatooly-main-container {
+  display: flex;
+  height: calc(100vh - var(--chatooly-header-height));
+  background-color: var(--chatooly-color-background);
+  overflow: hidden;
+}
+
+/* Side Panel */
+.chatooly-side-panel {
+  width: var(--chatooly-sidebar-width);
+  background-color: var(--chatooly-color-surface);
+  color: var(--chatooly-color-text);
+  padding: 24px var(--chatooly-panel-margin);
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-right: 1px solid var(--chatooly-color-border);
+  height: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* Panel Header */
+.chatooly-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 16px 0 12px;
+  border-bottom: 1px solid var(--chatooly-color-border-subtle);
+}
+
+.chatooly-panel-header h3 {
+  margin: 0;
+  color: var(--chatooly-color-text-bright);
+  font-weight: var(--chatooly-font-weight-normal);
+  font-size: var(--chatooly-font-size-base);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 24px;
+}
+
+/* Controls Section */
+.chatooly-controls-section {
+  margin-bottom: 32px;
+}
+
+.chatooly-controls-section h4 {
+  margin-bottom: 16px;
+  color: var(--chatooly-color-text-bright);
+  font-weight: var(--chatooly-font-weight-normal);
+  font-size: var(--chatooly-font-size-sm);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Section Dividers */
+.chatooly-section-with-divider:not(:first-child) {
+  border-top: 1px solid var(--chatooly-color-border-subtle);
+  padding-top: 32px;
+  margin-top: 0;
+}
+
+.chatooly-section-with-divider:first-child {
+  margin-top: 0;
+}
+
+/* Content Area */
+.chatooly-content-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--chatooly-color-background);
+  padding: 20px;
+  overflow: hidden;
+}
+
+.chatooly-canvas-wrapper {
+  position: relative;
+  background: #fff;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.chatooly-canvas-info {
+  position: absolute;
+  top: -25px;
+  left: 0;
+  font-size: var(--chatooly-font-size-xs);
+  color: var(--chatooly-color-text-light);
+  background: rgba(15, 15, 15, 0.8);
+  padding: 2px 6px;
+  border-radius: 3px;
+  z-index: 10;
+}
+
+/* Preset Buttons */
+.chatooly-preset-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.chatooly-preset-btn {
+  padding: 6px 8px;
+  background-color: var(--chatooly-color-button-primary);
+  color: var(--chatooly-color-button-primary-text);
+  border: 1px solid var(--chatooly-color-button-border);
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: var(--chatooly-font-size-xs);
+  font-weight: var(--chatooly-font-weight-normal);
+  letter-spacing: 0.02em;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.chatooly-preset-btn:hover {
+  background-color: var(--chatooly-color-button-hover);
+}
+
+.chatooly-preset-btn.active {
+  background-color: var(--chatooly-color-export-primary);
+  color: var(--chatooly-color-text-bright);
+}
+
+/* Export Buttons */
+.chatooly-export-btn {
+  background-color: var(--chatooly-color-export-primary);
+  color: var(--chatooly-color-text-bright);
+  border: 1px solid var(--chatooly-color-border-dark);
+  font-weight: var(--chatooly-font-weight-medium);
+}
+
+.chatooly-export-btn:hover {
+  background-color: var(--chatooly-color-export-hover);
+  border-color: var(--chatooly-color-gray-500);
 }

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SV Tools CSS Comparison</title>
+
+    <!-- Load both old and new styles for comparison -->
+    <link rel="stylesheet" href="css/unified.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .comparison-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .comparison-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .comparison-header {
+            padding: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            border-bottom: 2px solid #333;
+        }
+
+        .old-style {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .new-style {
+            background: var(--chatooly-color-background);
+            color: var(--chatooly-color-text);
+        }
+
+        .demo-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Old style overrides */
+        .old-style .demo-content {
+            background: #fff;
+        }
+
+        .old-style input {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #333;
+        }
+
+        .old-style button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .old-style button:hover {
+            background: #0056b3;
+        }
+
+        .old-style input[type="range"] {
+            height: 6px;
+            background: #ddd;
+        }
+
+        .old-style input[type="range"]::-webkit-slider-thumb {
+            width: 20px;
+            height: 20px;
+            background: #007bff;
+            border: 2px solid #fff;
+        }
+
+        /* New style uses Chatooly variables */
+        .new-style .control-group {
+            margin-bottom: 20px;
+        }
+
+        .new-style .control-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: var(--chatooly-font-size-sm);
+        }
+
+        .new-style .control-row label {
+            min-width: 60px;
+            color: var(--chatooly-color-text);
+            margin-right: 8px;
+        }
+
+        .new-style .control-row span {
+            color: var(--chatooly-color-text-light);
+            font-size: var(--chatooly-font-size-sm);
+            margin-left: 8px;
+        }
+
+        .new-style input {
+            background-color: var(--chatooly-color-surface-tertiary);
+            color: var(--chatooly-color-text);
+            border: 1px solid var(--chatooly-color-border);
+            padding: 6px 8px;
+            border-radius: 2px;
+            font-size: var(--chatooly-font-size-sm);
+        }
+
+        .new-style button {
+            background-color: var(--chatooly-color-button-primary);
+            color: var(--chatooly-color-button-primary-text);
+            border: 1px solid var(--chatooly-color-button-border);
+            border-radius: 2px;
+            padding: 8px 16px;
+            font-size: var(--chatooly-font-size-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .new-style button:hover {
+            background-color: var(--chatooly-color-button-hover);
+        }
+
+        .new-style .export-btn {
+            background-color: var(--chatooly-color-export-primary);
+            color: var(--chatooly-color-text-bright);
+            font-weight: var(--chatooly-font-weight-medium);
+        }
+
+        .new-style .export-btn:hover {
+            background-color: var(--chatooly-color-export-hover);
+        }
+
+        .new-style input[type="range"] {
+            height: 4px;
+            background: var(--chatooly-color-border);
+            border-radius: 2px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .new-style input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--chatooly-color-text-light);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .new-style input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--chatooly-color-text-bright);
+            transform: scale(1.1);
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+            margin: 12px 0;
+        }
+
+        .preset-btn {
+            padding: 6px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 2px;
+            text-align: center;
+        }
+
+        .old-style .preset-btn {
+            background: #e9ecef;
+            color: #495057;
+            border: 1px solid #ced4da;
+        }
+
+        .new-style .preset-btn {
+            background-color: var(--chatooly-color-button-primary);
+            color: var(--chatooly-color-button-primary-text);
+            border: 1px solid var(--chatooly-color-button-border);
+        }
+
+        .new-style .preset-btn.active {
+            background-color: var(--chatooly-color-export-primary);
+            color: var(--chatooly-color-text-bright);
+        }
+
+        h3 {
+            margin: 20px 0 10px 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .old-style h3 {
+            color: #495057;
+        }
+
+        .new-style h3 {
+            color: var(--chatooly-color-text-bright);
+        }
+    </style>
+</head>
+<body>
+    <div class="comparison-container">
+        <!-- OLD STYLE SIDE -->
+        <div class="comparison-side old-style">
+            <div class="comparison-header">
+                OLD CHATOOLY STYLE
+            </div>
+            <div class="demo-content">
+                <h3>Frame Settings</h3>
+                <div class="control-group">
+                    <input type="number" value="800" placeholder="Width">
+                    <input type="number" value="600" placeholder="Height">
+
+                    <div class="preset-buttons">
+                        <div class="preset-btn">Square</div>
+                        <div class="preset-btn">16:9</div>
+                        <div class="preset-btn">4:3</div>
+                    </div>
+                </div>
+
+                <h3>Controls</h3>
+                <div class="control-group">
+                    <label>Speed: <span>1.0</span></label>
+                    <input type="range" min="0.1" max="5" step="0.1" value="1">
+
+                    <label>Scale: <span>1.0</span></label>
+                    <input type="range" min="0.1" max="3" step="0.1" value="1">
+                </div>
+
+                <h3>Export</h3>
+                <button style="width: 100%; margin-bottom: 8px;">Export PNG</button>
+                <button style="width: 100%;">Export Video</button>
+            </div>
+        </div>
+
+        <!-- NEW SV TOOLS STYLE SIDE -->
+        <div class="comparison-side new-style">
+            <div class="comparison-header">
+                NEW SV TOOLS STYLE
+            </div>
+            <div class="demo-content">
+                <h3>Frame Settings</h3>
+                <div class="control-group">
+                    <input type="number" value="800" placeholder="Width">
+                    <input type="number" value="600" placeholder="Height">
+
+                    <div class="preset-buttons">
+                        <div class="preset-btn">Square</div>
+                        <div class="preset-btn active">16:9</div>
+                        <div class="preset-btn">4:3</div>
+                    </div>
+                </div>
+
+                <h3>Controls</h3>
+                <div class="control-group">
+                    <div class="control-row">
+                        <label>Speed</label>
+                        <input type="range" min="0.1" max="5" step="0.1" value="1">
+                        <span>1.0</span>
+                    </div>
+
+                    <div class="control-row">
+                        <label>Scale</label>
+                        <input type="range" min="0.1" max="3" step="0.1" value="1">
+                        <span>1.0</span>
+                    </div>
+                </div>
+
+                <h3>Export</h3>
+                <button class="export-btn" style="width: 100%; margin-bottom: 8px;">Export PNG</button>
+                <button class="export-btn" style="width: 100%;">Export Video</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactivity to show the differences
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const span = this.parentElement.querySelector('span');
+                if (span) {
+                    span.textContent = parseFloat(this.value).toFixed(1);
+                }
+            });
+        });
+
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const parent = this.parentElement;
+                parent.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

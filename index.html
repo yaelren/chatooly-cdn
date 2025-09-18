@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatooly CDN - Animation & Export Library</title>
     
-    <!-- Use Chatooly CDN CSS -->
-    <link rel="stylesheet" href="https://yaelren.github.io/chatooly-cdn/css/unified.min.css?v=2.0.1">
+    <!-- Use LOCAL Chatooly CDN CSS with SV Tools styling -->
+    <link rel="stylesheet" href="css/unified.css">
     
     <style>
         body {
@@ -15,41 +15,41 @@
             padding: 40px 20px;
         }
         .container {
-            background: var(--bg-primary);
+            background: var(--chatooly-color-surface);
             padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border: 1px solid var(--chatooly-color-border);
         }
         h1 {
-            color: var(--text-primary);
+            color: var(--chatooly-color-text-bright);
             margin-bottom: 30px;
         }
         h2 {
-            color: var(--text-primary);
+            color: var(--chatooly-color-text-bright);
             margin-top: 30px;
         }
         p, li {
-            color: var(--text-secondary);
+            color: var(--chatooly-color-text);
         }
         .usage-example {
-            background: var(--bg-secondary);
+            background: var(--chatooly-color-surface-secondary);
             padding: 20px;
             border-radius: 8px;
-            border-left: 4px solid var(--accent-primary);
+            border-left: 4px solid var(--chatooly-color-primary);
             margin: 20px 0;
         }
         .usage-example h3 {
-            color: var(--text-primary);
+            color: var(--chatooly-color-text-bright);
             margin-top: 0;
         }
         .usage-example pre {
-            background: var(--bg-tertiary);
+            background: var(--chatooly-color-surface-tertiary);
             padding: 15px;
             border-radius: 6px;
             overflow-x: auto;
-            color: var(--text-primary);
-            font-family: 'Courier New', monospace;
+            color: var(--chatooly-color-text);
+            font-family: var(--chatooly-font-family-mono);
         }
         .test-links {
             display: grid;
@@ -60,15 +60,15 @@
         .test-link {
             display: block;
             padding: 15px 20px;
-            background: var(--accent-primary);
-            color: white;
+            background: var(--chatooly-color-export-primary);
+            color: var(--chatooly-color-text-bright);
             text-decoration: none;
             border-radius: 8px;
             text-align: center;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
         }
         .test-link:hover {
-            background: var(--accent-secondary);
+            background: var(--chatooly-color-export-hover);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
@@ -78,23 +78,23 @@
             margin-top: 5px;
         }
         .cdn-url {
-            background: var(--bg-secondary);
+            background: var(--chatooly-color-surface-secondary);
             padding: 15px;
             border-radius: 8px;
-            font-family: 'Courier New', monospace;
+            font-family: var(--chatooly-font-family-mono);
             font-size: 14px;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
+            border: 1px solid var(--chatooly-color-border);
+            color: var(--chatooly-color-text);
         }
         ul {
-            color: var(--text-secondary);
+            color: var(--chatooly-color-text);
         }
         a {
-            color: var(--accent-primary);
+            color: var(--chatooly-color-primary);
             text-decoration: none;
         }
         a:hover {
-            color: var(--accent-secondary);
+            color: var(--chatooly-color-primary-hover);
         }
     </style>
 </head>

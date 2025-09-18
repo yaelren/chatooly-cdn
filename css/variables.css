@@ -7,7 +7,7 @@
   /* ========== Typography ========== */
   --chatooly-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --chatooly-font-family-mono: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
-  
+
   --chatooly-font-size-xs: 11px;
   --chatooly-font-size-sm: 12px;
   --chatooly-font-size-base: 13px;
@@ -27,11 +27,11 @@
   --chatooly-line-height-relaxed: 1.75;
   
   /* ========== Colors ========== */
-  /* Primary Palette - Ultra-minimalistic inspired by 099.supply */
+  /* Primary Palette - SV Tools inspired dark theme */
   --chatooly-color-primary: #e5e5e5;
   --chatooly-color-primary-hover: #fff;
   --chatooly-color-primary-active: #888;
-  --chatooly-color-primary-light: rgba(229, 229, 229, 0.1);
+  --chatooly-color-primary-light: rgba(229, 229, 229, 0.15);
   --chatooly-color-primary-dark: #555;
   
   /* Semantic Colors */
@@ -51,7 +51,7 @@
   --chatooly-color-info-hover: #138496;
   --chatooly-color-info-light: #d1ecf1;
   
-  /* Neutral Colors - Dark Mode Palette */
+  /* Neutral Colors - SV Tools Dark Palette */
   --chatooly-color-white: #ffffff;
   --chatooly-color-gray-50: #2a2a2a;
   --chatooly-color-gray-100: #1f1f1f;
@@ -64,22 +64,42 @@
   --chatooly-color-gray-800: #cccccc;
   --chatooly-color-gray-900: #e5e5e5;
   --chatooly-color-black: #000000;
-  
-  /* Functional Colors - Ultra-minimal Dark Theme */
+
+  /* Functional Colors - SV Tools Dark Theme */
   --chatooly-color-text: #e5e5e5;
   --chatooly-color-text-muted: #888888;
   --chatooly-color-text-light: #555555;
+  --chatooly-color-text-subtle: #555555;
   --chatooly-color-text-inverse: #000000;
   --chatooly-color-text-bright: #ffffff;
-  
+
   --chatooly-color-background: #121212;
   --chatooly-color-surface: #0f0f0f;
   --chatooly-color-surface-hover: #1a1a1a;
   --chatooly-color-surface-active: #222222;
-  
+  --chatooly-color-surface-secondary: #181818;
+  --chatooly-color-surface-tertiary: #1f1f1f;
+
   --chatooly-color-border: #2a2a2a;
   --chatooly-color-border-light: #1f1f1f;
+  --chatooly-color-border-subtle: #1f1f1f;
   --chatooly-color-border-dark: #333333;
+
+  /* Button Colors - SV Tools style */
+  --chatooly-color-button-primary: #1a1a1a;
+  --chatooly-color-button-primary-text: #e5e5e5;
+  --chatooly-color-button-hover: #222222;
+  --chatooly-color-button-subtle: #1a1a1a;
+  --chatooly-color-button-subtle-hover: #222222;
+  --chatooly-color-button-border: #2a2a2a;
+
+  /* Export/Action Colors */
+  --chatooly-color-export-primary: #333333;
+  --chatooly-color-export-hover: #444444;
+
+  /* Focus States */
+  --chatooly-color-focus: #666666;
+  --chatooly-color-focus-shadow: rgba(102, 102, 102, 0.15);
   
   /* ========== Spacing ========== */
   --chatooly-spacing-0: 0;
@@ -145,11 +165,13 @@
   --chatooly-z-tooltip: 1070;
   --chatooly-z-notification: 1080;
   
-  /* ========== Layout ========== */
-  --chatooly-sidebar-width: 300px;
+  /* ========== Layout - SV Tools Style ========== */
+  --chatooly-sidebar-width: 280px;
   --chatooly-sidebar-collapsed-width: 60px;
-  --chatooly-header-height: 60px;
+  --chatooly-header-height: 57px;
   --chatooly-footer-height: 40px;
+  --chatooly-panel-margin: 20px;
+  --chatooly-panel-content-width: calc(var(--chatooly-sidebar-width) - 40px);
   
   /* ========== Canvas ========== */
   --chatooly-canvas-background: var(--chatooly-color-surface);
