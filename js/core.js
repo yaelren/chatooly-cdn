@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-10-04T11:01:05.237Z
+ * Built: 2025-10-04T11:21:38.541Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -43,6 +43,18 @@
                 setTimeout(() => {
                     this.canvasZoom.init();
                 }, 200);
+            }
+
+            // Initialize canvas resizer (sets default 1000x1000 size)
+            if (this.canvasResizer && this.canvasResizer.init) {
+                this.canvasResizer.init();
+            }
+
+            // Auto-inject background controls
+            if (this.ui && this.ui.injectBackgroundControls) {
+                setTimeout(() => {
+                    this.ui.injectBackgroundControls();
+                }, 300);
             }
         },
         

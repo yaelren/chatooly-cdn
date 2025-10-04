@@ -246,6 +246,18 @@ function buildCoreJS() {
                     this.canvasZoom.init();
                 }, 200);
             }
+
+            // Initialize canvas resizer (sets default 1000x1000 size)
+            if (this.canvasResizer && this.canvasResizer.init) {
+                this.canvasResizer.init();
+            }
+
+            // Auto-inject background controls
+            if (this.ui && this.ui.injectBackgroundControls) {
+                setTimeout(() => {
+                    this.ui.injectBackgroundControls();
+                }, 300);
+            }
         },
         
         export: function(format, options) {
