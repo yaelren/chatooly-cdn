@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-10-04T11:21:38.541Z
+ * Built: 2025-10-04T11:57:25.007Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -4479,19 +4479,19 @@ Chatooly.canvasZoom = {
             if (existingButton) {
                 existingButton.remove();
             }
-            
+
             // Create export button
             const button = document.createElement('div');
             button.id = 'chatooly-export-btn';
             button.innerHTML = this._getButtonHTML();
             button.style.cssText = this._getButtonStyles();
-            
+
             // Add CSS styles
             this._injectButtonCSS();
-            
+
             // Add event handlers
             this._attachButtonEvents(button);
-            
+
             document.body.appendChild(button);
         },
         
@@ -4639,25 +4639,29 @@ Chatooly.canvasZoom = {
                                 <div class="chatooly-settings-section">
                                     <h4 class="chatooly-section-title">Publish to ToolHub</h4>
                                     <p class="chatooly-description">
-                                        Publish this tool to our ToolHub so others can discover and use it. 
+                                        Publish this tool to our ToolHub so others can discover and use it.
                                         Your tool will be available in our community gallery.
                                     </p>
                                 </div>
-                                
+
                                 <div class="chatooly-settings-section">
                                     <div class="chatooly-form-group">
                                         <label>Tool Name</label>
-                                        <input type="text" id="chatooly-tool-name" placeholder="Enter tool name" class="chatooly-text-input">
+                                        <input type="text" id="chatooly-tool-name" readonly class="chatooly-text-input chatooly-readonly">
                                     </div>
-                                    
+
                                     <div class="chatooly-form-group">
                                         <label>Description</label>
-                                        <textarea id="chatooly-tool-description" placeholder="Describe your tool..." class="chatooly-textarea"></textarea>
+                                        <textarea id="chatooly-tool-description" readonly class="chatooly-textarea chatooly-readonly"></textarea>
+                                    </div>
+
+                                    <div class="chatooly-info-message">
+                                        💡 To update these details, edit the <code>ChatoolyConfig</code> object in your HTML file
                                     </div>
                                 </div>
-                                
+
                                 <div class="chatooly-settings-section">
-                                    <button class="chatooly-btn-primary chatooly-publish-btn">Publish</button>
+                                    <button class="chatooly-btn-primary chatooly-publish-btn">Publish to ToolHub</button>
                                 </div>
                             </div>
                             
@@ -5093,7 +5097,37 @@ Chatooly.canvasZoom = {
                     border-color: var(--chatooly-color-primary);
                     box-shadow: var(--chatooly-shadow-focus);
                 }
-                
+
+                /* Readonly inputs */
+                #chatooly-export-btn .chatooly-readonly {
+                    background: var(--chatooly-color-surface);
+                    border-color: transparent;
+                    cursor: default;
+                    color: var(--chatooly-color-text-muted);
+                    opacity: 0.7;
+                    font-style: italic;
+                }
+
+                /* Info Message */
+                #chatooly-export-btn .chatooly-info-message {
+                    background: var(--chatooly-color-surface-hover);
+                    border-left: 3px solid var(--chatooly-color-primary);
+                    padding: var(--chatooly-spacing-3);
+                    border-radius: var(--chatooly-border-radius);
+                    font-size: var(--chatooly-font-size-xs);
+                    color: var(--chatooly-color-text-muted);
+                    margin-top: var(--chatooly-spacing-3);
+                }
+
+                #chatooly-export-btn .chatooly-info-message code {
+                    background: var(--chatooly-color-surface-active);
+                    padding: 2px 6px;
+                    border-radius: 3px;
+                    font-family: monospace;
+                    font-size: var(--chatooly-font-size-xs);
+                    color: var(--chatooly-color-text);
+                }
+
                 /* Description Text */
                 #chatooly-export-btn .chatooly-description {
                     font-size: var(--chatooly-font-size-sm);
@@ -5176,6 +5210,7 @@ Chatooly.canvasZoom = {
                 
                 /* Buttons */
                 #chatooly-export-btn .chatooly-btn-primary {
+                    width: 100%;
                     padding: var(--chatooly-spacing-3) var(--chatooly-spacing-6);
                     background: var(--chatooly-color-primary);
                     border: none;
@@ -5186,13 +5221,14 @@ Chatooly.canvasZoom = {
                     cursor: pointer;
                     transition: all var(--chatooly-transition-normal);
                 }
-                
+
                 #chatooly-export-btn .chatooly-btn-primary:hover {
                     background: var(--chatooly-color-primary-hover);
                     transform: translateY(-1px);
                 }
-                
+
                 #chatooly-export-btn .chatooly-btn-secondary {
+                    flex: 1;
                     padding: var(--chatooly-spacing-3) var(--chatooly-spacing-6);
                     background: var(--chatooly-color-surface-active);
                     border: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
@@ -5203,7 +5239,7 @@ Chatooly.canvasZoom = {
                     cursor: pointer;
                     transition: all var(--chatooly-transition-normal);
                 }
-                
+
                 #chatooly-export-btn .chatooly-btn-secondary:hover {
                     background: var(--chatooly-color-surface-hover);
                     border-color: var(--chatooly-color-border-dark);
@@ -5471,19 +5507,19 @@ Chatooly.canvasZoom = {
         _handlePublish: function() {
             const toolName = document.getElementById('chatooly-tool-name').value;
             const toolDescription = document.getElementById('chatooly-tool-description').value;
-            
+
             if (!toolName.trim()) {
                 alert('Please enter a tool name');
                 return;
             }
-            
+
             if (Chatooly.publish) {
                 Chatooly.publish.publish({
                     name: toolName,
                     description: toolDescription
                 });
             }
-            
+
             // Hide panel after publish
             const panel = document.querySelector('.chatooly-export-panel');
             if (panel) {
@@ -5633,6 +5669,9 @@ Chatooly.canvasZoom = {
             // Force reflow for animation
             panel.offsetHeight;
             panel.classList.add('show');
+
+            // Populate publish fields from config when panel is shown
+            this._populatePublishFields();
         },
         
         // Hide panel with animation
@@ -5774,6 +5813,23 @@ Chatooly.canvasZoom = {
             controlsPanel.insertAdjacentHTML('beforeend', backgroundHTML);
 
             console.log('✅ Background controls auto-injected by CDN');
+        },
+
+        /**
+         * Populate publish fields from config
+         * Called when panel is shown to sync UI with current config
+         */
+        _populatePublishFields: function() {
+            const toolNameInput = document.getElementById('chatooly-tool-name');
+            const toolDescInput = document.getElementById('chatooly-tool-description');
+
+            if (toolNameInput && Chatooly.config.name) {
+                toolNameInput.value = Chatooly.config.name;
+            }
+
+            if (toolDescInput && Chatooly.config.description) {
+                toolDescInput.value = Chatooly.config.description;
+            }
         }
 
     };

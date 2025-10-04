@@ -69,16 +69,12 @@ const config = {
 // Simple minifier for JavaScript
 function minifyJS(code) {
     return code
-        // Remove single-line comments (preserve URLs)
-        .replace(/(?<!https?:)\/\/.*$/gm, '')
         // Remove multi-line comments
         .replace(/\/\*[\s\S]*?\*\//g, '')
-        // Remove extra whitespace
+        // Remove single-line comments (but not URLs)
+        .replace(/([^:])\/\/.*$/gm, '$1')
+        // Compress multiple spaces/newlines into single space
         .replace(/\s+/g, ' ')
-        // Remove spaces around operators
-        .replace(/\s*([{}();,:])\s*/g, '$1')
-        // Remove trailing semicolons before }
-        .replace(/;\s*}/g, '}')
         // Trim
         .trim();
 }
@@ -111,16 +107,15 @@ function buildJavaScript() {
     fs.writeFileSync(path.join(jsDir, 'core.js'), coreContent);
     console.log(`   ✅ js/core.js (${(coreContent.length / 1024).toFixed(1)}KB)`);
     
-    // Build minified version
-    const minified = minifyJS(coreContent);
+    // Build minified version (just copy for now - minifier has issues)
     const header = `/**
- * Chatooly CDN v2.0.0 - Complete library with canvas area system (minified)
+ * Chatooly CDN v2.0.0 - Complete library with canvas area system
  * Built: ${new Date().toISOString()}
- * Original size: ${(coreContent.length / 1024).toFixed(1)}KB
+ * Size: ${(coreContent.length / 1024).toFixed(1)}KB
  */
 `;
-    fs.writeFileSync(path.join(jsDir, 'core.min.js'), header + minified);
-    console.log(`   ✅ js/core.min.js (${(minified.length / 1024).toFixed(1)}KB) - Minified`);
+    fs.writeFileSync(path.join(jsDir, 'core.min.js'), header + coreContent);
+    console.log(`   ✅ js/core.min.js (${(coreContent.length / 1024).toFixed(1)}KB)`);
 }
 
 // Build core.js from modules
