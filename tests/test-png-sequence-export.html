@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNG Sequence Export Test - Chatooly CDN</title>
+
+    <!-- Chatooly CDN -->
+    <link rel="stylesheet" href="../css/unified.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #999;
+            margin-bottom: 30px;
+        }
+
+        #chatooly-canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .info-panel {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .info-panel h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-list li:before {
+            content: "✨ ";
+            margin-right: 8px;
+        }
+
+        .instructions {
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .instructions h3 {
+            margin-top: 0;
+            color: #34d399;
+        }
+
+        .step {
+            margin: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .step:before {
+            content: "→";
+            position: absolute;
+            left: 10px;
+            color: #34d399;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎬 PNG Sequence Export Test</h1>
+        <p class="subtitle">High-quality lossless animation export with alpha channel support</p>
+
+        <canvas id="chatooly-canvas" width="800" height="600"></canvas>
+
+        <div class="info-panel">
+            <h3>PNG Sequence Export Features</h3>
+            <ul class="feature-list">
+                <li><strong>Lossless Quality</strong> - No video compression artifacts</li>
+                <li><strong>Alpha Channel</strong> - Full transparency support preserved</li>
+                <li><strong>Frame Perfect</strong> - Exact timing, no dropped frames</li>
+                <li><strong>Professional Workflow</strong> - Import into After Effects, Premiere, etc.</li>
+                <li><strong>ZIP Packaging</strong> - All frames bundled with metadata</li>
+                <li><strong>Multiple FPS</strong> - Support for 24, 30, and 60 FPS</li>
+            </ul>
+        </div>
+
+        <div class="instructions">
+            <h3>How to Test</h3>
+            <div class="step">Click the CHATOOLY button in the bottom-right corner</div>
+            <div class="step">Navigate to the "Export" tab</div>
+            <div class="step">Click "Video" export type</div>
+            <div class="step">Select "PNG Sequence - Highest quality" from format dropdown</div>
+            <div class="step">Set duration (e.g., 3 seconds for quick test)</div>
+            <div class="step">Choose frame rate (60 FPS recommended for smooth animation)</div>
+            <div class="step">Click "Export" and wait for frames to be captured</div>
+            <div class="step">Download will start automatically as a ZIP file</div>
+            <div class="step">Extract ZIP and import sequence into video editing software</div>
+        </div>
+    </div>
+
+    <!-- Chatooly CDN Core -->
+    <script src="../js/core.min.js"></script>
+
+    <!-- Configuration -->
+    <script>
+        window.ChatoolyConfig = {
+            name: "PNG Sequence Export Test",
+            category: "test",
+            tags: ["animation", "export", "png-sequence", "alpha"],
+            description: "Test high-quality PNG sequence export with alpha transparency",
+            author: "Chatooly Team",
+            version: "1.0.0",
+            resolution: 2,
+            buttonPosition: "bottom-right"
+        };
+    </script>
+
+    <!-- Animation Code -->
+    <script>
+        const canvas = document.getElementById('chatooly-canvas');
+        const ctx = canvas.getContext('2d', { alpha: true });
+
+        let time = 0;
+        let hue = 0;
+
+        function animate() {
+            // Semi-transparent background to show alpha preservation
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(26, 26, 26, 0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Animated gradient circles with transparency
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Outer rotating circles
+            for (let i = 0; i < 6; i++) {
+                const angle = (time * 0.02) + (i * Math.PI / 3);
+                const x = centerX + Math.cos(angle) * 200;
+                const y = centerY + Math.sin(angle) * 200;
+
+                // Gradient with alpha
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, 60);
+                const circleHue = (hue + i * 60) % 360;
+                gradient.addColorStop(0, `hsla(${circleHue}, 100%, 70%, 0.9)`);
+                gradient.addColorStop(0.5, `hsla(${circleHue}, 80%, 50%, 0.6)`);
+                gradient.addColorStop(1, `hsla(${circleHue}, 60%, 30%, 0)`);
+
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(x, y, 60, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Center pulsing circle
+            const pulseScale = 1 + Math.sin(time * 0.05) * 0.3;
+            const centerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 80 * pulseScale);
+            centerGradient.addColorStop(0, `hsla(${hue}, 100%, 80%, 1)`);
+            centerGradient.addColorStop(0.5, `hsla(${(hue + 120) % 360}, 90%, 60%, 0.8)`);
+            centerGradient.addColorStop(1, `hsla(${(hue + 240) % 360}, 70%, 40%, 0)`);
+
+            ctx.fillStyle = centerGradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 80 * pulseScale, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Rotating ring with alpha
+            ctx.strokeStyle = `hsla(${(hue + 180) % 360}, 100%, 70%, 0.6)`;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 150, time * 0.03, time * 0.03 + Math.PI * 1.5);
+            ctx.stroke();
+
+            // Text overlay (will show alpha preservation)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.font = 'bold 28px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('PNG Sequence Export', centerX, 50);
+
+            ctx.font = '16px Arial';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.fillText('Alpha channel preserved ✨', centerX, 80);
+
+            // Frame counter
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.font = '14px monospace';
+            ctx.fillText(`Frame: ${Math.floor(time / 2)}`, centerX, canvas.height - 30);
+
+            time++;
+            hue = (hue + 0.5) % 360;
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        console.log('✅ PNG Sequence Export test initialized');
+        console.log('📝 Select "PNG Sequence - Highest quality" from export options');
+    </script>
+</body>
+</html>

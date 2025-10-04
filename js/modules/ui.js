@@ -46,10 +46,10 @@
             return `
                 <!-- Minimized Floating Button -->
                 <div class="chatooly-minimized-btn">
-                    <div class="chatooly-minimized-icon">🐱</div>
+                    <div class="chatooly-minimized-icon">🌠</div>
                     <div class="chatooly-minimized-label">CHATOOLY</div>
                 </div>
-                
+
                 <!-- Expanded Panel -->
                 <div class="chatooly-export-panel" style="display: none;">
                     <!-- Sidebar Navigation -->
@@ -59,7 +59,7 @@
                             <span class="chatooly-nav-label">Canvas Size</span>
                         </div>
                         <div class="chatooly-nav-item" data-tab="export">
-                            <span class="chatooly-nav-icon">📤</span>
+                            <span class="chatooly-nav-icon">📥</span>
                             <span class="chatooly-nav-label">Export</span>
                         </div>
                         <div class="chatooly-nav-item" data-tab="publish">
@@ -67,7 +67,7 @@
                             <span class="chatooly-nav-label">Publish</span>
                         </div>
                         <div class="chatooly-nav-item" data-tab="info">
-                            <span class="chatooly-nav-icon">ℹ️</span>
+                            <span class="chatooly-nav-icon">❓</span>
                             <span class="chatooly-nav-label">Info</span>
                         </div>
                     </div>
@@ -139,59 +139,32 @@
                                 <!-- Video Export Options -->
                                 <div class="chatooly-export-options" id="video-export-options" style="display: none;">
                                     <div class="chatooly-settings-section">
-                                        <h4 class="chatooly-section-title">Duration</h4>
-                                        <div class="chatooly-form-group">
-                                            <input type="number" id="chatooly-video-duration" value="5" min="1" max="30" step="0.5" class="chatooly-text-input">
-                                            <small>How long to record the animation (seconds)</small>
+                                        <div class="chatooly-compact-form">
+                                            <div class="chatooly-compact-field">
+                                                <label>Duration (s)</label>
+                                                <input type="number" id="chatooly-video-duration" value="5" min="1" max="30" step="0.5" class="chatooly-compact-input">
+                                            </div>
+
+                                            <div class="chatooly-compact-field">
+                                                <label>FPS</label>
+                                                <select id="chatooly-video-fps" class="chatooly-compact-input">
+                                                    <option value="24">24</option>
+                                                    <option value="30" selected>30</option>
+                                                    <option value="60">60</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="chatooly-compact-field chatooly-compact-field-wide">
+                                                <label>Format</label>
+                                                <select id="chatooly-video-format" class="chatooly-compact-input">
+                                                    <option value="mp4">MP4</option>
+                                                    <option value="webm-vp9" selected>WebM</option>
+                                                    <option value="png-sequence">PNG Sequence</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                    
-                                    <div class="chatooly-settings-section">
-                                        <h4 class="chatooly-section-title">Frame Rate</h4>
-                                        <div class="chatooly-form-group">
-                                            <select id="chatooly-video-fps" class="chatooly-text-input">
-                                                <option value="24">24 FPS (cinematic)</option>
-                                                <option value="30" selected>30 FPS (standard)</option>
-                                                <option value="60">60 FPS (smooth)</option>
-                                            </select>
-                                            <small>Higher FPS = smoother but larger files</small>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="chatooly-settings-section">
-                                        <h4 class="chatooly-section-title">Video Format</h4>
-                                        <div class="chatooly-form-group">
-                                            <select id="chatooly-video-format" class="chatooly-text-input">
-                                                <option value="webm-vp9" selected>WebM (VP9) - Best quality</option>
-                                                <option value="webm-vp8">WebM (VP8) - Good quality</option>
-                                                <option value="mp4">MP4 (H.264) - Best compatibility</option>
-                                                <option value="webm-h264">WebM (H.264) - Chrome only</option>
-                                                <option value="mkv">MKV (Matroska) - Chrome only</option>
-                                                <option value="auto">Auto-detect best format</option>
-                                            </select>
-                                            <small>MP4 works everywhere, WebM is smaller, Auto finds best option</small>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="chatooly-settings-section">
-                                        <h4 class="chatooly-section-title">Video Quality</h4>
-                                        <div class="chatooly-form-group">
-                                            <select id="anim-quality" class="chatooly-text-input">
-                                                <option value="high">High Quality (12 Mbps)</option>
-                                                <option value="medium" selected>Medium Quality (8 Mbps)</option>
-                                                <option value="standard">Standard Quality (6 Mbps)</option>
-                                                <option value="low">Low Quality (3 Mbps)</option>
-                                                <option value="custom">Custom Bitrate</option>
-                                            </select>
-                                            <small>Higher quality = larger files but better visuals</small>
-                                        </div>
-                                        
-                                        <div class="chatooly-form-group" id="custom-bitrate-group" style="display: none;">
-                                            <input type="number" id="anim-bitrate" value="8" min="1" max="50" step="0.5" class="chatooly-text-input" placeholder="Custom bitrate (Mbps)">
-                                            <small>1-50 Mbps range, higher = better quality</small>
-                                        </div>
-                                    </div>
-                                    
+
                                     <div class="chatooly-settings-section">
                                         <button class="chatooly-btn-primary chatooly-video-export-btn">Export</button>
                                     </div>
@@ -285,9 +258,21 @@
             const style = document.createElement('style');
             style.id = 'chatooly-new-button-styles';
             style.textContent = `
+                /* Noto Emoji font for icons only */
+                @import url('https://fonts.googleapis.com/css2?family=Noto+Emoji&display=swap');
+
                 /* Hide old button styles completely */
                 #chatooly-export-btn .chatooly-btn-main {
                     display: none !important;
+                }
+
+                /* Icon styling with Noto Emoji font and B&W filter */
+                #chatooly-export-btn .chatooly-minimized-icon,
+                #chatooly-export-btn .chatooly-nav-icon,
+                #chatooly-export-btn .chatooly-emoji,
+                .chatooly-export-indicator {
+                    font-family: 'Noto Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                    filter: grayscale(100%) contrast(1.2);
                 }
                 
                 /* Minimized Floating Button - Override any cached styles */
@@ -673,6 +658,49 @@
                 #chatooly-export-btn .chatooly-export-options {
                     margin-top: var(--chatooly-spacing-4);
                 }
+
+                /* Compact Form Layout */
+                #chatooly-export-btn .chatooly-compact-form {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: var(--chatooly-spacing-3);
+                    align-items: end;
+                }
+
+                #chatooly-export-btn .chatooly-compact-field {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--chatooly-spacing-2);
+                }
+
+                #chatooly-export-btn .chatooly-compact-field-wide {
+                    grid-column: 1 / -1;
+                }
+
+                #chatooly-export-btn .chatooly-compact-field label {
+                    font-size: var(--chatooly-font-size-xs);
+                    font-weight: var(--chatooly-font-weight-medium);
+                    color: var(--chatooly-color-text-muted);
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+
+                #chatooly-export-btn .chatooly-compact-input {
+                    width: 100%;
+                    padding: var(--chatooly-spacing-2) var(--chatooly-spacing-3);
+                    background: var(--chatooly-color-surface-hover);
+                    border: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+                    border-radius: var(--chatooly-border-radius);
+                    color: var(--chatooly-color-text);
+                    font-size: var(--chatooly-font-size-sm);
+                    transition: all var(--chatooly-transition-normal);
+                }
+
+                #chatooly-export-btn .chatooly-compact-input:focus {
+                    outline: none;
+                    border-color: var(--chatooly-color-primary);
+                    box-shadow: var(--chatooly-shadow-focus);
+                }
                 
                 /* Info Box */
                 #chatooly-export-btn .chatooly-info-box {
@@ -886,19 +914,6 @@
                 });
             }
             
-            // Quality dropdown event listener
-            const qualitySelect = button.querySelector('#anim-quality');
-            const customBitrateGroup = button.querySelector('#custom-bitrate-group');
-            if (qualitySelect && customBitrateGroup) {
-                qualitySelect.addEventListener('change', function() {
-                    if (this.value === 'custom') {
-                        customBitrateGroup.style.display = 'block';
-                    } else {
-                        customBitrateGroup.style.display = 'none';
-                    }
-                });
-            }
-            
             // Publish button
             const publishBtn = button.querySelector('.chatooly-publish-btn');
             if (publishBtn) {
@@ -1052,10 +1067,28 @@
         _handleVideoExport: function() {
             const duration = parseFloat(document.querySelector('#chatooly-video-duration')?.value || 5);
             const fps = parseInt(document.querySelector('#chatooly-video-fps')?.value || 30);
-            const format = document.querySelector('#chatooly-video-format')?.value || 'mp4';
-            const quality = document.querySelector('#anim-quality')?.value || 'medium';
-            const customBitrate = parseFloat(document.querySelector('#anim-bitrate')?.value || 8);
-            
+            const format = document.querySelector('#chatooly-video-format')?.value || 'webm-vp9';
+
+            // Always use high quality (12 Mbps)
+            const quality = 'high';
+            const customBitrate = 12;
+
+            // Handle PNG sequence export
+            if (format === 'png-sequence') {
+                if (Chatooly.animationSequenceExport) {
+                    Chatooly.animationSequenceExport.exportSequence(duration, fps);
+                } else {
+                    alert('PNG Sequence export module not loaded');
+                }
+
+                // Hide panel after starting export
+                const panel = document.querySelector('.chatooly-export-panel');
+                if (panel) {
+                    this._hidePanel(panel);
+                }
+                return;
+            }
+
             if (Chatooly.animationMediaRecorder) {
                 // Re-detect tool type in case it changed
                 Chatooly.animationMediaRecorder.toolInfo = Chatooly.animationMediaRecorder.detectToolType();

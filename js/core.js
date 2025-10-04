@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-09-17T12:49:01.162Z
+ * Built: 2025-10-04T10:32:04.275Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -1578,62 +1578,335 @@
         
         // Update UI during recording
         updateRecordingUI: function() {
-            const startBtn = document.querySelector('.chatooly-btn-primary');
-            if (startBtn) {
-                startBtn.textContent = 'Exporting...';
-                startBtn.disabled = true;
-                startBtn.style.opacity = '0.6';
-            }
-            
-            // Add recording indicator with Chatooly CSS styling
+            // Add recording indicator with Chatooly styling
             const indicator = document.createElement('div');
             indicator.className = 'chatooly-export-indicator';
-            indicator.innerHTML = '📤 Exporting...';
+            indicator.innerHTML = '○ Recording...';
             indicator.style.cssText = `
                 position: fixed;
-                top: var(--chatooly-spacing-4, 20px);
-                right: var(--chatooly-spacing-4, 20px);
-                background: var(--chatooly-color-primary, #007acc);
-                color: var(--chatooly-color-text-inverse, white);
-                padding: var(--chatooly-spacing-3, 12px) var(--chatooly-spacing-4, 16px);
-                border-radius: var(--chatooly-border-radius-lg, 20px);
-                font-size: var(--chatooly-font-size-sm, 14px);
-                font-weight: var(--chatooly-font-weight-semibold, 600);
-                font-family: var(--chatooly-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
-                box-shadow: var(--chatooly-shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.15));
+                top: 20px;
+                right: 20px;
+                background: #000000;
+                border: 2px solid #ffffff;
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 600;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
                 z-index: 100000;
-                animation: chatooly-pulse 1.5s ease-in-out infinite;
+                animation: chatoolyPulse 2s ease-in-out infinite;
             `;
-            
+
             // Add pulse animation keyframes if not already added
             if (!document.querySelector('#chatooly-export-animation')) {
                 const style = document.createElement('style');
                 style.id = 'chatooly-export-animation';
                 style.textContent = `
-                    @keyframes chatooly-pulse {
+                    @keyframes chatoolyPulse {
                         0%, 100% { opacity: 1; transform: scale(1); }
-                        50% { opacity: 0.8; transform: scale(1.05); }
+                        50% { opacity: 0.8; transform: scale(1.02); }
                     }
                 `;
                 document.head.appendChild(style);
             }
-            
+
             document.body.appendChild(indicator);
         },
-        
+
         // Reset UI after recording
         resetRecordingUI: function() {
-            const startBtn = document.querySelector('.chatooly-btn-primary');
-            if (startBtn) {
-                startBtn.textContent = 'Export';
-                startBtn.disabled = false;
-                startBtn.style.opacity = '1';
-            }
-            
-            // Remove export indicator
+            // Remove export indicator with animation
             const indicator = document.querySelector('.chatooly-export-indicator');
             if (indicator) {
-                indicator.remove();
+                indicator.style.animation = 'none';
+                indicator.style.opacity = '0';
+                indicator.style.transform = 'translateX(100%)';
+                indicator.style.transition = 'all 0.3s ease-out';
+                setTimeout(() => indicator.remove(), 300);
+            }
+        }
+    };
+
+
+
+
+    // ===== ANIMATION-SEQUENCE-EXPORT MODULE =====
+    
+/**
+ * Chatooly CDN - Animation Sequence Export Module
+ * High-quality PNG sequence export with alpha channel support
+ * Creates frame-by-frame captures for professional video editing workflows
+ */
+
+Chatooly.animationSequenceExport = {
+        // Export state
+        isExporting: false,
+        exportCanvas: null,
+        exportCtx: null,
+        captureInterval: null,
+
+        /**
+         * Export animation as PNG sequence
+         * @param {number} duration - Duration in seconds
+         * @param {number} fps - Frame rate (24, 30, or 60)
+         */
+        exportSequence: async function(duration, fps) {
+            if (this.isExporting) {
+                console.warn('🎬 Sequence export already in progress');
+                return;
+            }
+
+            this.isExporting = true;
+
+            try {
+                // Get canvas from animationMediaRecorder detection
+                const toolInfo = Chatooly.animationMediaRecorder
+                    ? Chatooly.animationMediaRecorder.detectToolType()
+                    : this._detectCanvas();
+
+                const sourceCanvas = toolInfo.canvas || toolInfo.element;
+
+                if (!sourceCanvas) {
+                    throw new Error('No canvas found for sequence export');
+                }
+
+                console.log(`🎬 Starting PNG sequence export: ${duration}s at ${fps} FPS`);
+
+                // Calculate frames
+                const totalFrames = Math.ceil(duration * fps);
+                const frameInterval = 1000 / fps; // ms between frames
+                const frames = [];
+
+                // Create export canvas for alpha preservation
+                this.exportCanvas = document.createElement('canvas');
+                this.exportCtx = this.exportCanvas.getContext('2d', { alpha: true });
+                this.exportCanvas.width = sourceCanvas.width;
+                this.exportCanvas.height = sourceCanvas.height;
+
+                // Show export indicator
+                this._showExportIndicator('Capturing frames...');
+
+                // Capture frames
+                for (let frame = 0; frame < totalFrames; frame++) {
+                    this._updateExportIndicator(`Frame ${frame + 1}/${totalFrames}`);
+
+                    // Clear with transparency
+                    this.exportCtx.clearRect(0, 0, this.exportCanvas.width, this.exportCanvas.height);
+
+                    // Copy current frame from source canvas
+                    this.exportCtx.drawImage(sourceCanvas, 0, 0);
+
+                    // Capture as PNG with alpha
+                    const dataURL = this.exportCanvas.toDataURL('image/png');
+                    frames.push(dataURL);
+
+                    // Small delay for browser processing
+                    await this._delay(frameInterval);
+                }
+
+                // Create ZIP file
+                this._updateExportIndicator('Creating ZIP...');
+
+                await this._createZipArchive(frames, fps, duration, sourceCanvas.width, sourceCanvas.height);
+
+                console.log(`✅ PNG sequence exported: ${totalFrames} frames`);
+
+                this._hideExportIndicator();
+
+                setTimeout(() => {
+                    alert(`PNG sequence exported successfully!\n${totalFrames} frames at ${fps} FPS\nAlpha channel preserved for transparency.`);
+                }, 100);
+
+            } catch (error) {
+                console.error('❌ PNG sequence export failed:', error);
+                this._hideExportIndicator();
+                alert(`PNG sequence export failed: ${error.message}\n\nTry using video export instead.`);
+            } finally {
+                // Cleanup
+                this.exportCanvas = null;
+                this.exportCtx = null;
+                this.isExporting = false;
+            }
+        },
+
+        /**
+         * Create ZIP archive with frames and metadata
+         */
+        _createZipArchive: async function(frames, fps, duration, width, height) {
+            // Load JSZip from CDN if not available
+            if (typeof JSZip === 'undefined') {
+                await this._loadJSZip();
+            }
+
+            const zip = new JSZip();
+            const timestamp = Date.now();
+            const folderName = `chatooly-sequence-${timestamp}`;
+            const folder = zip.folder(folderName);
+
+            // Add frames
+            frames.forEach((frameData, index) => {
+                const frameNumber = String(index + 1).padStart(4, '0');
+                const fileName = `frame_${frameNumber}.png`;
+                const base64Data = frameData.split(',')[1];
+                folder.file(fileName, base64Data, { base64: true });
+            });
+
+            // Add README
+            const readmeContent = `Chatooly PNG Sequence Export
+Generated: ${new Date().toISOString()}
+Frames: ${frames.length}
+Duration: ${duration}s
+Frame Rate: ${fps} FPS
+Canvas Size: ${width} × ${height}px
+Alpha Channel: Preserved
+
+This sequence contains PNG files with full alpha transparency support.
+Import into video editing software (After Effects, Premiere, etc.) as image sequence.
+
+Frame naming: frame_0001.png, frame_0002.png, etc.
+`;
+            folder.file('README.txt', readmeContent);
+
+            // Generate and download ZIP
+            const zipBlob = await zip.generateAsync({
+                type: 'blob',
+                compression: 'DEFLATE',
+                compressionOptions: { level: 6 }
+            });
+
+            const url = URL.createObjectURL(zipBlob);
+            const link = document.createElement('a');
+            link.download = `${folderName}.zip`;
+            link.href = url;
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        },
+
+        /**
+         * Load JSZip library from CDN
+         */
+        _loadJSZip: function() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                script.onload = () => {
+                    console.log('✅ JSZip loaded from CDN');
+                    resolve();
+                };
+                script.onerror = () => {
+                    reject(new Error('Failed to load JSZip library'));
+                };
+                document.head.appendChild(script);
+            });
+        },
+
+        /**
+         * Detect canvas element (fallback if animationMediaRecorder not available)
+         */
+        _detectCanvas: function() {
+            const canvas = document.getElementById('chatooly-canvas');
+            if (canvas && canvas.tagName === 'CANVAS') {
+                return { canvas: canvas, type: 'canvas' };
+            }
+
+            const canvases = document.querySelectorAll('canvas');
+            if (canvases.length > 0) {
+                return { canvas: canvases[0], type: 'canvas' };
+            }
+
+            return { canvas: null, type: 'none' };
+        },
+
+        /**
+         * Delay helper
+         */
+        _delay: function(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        },
+
+        /**
+         * Show export progress indicator
+         */
+        _showExportIndicator: function(message) {
+            // Remove existing indicator if any
+            this._hideExportIndicator();
+
+            const indicator = document.createElement('div');
+            indicator.className = 'chatooly-export-indicator';
+            indicator.innerHTML = `○ ${message}`;
+            indicator.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #000000;
+                border: 2px solid #ffffff;
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 600;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                z-index: 100000;
+                animation: chatoolySlideIn 0.3s ease-out;
+            `;
+
+            // Add animation keyframes if not already added
+            if (!document.querySelector('#chatooly-sequence-export-animation')) {
+                const style = document.createElement('style');
+                style.id = 'chatooly-sequence-export-animation';
+                style.textContent = `
+                    @keyframes chatoolySlideIn {
+                        from {
+                            opacity: 0;
+                            transform: translateX(100%);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateX(0);
+                        }
+                    }
+                    @keyframes chatoolyPulse {
+                        0%, 100% { opacity: 1; transform: scale(1); }
+                        50% { opacity: 0.8; transform: scale(1.02); }
+                    }
+                    .chatooly-export-indicator {
+                        animation: chatoolyPulse 2s ease-in-out infinite !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            document.body.appendChild(indicator);
+        },
+
+        /**
+         * Update export indicator text
+         */
+        _updateExportIndicator: function(message) {
+            const indicator = document.querySelector('.chatooly-export-indicator');
+            if (indicator) {
+                indicator.innerHTML = `○ ${message}`;
+            }
+        },
+
+        /**
+         * Hide export indicator
+         */
+        _hideExportIndicator: function() {
+            const indicator = document.querySelector('.chatooly-export-indicator');
+            if (indicator) {
+                indicator.style.animation = 'none';
+                indicator.style.opacity = '0';
+                indicator.style.transform = 'translateX(100%)';
+                indicator.style.transition = 'all 0.3s ease-out';
+                setTimeout(() => indicator.remove(), 300);
             }
         }
     };
@@ -3899,10 +4172,10 @@ Chatooly.canvasZoom = {
             return `
                 <!-- Minimized Floating Button -->
                 <div class="chatooly-minimized-btn">
-                    <div class="chatooly-minimized-icon">🐱</div>
+                    <div class="chatooly-minimized-icon">🌠</div>
                     <div class="chatooly-minimized-label">CHATOOLY</div>
                 </div>
-                
+
                 <!-- Expanded Panel -->
                 <div class="chatooly-export-panel" style="display: none;">
                     <!-- Sidebar Navigation -->
@@ -3912,7 +4185,7 @@ Chatooly.canvasZoom = {
                             <span class="chatooly-nav-label">Canvas Size</span>
                         </div>
                         <div class="chatooly-nav-item" data-tab="export">
-                            <span class="chatooly-nav-icon">📤</span>
+                            <span class="chatooly-nav-icon">📥</span>
                             <span class="chatooly-nav-label">Export</span>
                         </div>
                         <div class="chatooly-nav-item" data-tab="publish">
@@ -3920,7 +4193,7 @@ Chatooly.canvasZoom = {
                             <span class="chatooly-nav-label">Publish</span>
                         </div>
                         <div class="chatooly-nav-item" data-tab="info">
-                            <span class="chatooly-nav-icon">ℹ️</span>
+                            <span class="chatooly-nav-icon">❓</span>
                             <span class="chatooly-nav-label">Info</span>
                         </div>
                     </div>
@@ -3992,59 +4265,32 @@ Chatooly.canvasZoom = {
                                 <!-- Video Export Options -->
                                 <div class="chatooly-export-options" id="video-export-options" style="display: none;">
                                     <div class="chatooly-settings-section">
-                                        <h4 class="chatooly-section-title">Duration</h4>
-                                        <div class="chatooly-form-group">
-                                            <input type="number" id="chatooly-video-duration" value="5" min="1" max="30" step="0.5" class="chatooly-text-input">
-                                            <small>How long to record the animation (seconds)</small>
+                                        <div class="chatooly-compact-form">
+                                            <div class="chatooly-compact-field">
+                                                <label>Duration (s)</label>
+                                                <input type="number" id="chatooly-video-duration" value="5" min="1" max="30" step="0.5" class="chatooly-compact-input">
+                                            </div>
+
+                                            <div class="chatooly-compact-field">
+                                                <label>FPS</label>
+                                                <select id="chatooly-video-fps" class="chatooly-compact-input">
+                                                    <option value="24">24</option>
+                                                    <option value="30" selected>30</option>
+                                                    <option value="60">60</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="chatooly-compact-field chatooly-compact-field-wide">
+                                                <label>Format</label>
+                                                <select id="chatooly-video-format" class="chatooly-compact-input">
+                                                    <option value="mp4">MP4</option>
+                                                    <option value="webm-vp9" selected>WebM</option>
+                                                    <option value="png-sequence">PNG Sequence</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                    
-                                    <div class="chatooly-settings-section">
-                                        <h4 class="chatooly-section-title">Frame Rate</h4>
-                                        <div class="chatooly-form-group">
-                                            <select id="chatooly-video-fps" class="chatooly-text-input">
-                                                <option value="24">24 FPS (cinematic)</option>
-                                                <option value="30" selected>30 FPS (standard)</option>
-                                                <option value="60">60 FPS (smooth)</option>
-                                            </select>
-                                            <small>Higher FPS = smoother but larger files</small>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="chatooly-settings-section">
-                                        <h4 class="chatooly-section-title">Video Format</h4>
-                                        <div class="chatooly-form-group">
-                                            <select id="chatooly-video-format" class="chatooly-text-input">
-                                                <option value="webm-vp9" selected>WebM (VP9) - Best quality</option>
-                                                <option value="webm-vp8">WebM (VP8) - Good quality</option>
-                                                <option value="mp4">MP4 (H.264) - Best compatibility</option>
-                                                <option value="webm-h264">WebM (H.264) - Chrome only</option>
-                                                <option value="mkv">MKV (Matroska) - Chrome only</option>
-                                                <option value="auto">Auto-detect best format</option>
-                                            </select>
-                                            <small>MP4 works everywhere, WebM is smaller, Auto finds best option</small>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="chatooly-settings-section">
-                                        <h4 class="chatooly-section-title">Video Quality</h4>
-                                        <div class="chatooly-form-group">
-                                            <select id="anim-quality" class="chatooly-text-input">
-                                                <option value="high">High Quality (12 Mbps)</option>
-                                                <option value="medium" selected>Medium Quality (8 Mbps)</option>
-                                                <option value="standard">Standard Quality (6 Mbps)</option>
-                                                <option value="low">Low Quality (3 Mbps)</option>
-                                                <option value="custom">Custom Bitrate</option>
-                                            </select>
-                                            <small>Higher quality = larger files but better visuals</small>
-                                        </div>
-                                        
-                                        <div class="chatooly-form-group" id="custom-bitrate-group" style="display: none;">
-                                            <input type="number" id="anim-bitrate" value="8" min="1" max="50" step="0.5" class="chatooly-text-input" placeholder="Custom bitrate (Mbps)">
-                                            <small>1-50 Mbps range, higher = better quality</small>
-                                        </div>
-                                    </div>
-                                    
+
                                     <div class="chatooly-settings-section">
                                         <button class="chatooly-btn-primary chatooly-video-export-btn">Export</button>
                                     </div>
@@ -4138,9 +4384,21 @@ Chatooly.canvasZoom = {
             const style = document.createElement('style');
             style.id = 'chatooly-new-button-styles';
             style.textContent = `
+                /* Noto Emoji font for icons only */
+                @import url('https://fonts.googleapis.com/css2?family=Noto+Emoji&display=swap');
+
                 /* Hide old button styles completely */
                 #chatooly-export-btn .chatooly-btn-main {
                     display: none !important;
+                }
+
+                /* Icon styling with Noto Emoji font and B&W filter */
+                #chatooly-export-btn .chatooly-minimized-icon,
+                #chatooly-export-btn .chatooly-nav-icon,
+                #chatooly-export-btn .chatooly-emoji,
+                .chatooly-export-indicator {
+                    font-family: 'Noto Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                    filter: grayscale(100%) contrast(1.2);
                 }
                 
                 /* Minimized Floating Button - Override any cached styles */
@@ -4526,6 +4784,49 @@ Chatooly.canvasZoom = {
                 #chatooly-export-btn .chatooly-export-options {
                     margin-top: var(--chatooly-spacing-4);
                 }
+
+                /* Compact Form Layout */
+                #chatooly-export-btn .chatooly-compact-form {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: var(--chatooly-spacing-3);
+                    align-items: end;
+                }
+
+                #chatooly-export-btn .chatooly-compact-field {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--chatooly-spacing-2);
+                }
+
+                #chatooly-export-btn .chatooly-compact-field-wide {
+                    grid-column: 1 / -1;
+                }
+
+                #chatooly-export-btn .chatooly-compact-field label {
+                    font-size: var(--chatooly-font-size-xs);
+                    font-weight: var(--chatooly-font-weight-medium);
+                    color: var(--chatooly-color-text-muted);
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+
+                #chatooly-export-btn .chatooly-compact-input {
+                    width: 100%;
+                    padding: var(--chatooly-spacing-2) var(--chatooly-spacing-3);
+                    background: var(--chatooly-color-surface-hover);
+                    border: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+                    border-radius: var(--chatooly-border-radius);
+                    color: var(--chatooly-color-text);
+                    font-size: var(--chatooly-font-size-sm);
+                    transition: all var(--chatooly-transition-normal);
+                }
+
+                #chatooly-export-btn .chatooly-compact-input:focus {
+                    outline: none;
+                    border-color: var(--chatooly-color-primary);
+                    box-shadow: var(--chatooly-shadow-focus);
+                }
                 
                 /* Info Box */
                 #chatooly-export-btn .chatooly-info-box {
@@ -4739,19 +5040,6 @@ Chatooly.canvasZoom = {
                 });
             }
             
-            // Quality dropdown event listener
-            const qualitySelect = button.querySelector('#anim-quality');
-            const customBitrateGroup = button.querySelector('#custom-bitrate-group');
-            if (qualitySelect && customBitrateGroup) {
-                qualitySelect.addEventListener('change', function() {
-                    if (this.value === 'custom') {
-                        customBitrateGroup.style.display = 'block';
-                    } else {
-                        customBitrateGroup.style.display = 'none';
-                    }
-                });
-            }
-            
             // Publish button
             const publishBtn = button.querySelector('.chatooly-publish-btn');
             if (publishBtn) {
@@ -4905,10 +5193,28 @@ Chatooly.canvasZoom = {
         _handleVideoExport: function() {
             const duration = parseFloat(document.querySelector('#chatooly-video-duration')?.value || 5);
             const fps = parseInt(document.querySelector('#chatooly-video-fps')?.value || 30);
-            const format = document.querySelector('#chatooly-video-format')?.value || 'mp4';
-            const quality = document.querySelector('#anim-quality')?.value || 'medium';
-            const customBitrate = parseFloat(document.querySelector('#anim-bitrate')?.value || 8);
-            
+            const format = document.querySelector('#chatooly-video-format')?.value || 'webm-vp9';
+
+            // Always use high quality (12 Mbps)
+            const quality = 'high';
+            const customBitrate = 12;
+
+            // Handle PNG sequence export
+            if (format === 'png-sequence') {
+                if (Chatooly.animationSequenceExport) {
+                    Chatooly.animationSequenceExport.exportSequence(duration, fps);
+                } else {
+                    alert('PNG Sequence export module not loaded');
+                }
+
+                // Hide panel after starting export
+                const panel = document.querySelector('.chatooly-export-panel');
+                if (panel) {
+                    this._hidePanel(panel);
+                }
+                return;
+            }
+
             if (Chatooly.animationMediaRecorder) {
                 // Re-detect tool type in case it changed
                 Chatooly.animationMediaRecorder.toolInfo = Chatooly.animationMediaRecorder.detectToolType();

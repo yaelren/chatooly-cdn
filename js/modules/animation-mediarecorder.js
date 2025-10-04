@@ -559,62 +559,53 @@
         
         // Update UI during recording
         updateRecordingUI: function() {
-            const startBtn = document.querySelector('.chatooly-btn-primary');
-            if (startBtn) {
-                startBtn.textContent = 'Exporting...';
-                startBtn.disabled = true;
-                startBtn.style.opacity = '0.6';
-            }
-            
-            // Add recording indicator with Chatooly CSS styling
+            // Add recording indicator with Chatooly styling
             const indicator = document.createElement('div');
             indicator.className = 'chatooly-export-indicator';
-            indicator.innerHTML = '📤 Exporting...';
+            indicator.innerHTML = '○ Recording...';
             indicator.style.cssText = `
                 position: fixed;
-                top: var(--chatooly-spacing-4, 20px);
-                right: var(--chatooly-spacing-4, 20px);
-                background: var(--chatooly-color-primary, #007acc);
-                color: var(--chatooly-color-text-inverse, white);
-                padding: var(--chatooly-spacing-3, 12px) var(--chatooly-spacing-4, 16px);
-                border-radius: var(--chatooly-border-radius-lg, 20px);
-                font-size: var(--chatooly-font-size-sm, 14px);
-                font-weight: var(--chatooly-font-weight-semibold, 600);
-                font-family: var(--chatooly-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
-                box-shadow: var(--chatooly-shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.15));
+                top: 20px;
+                right: 20px;
+                background: #000000;
+                border: 2px solid #ffffff;
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 600;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
                 z-index: 100000;
-                animation: chatooly-pulse 1.5s ease-in-out infinite;
+                animation: chatoolyPulse 2s ease-in-out infinite;
             `;
-            
+
             // Add pulse animation keyframes if not already added
             if (!document.querySelector('#chatooly-export-animation')) {
                 const style = document.createElement('style');
                 style.id = 'chatooly-export-animation';
                 style.textContent = `
-                    @keyframes chatooly-pulse {
+                    @keyframes chatoolyPulse {
                         0%, 100% { opacity: 1; transform: scale(1); }
-                        50% { opacity: 0.8; transform: scale(1.05); }
+                        50% { opacity: 0.8; transform: scale(1.02); }
                     }
                 `;
                 document.head.appendChild(style);
             }
-            
+
             document.body.appendChild(indicator);
         },
-        
+
         // Reset UI after recording
         resetRecordingUI: function() {
-            const startBtn = document.querySelector('.chatooly-btn-primary');
-            if (startBtn) {
-                startBtn.textContent = 'Export';
-                startBtn.disabled = false;
-                startBtn.style.opacity = '1';
-            }
-            
-            // Remove export indicator
+            // Remove export indicator with animation
             const indicator = document.querySelector('.chatooly-export-indicator');
             if (indicator) {
-                indicator.remove();
+                indicator.style.animation = 'none';
+                indicator.style.opacity = '0';
+                indicator.style.transform = 'translateX(100%)';
+                indicator.style.transition = 'all 0.3s ease-out';
+                setTimeout(() => indicator.remove(), 300);
             }
         }
     };
