@@ -8,8 +8,8 @@
     
     Chatooly.canvasResizer = {
         // Export dimensions (what resolution the image exports at)
-        exportWidth: 800,
-        exportHeight: 600,
+        exportWidth: 1000,
+        exportHeight: 1000,
         
         // Set export resolution
         setExportSize: function(width, height) {
@@ -32,8 +32,8 @@
                 return;
             }
             
-            const width = parseInt(widthInput.value) || 800;
-            const height = parseInt(heightInput.value) || 600;
+            const width = parseInt(widthInput.value) || 1000;
+            const height = parseInt(heightInput.value) || 1000;
             
             // Validate dimensions
             if (width < 100 || width > 4000 || height < 100 || height > 4000) {

@@ -14,6 +14,7 @@ const config = {
     jsModules: [
         'utils.js',           // Base utilities - no dependencies
         'style-loader.js',    // CSS injection - should load early
+        'background-manager.js', // Background management - depends on utils (early load for tool initialization)
         'canvas-html5.js',    // Canvas exporters - depends on utils
         'canvas-p5.js',       // p5.js exporters - depends on utils
         'canvas-three.js',    // Three.js exporters - depends on utils

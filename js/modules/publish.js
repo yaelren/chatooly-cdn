@@ -17,12 +17,30 @@
             }
             
             options = options || {};
-            
-            // Check for config options or prompt user
-            const toolName = options.name || Chatooly.config.name || prompt('Enter tool name for publishing:');
-            if (!toolName) {
-                console.log('Chatooly: Publishing cancelled');
-                return;
+
+            // Try to get tool name from multiple sources (in order of priority)
+            // 1. Explicit option passed to publish()
+            // 2. Chatooly config name
+            // 3. Last published name from localStorage
+            // 4. Prompt user
+            let toolName = options.name || Chatooly.config.name;
+
+            // If config name exists and is not empty, use it (enables easy republishing)
+            if (toolName && toolName.trim()) {
+                console.log('Chatooly: Using tool name from config: "' + toolName + '"');
+            } else {
+                // Try to get last published name for convenience
+                const lastPublishedName = localStorage.getItem('chatooly_last_tool_name');
+                const defaultName = lastPublishedName || '';
+
+                toolName = prompt('Enter tool name for publishing:', defaultName);
+                if (!toolName || !toolName.trim()) {
+                    console.log('Chatooly: Publishing cancelled');
+                    return;
+                }
+
+                // Save for next time
+                localStorage.setItem('chatooly_last_tool_name', toolName);
             }
             
             // Read additional config from chatooly.config.js if exists

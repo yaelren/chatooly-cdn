@@ -43,6 +43,13 @@
             if (this.utils && this.utils.logDevelopmentMode) {
                 this.utils.logDevelopmentMode();
             }
+
+            // Auto-inject background controls
+            if (this.ui && this.ui.injectBackgroundControls) {
+                setTimeout(() => {
+                    this.ui.injectBackgroundControls();
+                }, 300);
+            }
         },
         
         // Main export function - detects target and format

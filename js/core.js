@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-10-04T10:32:04.275Z
+ * Built: 2025-10-04T11:01:05.237Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -482,6 +482,313 @@
     }
     
 })();
+
+
+    // ===== BACKGROUND-MANAGER MODULE =====
+    
+/**
+ * Chatooly CDN - Background Manager Module
+ * Framework-agnostic background management for canvas tools
+ * Handles: color, transparency, images, and fit modes
+ */
+
+Chatooly.backgroundManager = {
+        // Background state
+        state: {
+            bgColor: '#CCFD50',
+            bgTransparent: false,
+            bgImage: null,
+            bgImageURL: null,
+            bgFit: 'cover' // 'cover', 'contain', 'fill'
+        },
+
+        // Canvas element reference
+        canvas: null,
+
+        /**
+         * Initialize background manager with canvas element
+         * @param {HTMLCanvasElement|HTMLElement} canvasElement - The canvas to manage
+         */
+        init: function(canvasElement) {
+            this.canvas = canvasElement;
+            console.log('🎨 Background Manager initialized');
+            return this;
+        },
+
+        /**
+         * Set background color
+         * @param {string} color - Hex color code
+         */
+        setBackgroundColor: function(color) {
+            this.state.bgColor = color;
+
+            // Update checkered pattern if transparent
+            if (this.state.bgTransparent && this.canvas) {
+                this._updateCheckeredPattern();
+            }
+
+            console.log(`🎨 Background color set: ${color}`);
+            return this;
+        },
+
+        /**
+         * Set transparent background
+         * @param {boolean} transparent - Enable/disable transparency
+         */
+        setTransparent: function(transparent) {
+            this.state.bgTransparent = transparent;
+
+            if (this.canvas) {
+                if (transparent) {
+                    this.canvas.classList.add('chatooly-canvas-transparent');
+                } else {
+                    this.canvas.classList.remove('chatooly-canvas-transparent');
+                }
+            }
+
+            console.log(`🎨 Transparent background: ${transparent}`);
+            return this;
+        },
+
+        /**
+         * Set background image from file
+         * @param {File} file - Image file
+         * @returns {Promise} Resolves with loaded image
+         */
+        setBackgroundImage: function(file) {
+            return new Promise((resolve, reject) => {
+                if (!file || !file.type.startsWith('image/')) {
+                    reject(new Error('Invalid image file'));
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    const img = new Image();
+
+                    img.onload = () => {
+                        this.state.bgImage = img;
+                        this.state.bgImageURL = e.target.result;
+                        console.log(`🎨 Background image loaded: ${img.width}x${img.height}`);
+                        resolve(img);
+                    };
+
+                    img.onerror = () => {
+                        reject(new Error('Failed to load image'));
+                    };
+
+                    img.src = e.target.result;
+                };
+
+                reader.onerror = () => {
+                    reject(new Error('Failed to read file'));
+                };
+
+                reader.readAsDataURL(file);
+            });
+        },
+
+        /**
+         * Clear background image
+         */
+        clearBackgroundImage: function() {
+            this.state.bgImage = null;
+            this.state.bgImageURL = null;
+            console.log('🎨 Background image cleared');
+            return this;
+        },
+
+        /**
+         * Set background fit mode
+         * @param {string} mode - 'cover', 'contain', or 'fill'
+         */
+        setFit: function(mode) {
+            if (!['cover', 'contain', 'fill'].includes(mode)) {
+                console.warn(`Invalid fit mode: ${mode}. Using 'cover'.`);
+                mode = 'cover';
+            }
+
+            this.state.bgFit = mode;
+            console.log(`🎨 Background fit mode: ${mode}`);
+            return this;
+        },
+
+        /**
+         * Get current background state
+         * @returns {Object} Current background state
+         */
+        getBackgroundState: function() {
+            return {
+                bgColor: this.state.bgColor,
+                bgTransparent: this.state.bgTransparent,
+                bgImage: this.state.bgImage,
+                bgImageURL: this.state.bgImageURL,
+                bgFit: this.state.bgFit
+            };
+        },
+
+        /**
+         * Calculate background image dimensions for canvas
+         * @param {number} canvasWidth - Canvas width
+         * @param {number} canvasHeight - Canvas height
+         * @returns {Object} { drawWidth, drawHeight, offsetX, offsetY }
+         */
+        calculateImageDimensions: function(canvasWidth, canvasHeight) {
+            if (!this.state.bgImage) {
+                return null;
+            }
+
+            const img = this.state.bgImage;
+            const imgAspect = img.width / img.height;
+            const canvasAspect = canvasWidth / canvasHeight;
+
+            let drawWidth, drawHeight, offsetX, offsetY;
+
+            switch (this.state.bgFit) {
+                case 'cover':
+                    // Fill entire canvas, may crop image
+                    if (imgAspect > canvasAspect) {
+                        drawHeight = canvasHeight;
+                        drawWidth = drawHeight * imgAspect;
+                        offsetX = -(drawWidth - canvasWidth) / 2;
+                        offsetY = 0;
+                    } else {
+                        drawWidth = canvasWidth;
+                        drawHeight = drawWidth / imgAspect;
+                        offsetX = 0;
+                        offsetY = -(drawHeight - canvasHeight) / 2;
+                    }
+                    break;
+
+                case 'contain':
+                    // Fit entire image within canvas
+                    if (imgAspect > canvasAspect) {
+                        drawWidth = canvasWidth;
+                        drawHeight = drawWidth / imgAspect;
+                        offsetX = 0;
+                        offsetY = (canvasHeight - drawHeight) / 2;
+                    } else {
+                        drawHeight = canvasHeight;
+                        drawWidth = drawHeight * imgAspect;
+                        offsetX = (canvasWidth - drawWidth) / 2;
+                        offsetY = 0;
+                    }
+                    break;
+
+                case 'fill':
+                    // Stretch to fill canvas
+                    drawWidth = canvasWidth;
+                    drawHeight = canvasHeight;
+                    offsetX = 0;
+                    offsetY = 0;
+                    break;
+
+                default:
+                    drawWidth = canvasWidth;
+                    drawHeight = canvasHeight;
+                    offsetX = 0;
+                    offsetY = 0;
+            }
+
+            return {
+                drawWidth,
+                drawHeight,
+                offsetX,
+                offsetY
+            };
+        },
+
+        /**
+         * Draw background to canvas context (for Canvas API tools)
+         * @param {CanvasRenderingContext2D} ctx - Canvas 2D context
+         * @param {number} canvasWidth - Canvas width
+         * @param {number} canvasHeight - Canvas height
+         */
+        drawToCanvas: function(ctx, canvasWidth, canvasHeight) {
+            if (this.state.bgTransparent) {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                return;
+            }
+
+            // Draw image if present
+            if (this.state.bgImage) {
+                const dims = this.calculateImageDimensions(canvasWidth, canvasHeight);
+
+                // Fill with color first if using 'contain' mode
+                if (this.state.bgFit === 'contain') {
+                    ctx.fillStyle = this.state.bgColor;
+                    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                }
+
+                ctx.drawImage(
+                    this.state.bgImage,
+                    dims.offsetX,
+                    dims.offsetY,
+                    dims.drawWidth,
+                    dims.drawHeight
+                );
+            } else {
+                // Draw solid color
+                ctx.fillStyle = this.state.bgColor;
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            }
+        },
+
+        /**
+         * Update checkered pattern (internal)
+         */
+        _updateCheckeredPattern: function() {
+            if (!this.canvas) return;
+
+            // Pattern is handled by CSS class, but we could add custom logic here
+            // if needed for specific canvas types
+        },
+
+        /**
+         * Generate background CSS for DOM-based tools
+         * @returns {string} CSS background property value
+         */
+        getBackgroundCSS: function() {
+            if (this.state.bgTransparent) {
+                return 'transparent';
+            }
+
+            if (this.state.bgImage && this.state.bgImageURL) {
+                let size;
+                switch (this.state.bgFit) {
+                    case 'cover': size = 'cover'; break;
+                    case 'contain': size = 'contain'; break;
+                    case 'fill': size = '100% 100%'; break;
+                    default: size = 'cover';
+                }
+
+                return `${this.state.bgColor} url("${this.state.bgImageURL}") center/${size} no-repeat`;
+            }
+
+            return this.state.bgColor;
+        },
+
+        /**
+         * Reset to default background
+         */
+        reset: function() {
+            this.state.bgColor = '#CCFD50';
+            this.state.bgTransparent = false;
+            this.state.bgImage = null;
+            this.state.bgImageURL = null;
+            this.state.bgFit = 'cover';
+
+            if (this.canvas) {
+                this.canvas.classList.remove('chatooly-canvas-transparent');
+            }
+
+            console.log('🎨 Background reset to defaults');
+            return this;
+        }
+    };
+
+
 
 
     // ===== CANVAS-HTML5 MODULE =====
@@ -2558,8 +2865,8 @@ Chatooly.canvasArea = {
 
 Chatooly.canvasResizer = {
         // Export dimensions (what resolution the image exports at)
-        exportWidth: 800,
-        exportHeight: 600,
+        exportWidth: 1000,
+        exportHeight: 1000,
         
         // Set export resolution
         setExportSize: function(width, height) {
@@ -2582,8 +2889,8 @@ Chatooly.canvasResizer = {
                 return;
             }
             
-            const width = parseInt(widthInput.value) || 800;
-            const height = parseInt(heightInput.value) || 600;
+            const width = parseInt(widthInput.value) || 1000;
+            const height = parseInt(heightInput.value) || 1000;
             
             // Validate dimensions
             if (width < 100 || width > 4000 || height < 100 || height > 4000) {
@@ -3529,12 +3836,30 @@ Chatooly.canvasZoom = {
             }
             
             options = options || {};
-            
-            // Check for config options or prompt user
-            const toolName = options.name || Chatooly.config.name || prompt('Enter tool name for publishing:');
-            if (!toolName) {
-                console.log('Chatooly: Publishing cancelled');
-                return;
+
+            // Try to get tool name from multiple sources (in order of priority)
+            // 1. Explicit option passed to publish()
+            // 2. Chatooly config name
+            // 3. Last published name from localStorage
+            // 4. Prompt user
+            let toolName = options.name || Chatooly.config.name;
+
+            // If config name exists and is not empty, use it (enables easy republishing)
+            if (toolName && toolName.trim()) {
+                console.log('Chatooly: Using tool name from config: "' + toolName + '"');
+            } else {
+                // Try to get last published name for convenience
+                const lastPublishedName = localStorage.getItem('chatooly_last_tool_name');
+                const defaultName = lastPublishedName || '';
+
+                toolName = prompt('Enter tool name for publishing:', defaultName);
+                if (!toolName || !toolName.trim()) {
+                    console.log('Chatooly: Publishing cancelled');
+                    return;
+                }
+
+                // Save for next time
+                localStorage.setItem('chatooly_last_tool_name', toolName);
             }
             
             // Read additional config from chatooly.config.js if exists
@@ -4163,9 +4488,9 @@ Chatooly.canvasZoom = {
             const isDev = Chatooly.utils.isDevelopment();
             
             // Get current canvas size
-            const dimensions = Chatooly.canvasResizer ? 
-                Chatooly.canvasResizer.getCurrentDimensions() : 
-                { width: 1920, height: 1080 };
+            const dimensions = Chatooly.canvasResizer ?
+                Chatooly.canvasResizer.getCurrentDimensions() :
+                { width: 1000, height: 1000 };
             const currentWidth = dimensions.width;
             const currentHeight = dimensions.height;
             
@@ -5370,17 +5695,77 @@ Chatooly.canvasZoom = {
             if (Chatooly.canvasArea && Chatooly.canvasArea.centerCanvas) {
                 Chatooly.canvasArea.centerCanvas();
             }
-            
+
             // Hide menu after action
             const menu = document.querySelector('.chatooly-btn-menu');
             if (menu && this._hideMenu) {
                 this._hideMenu(menu);
             }
         },
-        
-        
+
+        /**
+         * Auto-inject background controls into the controls panel
+         * This makes background management available by default in all Chatooly tools
+         */
+        injectBackgroundControls: function() {
+            // Find the controls content area
+            const controlsPanel = document.querySelector('.chatooly-controls-content');
+            if (!controlsPanel) {
+                console.log('⚠️ Background controls: No .chatooly-controls-content found, skipping injection');
+                return;
+            }
+
+            // Check if background section already exists (manual implementation)
+            if (document.getElementById('background-section')) {
+                console.log('✅ Background controls: Already present (manual implementation)');
+                return;
+            }
+
+            // Create background controls HTML
+            const backgroundHTML = `
+                <!-- ========== BACKGROUND SECTION (AUTO-INJECTED BY CDN) ========== -->
+                <h3 class="section-header" id="background-header">
+                    ◼ Background <span class="section-toggle">▼</span>
+                </h3>
+                <div id="background-section" class="section-content">
+                    <div class="chatooly-control-group">
+                        <label>
+                            <input type="checkbox" id="transparent-bg"> Transparent Background
+                        </label>
+                    </div>
+
+                    <div class="chatooly-control-group" id="bg-color-group">
+                        <label for="bg-color">Background Color</label>
+                        <input type="color" id="bg-color" value="#CCFD50">
+                    </div>
+
+                    <div class="chatooly-control-group">
+                        <label for="bg-image">Background Image</label>
+                        <div class="chatooly-bg-image-wrapper">
+                            <input type="file" id="bg-image" accept="image/*">
+                            <button id="clear-bg-image" type="button" class="chatooly-bg-image-remove" style="display: none;">×</button>
+                        </div>
+                    </div>
+
+                    <div class="chatooly-control-group" id="bg-fit-group" style="display: none;">
+                        <label for="bg-fit">Background Fit</label>
+                        <select id="bg-fit">
+                            <option value="cover">Fill Frame</option>
+                            <option value="contain">Fit in Frame</option>
+                            <option value="fill">Stretch to Fill</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+
+            // Inject at the end of controls content
+            controlsPanel.insertAdjacentHTML('beforeend', backgroundHTML);
+
+            console.log('✅ Background controls auto-injected by CDN');
+        }
+
     };
-    
+
 
 
 

@@ -37,9 +37,9 @@
             const isDev = Chatooly.utils.isDevelopment();
             
             // Get current canvas size
-            const dimensions = Chatooly.canvasResizer ? 
-                Chatooly.canvasResizer.getCurrentDimensions() : 
-                { width: 1920, height: 1080 };
+            const dimensions = Chatooly.canvasResizer ?
+                Chatooly.canvasResizer.getCurrentDimensions() :
+                { width: 1000, height: 1000 };
             const currentWidth = dimensions.width;
             const currentHeight = dimensions.height;
             
@@ -1244,15 +1244,75 @@
             if (Chatooly.canvasArea && Chatooly.canvasArea.centerCanvas) {
                 Chatooly.canvasArea.centerCanvas();
             }
-            
+
             // Hide menu after action
             const menu = document.querySelector('.chatooly-btn-menu');
             if (menu && this._hideMenu) {
                 this._hideMenu(menu);
             }
         },
-        
-        
+
+        /**
+         * Auto-inject background controls into the controls panel
+         * This makes background management available by default in all Chatooly tools
+         */
+        injectBackgroundControls: function() {
+            // Find the controls content area
+            const controlsPanel = document.querySelector('.chatooly-controls-content');
+            if (!controlsPanel) {
+                console.log('⚠️ Background controls: No .chatooly-controls-content found, skipping injection');
+                return;
+            }
+
+            // Check if background section already exists (manual implementation)
+            if (document.getElementById('background-section')) {
+                console.log('✅ Background controls: Already present (manual implementation)');
+                return;
+            }
+
+            // Create background controls HTML
+            const backgroundHTML = `
+                <!-- ========== BACKGROUND SECTION (AUTO-INJECTED BY CDN) ========== -->
+                <h3 class="section-header" id="background-header">
+                    ◼ Background <span class="section-toggle">▼</span>
+                </h3>
+                <div id="background-section" class="section-content">
+                    <div class="chatooly-control-group">
+                        <label>
+                            <input type="checkbox" id="transparent-bg"> Transparent Background
+                        </label>
+                    </div>
+
+                    <div class="chatooly-control-group" id="bg-color-group">
+                        <label for="bg-color">Background Color</label>
+                        <input type="color" id="bg-color" value="#CCFD50">
+                    </div>
+
+                    <div class="chatooly-control-group">
+                        <label for="bg-image">Background Image</label>
+                        <div class="chatooly-bg-image-wrapper">
+                            <input type="file" id="bg-image" accept="image/*">
+                            <button id="clear-bg-image" type="button" class="chatooly-bg-image-remove" style="display: none;">×</button>
+                        </div>
+                    </div>
+
+                    <div class="chatooly-control-group" id="bg-fit-group" style="display: none;">
+                        <label for="bg-fit">Background Fit</label>
+                        <select id="bg-fit">
+                            <option value="cover">Fill Frame</option>
+                            <option value="contain">Fit in Frame</option>
+                            <option value="fill">Stretch to Fill</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+
+            // Inject at the end of controls content
+            controlsPanel.insertAdjacentHTML('beforeend', backgroundHTML);
+
+            console.log('✅ Background controls auto-injected by CDN');
+        }
+
     };
-    
+
 })(window.Chatooly);
