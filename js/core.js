@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-10-04T12:07:27.294Z
+ * Built: 2025-10-05T08:17:01.808Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -4498,14 +4498,21 @@ Chatooly.canvasZoom = {
         // Generate button HTML with Chatooly branding
         _getButtonHTML: function() {
             const isDev = Chatooly.utils.isDevelopment();
-            
+
             // Get current canvas size
             const dimensions = Chatooly.canvasResizer ?
                 Chatooly.canvasResizer.getCurrentDimensions() :
                 { width: 1000, height: 1000 };
             const currentWidth = dimensions.width;
             const currentHeight = dimensions.height;
-            
+
+            // Publish tab only shows in development mode
+            const publishTab = isDev ? `
+                        <div class="chatooly-nav-item" data-tab="publish">
+                            <span class="chatooly-nav-icon">🚀</span>
+                            <span class="chatooly-nav-label">Publish</span>
+                        </div>` : '';
+
             return `
                 <!-- Minimized Floating Button -->
                 <div class="chatooly-minimized-btn">
@@ -4524,11 +4531,7 @@ Chatooly.canvasZoom = {
                         <div class="chatooly-nav-item" data-tab="export">
                             <span class="chatooly-nav-icon">📥</span>
                             <span class="chatooly-nav-label">Export</span>
-                        </div>
-                        <div class="chatooly-nav-item" data-tab="publish">
-                            <span class="chatooly-nav-icon">🚀</span>
-                            <span class="chatooly-nav-label">Publish</span>
-                        </div>
+                        </div>${publishTab}
                         <div class="chatooly-nav-item" data-tab="info">
                             <span class="chatooly-nav-icon">❓</span>
                             <span class="chatooly-nav-label">Info</span>
@@ -4633,7 +4636,7 @@ Chatooly.canvasZoom = {
                                     </div>
                                 </div>
                             </div>
-                            
+                            ${isDev ? `
                             <!-- Publish Tab Content -->
                             <div class="chatooly-tab-content" id="publish-content" style="display: none;">
                                 <div class="chatooly-settings-section">
@@ -4664,7 +4667,7 @@ Chatooly.canvasZoom = {
                                     <button class="chatooly-btn-primary chatooly-publish-btn">Publish to ToolHub</button>
                                 </div>
                             </div>
-                            
+                            ` : ''}
                             <!-- Info Tab Content -->
                             <div class="chatooly-tab-content" id="info-content" style="display: none;">
                                 <div class="chatooly-settings-section">
