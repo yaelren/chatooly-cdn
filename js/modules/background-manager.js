@@ -10,7 +10,7 @@
     Chatooly.backgroundManager = {
         // Background state
         state: {
-            bgColor: '#CCFD50',
+            bgColor: '#FFFFFF',
             bgTransparent: false,
             bgImage: null,
             bgImageURL: null,
@@ -288,7 +288,7 @@
          * Reset to default background
          */
         reset: function() {
-            this.state.bgColor = '#CCFD50';
+            this.state.bgColor = '#FFFFFF';
             this.state.bgTransparent = false;
             this.state.bgImage = null;
             this.state.bgImageURL = null;

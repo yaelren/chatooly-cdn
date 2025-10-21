@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-10-05T08:17:01.808Z
+ * Built: 2025-10-21T11:17:38.512Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -507,7 +507,7 @@
 Chatooly.backgroundManager = {
         // Background state
         state: {
-            bgColor: '#CCFD50',
+            bgColor: '#FFFFFF',
             bgTransparent: false,
             bgImage: null,
             bgImageURL: null,
@@ -785,7 +785,7 @@ Chatooly.backgroundManager = {
          * Reset to default background
          */
         reset: function() {
-            this.state.bgColor = '#CCFD50';
+            this.state.bgColor = '#FFFFFF';
             this.state.bgTransparent = false;
             this.state.bgImage = null;
             this.state.bgImageURL = null;
