@@ -26,7 +26,6 @@
          */
         init: function(canvasElement) {
             this.canvas = canvasElement;
-            console.log('🎨 Background Manager initialized');
             return this;
         },
 
@@ -42,7 +41,6 @@
                 this._updateCheckeredPattern();
             }
 
-            console.log(`🎨 Background color set: ${color}`);
             return this;
         },
 
@@ -61,7 +59,6 @@
                 }
             }
 
-            console.log(`🎨 Transparent background: ${transparent}`);
             return this;
         },
 

@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-10-21T11:17:38.512Z
+ * Built: 2025-10-21T11:30:53.465Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -523,7 +523,6 @@ Chatooly.backgroundManager = {
          */
         init: function(canvasElement) {
             this.canvas = canvasElement;
-            console.log('🎨 Background Manager initialized');
             return this;
         },
 
@@ -539,7 +538,6 @@ Chatooly.backgroundManager = {
                 this._updateCheckeredPattern();
             }
 
-            console.log(`🎨 Background color set: ${color}`);
             return this;
         },
 
@@ -558,7 +556,6 @@ Chatooly.backgroundManager = {
                 }
             }
 
-            console.log(`🎨 Transparent background: ${transparent}`);
             return this;
         },
 
