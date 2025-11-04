@@ -46,9 +46,11 @@
 
 .chatooly-section-header {
   font-family: var(--chatooly-font-family-section-header);
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--chatooly-color-text-light);
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: normal;
+  color: #6D736C;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 12px;
@@ -181,9 +183,12 @@
 }
 
 .chatooly-input-label {
-  font-size: 11px;
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
   font-weight: 500;
-  color: var(--chatooly-color-accent-text);
+  font-style: normal;
+  line-height: normal;
+  color: #000;
   text-transform: none;
   letter-spacing: 0;
 }
@@ -236,10 +241,14 @@
 /* ========== DROPDOWNS / SELECTS ========== */
 .chatooly-select {
   width: 100%;
-  padding: 8px 30px 8px 10px;
+  display: flex;
+  padding: 8px 10px;
+  align-items: center;
+  gap: 5px;
+  align-self: stretch;
+  border-radius: 5px;
   background: var(--chatooly-color-accent-input);
   border: none;
-  border-radius: var(--chatooly-input-radius);
   color: var(--chatooly-color-accent-input-text);
   font-family: var(--chatooly-font-family);
   font-size: 12px;
@@ -277,9 +286,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
   font-weight: 500;
-  color: var(--chatooly-color-accent-text);
+  font-style: normal;
+  line-height: normal;
+  color: #000;
 }
 
 .chatooly-slider-value {
@@ -384,55 +396,52 @@ input[type="range"].chatooly-slider::-moz-range-track {
 
 .chatooly-toggle {
   position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 20px;
+  display: flex;
+  width: 25px;
+  padding: 2px;
+  align-items: center;
+  border-radius: 500px;
   flex-shrink: 0;
+  background: var(--chatooly-color-accent-input);
+  transition: background 0.15s ease;
+  cursor: pointer;
+  box-sizing: border-box;
 }
 
 .chatooly-toggle input {
   opacity: 0;
   width: 0;
   height: 0;
+  position: absolute;
 }
 
 .chatooly-toggle-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--chatooly-color-accent-input);
-  border-radius: 10px;
-  transition: background 0.15s ease;
-}
-
-.chatooly-toggle-slider::before {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  left: 2px;
-  bottom: 2px;
-  background: var(--chatooly-color-text-light);
+  width: 10px;
+  height: 10px;
+  background: #000000;
   border-radius: 50%;
-  transition: transform 0.15s ease;
+  transition: all 0.15s ease;
+  pointer-events: none;
+  flex-shrink: 0;
+  aspect-ratio: 1/1;
 }
 
-.chatooly-toggle input:checked + .chatooly-toggle-slider {
-  background: #00ff88;
+.chatooly-toggle input:checked ~ .chatooly-toggle-slider {
+  background: #FFFFFF;
 }
 
-.chatooly-toggle input:checked + .chatooly-toggle-slider::before {
-  background: var(--chatooly-color-black);
-  transform: translateX(20px);
+.chatooly-toggle:has(input:checked) {
+  background: #000000;
+  justify-content: flex-end;
 }
 
 .chatooly-toggle-label {
-  font-size: 11px;
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
   font-weight: 500;
-  color: var(--chatooly-color-accent-text);
+  font-style: normal;
+  line-height: normal;
+  color: #000;
   cursor: pointer;
   user-select: none;
 }
@@ -466,8 +475,12 @@ input[type="range"].chatooly-slider::-moz-range-track {
 }
 
 .chatooly-upload-text {
-  font-size: 11px;
-  color: var(--chatooly-color-accent-text);
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: normal;
+  color: #000;
   text-align: center;
 }
 
@@ -497,9 +510,12 @@ input[type="range"].chatooly-slider::-moz-range-track {
 }
 
 .chatooly-control-label {
-  font-size: 11px;
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
   font-weight: 500;
-  color: var(--chatooly-color-accent-text);
+  font-style: normal;
+  line-height: normal;
+  color: #000;
   min-width: 80px;
 }
 
