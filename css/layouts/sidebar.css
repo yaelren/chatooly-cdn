@@ -3,6 +3,11 @@
  * Standard sidebar + canvas layout for design tools
  */
 
+/* ========== Header (Hidden in new design) ========== */
+.chatooly-header {
+  display: none;
+}
+
 /* ========== Layout Container ========== */
 .chatooly-app-container {
   display: flex;
@@ -21,34 +26,46 @@
   flex-direction: column;
   z-index: var(--chatooly-z-sticky);
   transition: width var(--chatooly-transition-normal);
+  position: relative;
 }
 
-/* Sidebar header */
+/* Sidebar header - Tool name at top (FIXED) */
 .chatooly-controls-header {
-  padding: var(--chatooly-spacing-4);
+  display: flex;
+  padding: 15px;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
   background: var(--chatooly-color-surface);
   border-bottom: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
 }
 
 .chatooly-controls-header h1 {
-  font-size: var(--chatooly-font-size-xl);
-  font-weight: var(--chatooly-font-weight-bold);
+  font-size: var(--chatooly-font-size-md);
+  font-weight: var(--chatooly-font-weight-medium);
   color: var(--chatooly-color-text);
   margin: 0;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .chatooly-controls-header p {
-  font-size: var(--chatooly-font-size-sm);
+  font-size: var(--chatooly-font-size-xs);
   color: var(--chatooly-color-text-muted);
-  margin: var(--chatooly-spacing-1) 0 0 0;
+  margin: 0;
+  letter-spacing: 0;
 }
 
-/* Sidebar controls container */
+/* Sidebar controls container (SCROLLABLE) */
 .chatooly-controls-content {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--chatooly-spacing-4);
+  padding: 15px;
+  padding-bottom: 20px;
 }
 
 /* Smooth scrolling for controls */
@@ -69,11 +86,14 @@
   background: var(--chatooly-color-gray-400);
 }
 
-/* Sidebar footer (optional) */
+/* Sidebar footer - Fixed export button at bottom */
 .chatooly-controls-footer {
-  padding: var(--chatooly-spacing-3);
+  padding: 15px;
   background: var(--chatooly-color-surface);
   border-top: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
 }
 
 /* ========== Preview/Canvas Panel ========== */

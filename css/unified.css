@@ -1037,6 +1037,255 @@ button {
   margin-bottom: 16px;
 }
 /**
+ * Chatooly Design System - Sidebar Layout
+ * Standard sidebar + canvas layout for design tools
+ */
+
+/* ========== Header (Hidden in new design) ========== */
+.chatooly-header {
+  display: none;
+}
+
+/* ========== Layout Container ========== */
+.chatooly-app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: var(--chatooly-color-background);
+}
+
+/* ========== Sidebar Panel ========== */
+.chatooly-controls-panel {
+  width: var(--chatooly-sidebar-width);
+  background: var(--chatooly-color-surface);
+  box-shadow: var(--chatooly-shadow-md);
+  display: flex;
+  flex-direction: column;
+  z-index: var(--chatooly-z-sticky);
+  transition: width var(--chatooly-transition-normal);
+  position: relative;
+}
+
+/* Sidebar header - Tool name at top (FIXED) */
+.chatooly-controls-header {
+  display: flex;
+  padding: 15px;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+  background: var(--chatooly-color-surface);
+  border-bottom: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.chatooly-controls-header h1 {
+  font-size: var(--chatooly-font-size-md);
+  font-weight: var(--chatooly-font-weight-medium);
+  color: var(--chatooly-color-text);
+  margin: 0;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.chatooly-controls-header p {
+  font-size: var(--chatooly-font-size-xs);
+  color: var(--chatooly-color-text-muted);
+  margin: 0;
+  letter-spacing: 0;
+}
+
+/* Sidebar controls container (SCROLLABLE) */
+.chatooly-controls-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 15px;
+  padding-bottom: 20px;
+}
+
+/* Smooth scrolling for controls */
+.chatooly-controls-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatooly-controls-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chatooly-controls-content::-webkit-scrollbar-thumb {
+  background: var(--chatooly-color-gray-300);
+  border-radius: var(--chatooly-border-radius-full);
+}
+
+.chatooly-controls-content::-webkit-scrollbar-thumb:hover {
+  background: var(--chatooly-color-gray-400);
+}
+
+/* Sidebar footer - Fixed export button at bottom */
+.chatooly-controls-footer {
+  padding: 15px;
+  background: var(--chatooly-color-surface);
+  border-top: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+/* ========== Preview/Canvas Panel ========== */
+.chatooly-preview-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--chatooly-spacing-6);
+  background: var(--chatooly-color-background);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ========== Canvas Container ========== */
+#chatooly-canvas {
+  position: relative;
+  background: var(--chatooly-canvas-background);
+  border-radius: var(--chatooly-canvas-radius);
+  box-shadow: var(--chatooly-canvas-shadow);
+  overflow: hidden;
+  transition: all var(--chatooly-transition-normal);
+}
+
+/* Canvas sizing modes */
+#chatooly-canvas[data-display="fit"] {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+#chatooly-canvas[data-display="fill"] {
+  width: 100%;
+  height: 100%;
+}
+
+#chatooly-canvas[data-display="actual"] {
+  /* Use actual dimensions */
+}
+
+/* Canvas content styling */
+#chatooly-canvas canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+/* ========== Collapsible Sidebar ========== */
+.chatooly-sidebar-toggle {
+  position: absolute;
+  top: var(--chatooly-spacing-4);
+  right: calc(-1 * var(--chatooly-spacing-4));
+  width: 32px;
+  height: 32px;
+  background: var(--chatooly-color-surface);
+  border: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  border-radius: var(--chatooly-border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--chatooly-shadow-sm);
+  transition: all var(--chatooly-transition-fast);
+  z-index: var(--chatooly-z-sticky);
+}
+
+.chatooly-sidebar-toggle:hover {
+  background: var(--chatooly-color-surface-hover);
+  box-shadow: var(--chatooly-shadow-md);
+}
+
+.chatooly-sidebar-toggle::before {
+  content: '◀';
+  font-size: var(--chatooly-font-size-sm);
+  color: var(--chatooly-color-text-muted);
+}
+
+.chatooly-app-container.sidebar-collapsed .chatooly-controls-panel {
+  width: var(--chatooly-sidebar-collapsed-width);
+}
+
+.chatooly-app-container.sidebar-collapsed .chatooly-sidebar-toggle::before {
+  content: '▶';
+}
+
+.chatooly-app-container.sidebar-collapsed .chatooly-controls-content,
+.chatooly-app-container.sidebar-collapsed .chatooly-controls-header h1,
+.chatooly-app-container.sidebar-collapsed .chatooly-controls-header p {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ========== Responsive Design ========== */
+@media (max-width: 768px) {
+  .chatooly-app-container {
+    flex-direction: column;
+  }
+  
+  .chatooly-controls-panel {
+    width: 100%;
+    height: auto;
+    max-height: 40vh;
+    border-right: none;
+    border-bottom: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  }
+  
+  .chatooly-preview-panel {
+    padding: var(--chatooly-spacing-4);
+  }
+  
+  #chatooly-canvas {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .chatooly-sidebar-toggle {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .chatooly-controls-panel {
+    max-height: 50vh;
+  }
+  
+  .chatooly-preview-panel {
+    padding: var(--chatooly-spacing-2);
+  }
+  
+  .chatooly-controls-header {
+    padding: var(--chatooly-spacing-3);
+  }
+  
+  .chatooly-controls-content {
+    padding: var(--chatooly-spacing-3);
+  }
+}
+
+/* ========== Print Styles ========== */
+@media print {
+  .chatooly-controls-panel {
+    display: none;
+  }
+  
+  .chatooly-preview-panel {
+    padding: 0;
+  }
+  
+  #chatooly-canvas {
+    box-shadow: none;
+    border-radius: 0;
+  }
+}/**
  * Chatooly Design System - Responsive Styles
  * Mobile-first responsive design utilities
  */
