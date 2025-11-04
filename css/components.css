@@ -205,6 +205,34 @@
   flex: 1;
 }
 
+/* Textarea (multi-line input) */
+.chatooly-textarea {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--chatooly-color-accent-input);
+  border: none;
+  border-radius: var(--chatooly-input-radius);
+  color: var(--chatooly-color-accent-input-text);
+  font-family: var(--chatooly-font-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  outline: none;
+  transition: background 0.15s ease;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.chatooly-textarea:focus {
+  background: var(--chatooly-color-button-subtle-hover);
+}
+
+.chatooly-textarea::placeholder {
+  color: var(--chatooly-color-text-subtle);
+  opacity: 0.6;
+}
+
 /* ========== DROPDOWNS / SELECTS ========== */
 .chatooly-select {
   width: 100%;
@@ -259,54 +287,57 @@
   color: var(--chatooly-color-accent-input-text);
 }
 
-.chatooly-slider {
+input[type="range"].chatooly-slider {
   width: 100%;
-  height: 4px;
+  height: 20px;
+  border-radius: 500px;
   background: var(--chatooly-color-accent-input);
-  border-radius: 2px;
   outline: none;
   appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
+  padding: 0;
+  box-shadow: none;
 }
 
 /* Webkit (Chrome, Safari) */
-.chatooly-slider::-webkit-slider-thumb {
+input[type="range"].chatooly-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
-  background: var(--chatooly-color-text-light);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.chatooly-slider::-webkit-slider-thumb:hover {
-  background: var(--chatooly-color-text-bright);
-  transform: scale(1.1);
-}
-
-/* Firefox */
-.chatooly-slider::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  background: var(--chatooly-color-text-light);
+  width: 12px;
+  height: 12px;
+  background: #000000;
   border-radius: 50%;
   border: none;
   cursor: pointer;
   transition: all 0.15s ease;
+  box-shadow: none;
 }
 
-.chatooly-slider::-moz-range-thumb:hover {
-  background: var(--chatooly-color-text-bright);
+input[type="range"].chatooly-slider::-webkit-slider-thumb:hover {
   transform: scale(1.1);
 }
 
-.chatooly-slider::-moz-range-track {
-  height: 4px;
+/* Firefox */
+input[type="range"].chatooly-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: #000000;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: none;
+}
+
+input[type="range"].chatooly-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+input[type="range"].chatooly-slider::-moz-range-track {
+  height: 20px;
   background: var(--chatooly-color-accent-input);
-  border-radius: 2px;
+  border-radius: 500px;
   border: none;
 }
 
