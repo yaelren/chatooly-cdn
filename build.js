@@ -24,6 +24,7 @@ const config = {
         'animation-sequence-export.js', // PNG sequence export - depends on animation-mediarecorder
         'canvas-area.js',     // Canvas area container - depends on utils
         'canvas-resizer.js',  // Canvas resizing - depends on utils, canvas-area
+        'canvas-resize-bar.js', // Canvas resize bar UI - depends on canvas-resizer, canvas-area
         'canvas-zoom.js',     // Canvas zoom functionality - depends on utils, canvas-area
         'publish.js',         // Publishing - depends on utils
         'ui.js',              // UI components - depends on utils, canvas-resizer, publish
@@ -252,6 +253,13 @@ function buildCoreJS() {
                 setTimeout(() => {
                     this.ui.injectBackgroundControls();
                 }, 300);
+            }
+
+            // Initialize canvas resize bar (bottom control bar)
+            if (this.canvasResizeBar && this.canvasResizeBar.init) {
+                setTimeout(() => {
+                    this.canvasResizeBar.init();
+                }, 400);
             }
         },
         

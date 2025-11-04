@@ -37,12 +37,6 @@
             const isDev = Chatooly.utils.isDevelopment();
 
             // Get current canvas size
-            const dimensions = Chatooly.canvasResizer ?
-                Chatooly.canvasResizer.getCurrentDimensions() :
-                { width: 1000, height: 1000 };
-            const currentWidth = dimensions.width;
-            const currentHeight = dimensions.height;
-
             // Publish tab only shows in development mode
             const publishTab = isDev ? `
                         <div class="chatooly-nav-item" data-tab="publish">
@@ -61,11 +55,7 @@
                 <div class="chatooly-export-panel" style="display: none;">
                     <!-- Sidebar Navigation -->
                     <div class="chatooly-sidebar">
-                        <div class="chatooly-nav-item active" data-tab="canvas-size">
-                            <span class="chatooly-nav-icon">📏</span>
-                            <span class="chatooly-nav-label">Canvas Size</span>
-                        </div>
-                        <div class="chatooly-nav-item" data-tab="export">
+                        <div class="chatooly-nav-item active" data-tab="export">
                             <span class="chatooly-nav-icon">📥</span>
                             <span class="chatooly-nav-label">Export</span>
                         </div>${publishTab}
@@ -78,39 +68,6 @@
                     <!-- Settings Panel -->
                     <div class="chatooly-settings-panel">
                         <div class="chatooly-settings-content">
-                            <!-- Canvas Size Tab Content -->
-                            <div class="chatooly-tab-content" id="canvas-size-content">
-                                <div class="chatooly-settings-section">
-                                    <h4 class="chatooly-section-title">Size</h4>
-                                    <div class="chatooly-size-inputs">
-                                        <div class="chatooly-input-group">
-                                            <label>W</label>
-                                            <input type="number" id="chatooly-canvas-width" value="${currentWidth}" min="100" max="4000" class="chatooly-size-input">
-                                            <span class="chatooly-unit">px</span>
-                                        </div>
-                                        <div class="chatooly-input-group">
-                                            <label>H</label>
-                                            <input type="number" id="chatooly-canvas-height" value="${currentHeight}" min="100" max="4000" class="chatooly-size-input">
-                                            <span class="chatooly-unit">px</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="chatooly-settings-section">
-                                    <h4 class="chatooly-section-title">Standard Ratios</h4>
-                                    <div class="chatooly-ratio-buttons">
-                                        <button class="chatooly-ratio-btn" data-width="1920" data-height="1080">HD (16:9)</button>
-                                        <button class="chatooly-ratio-btn" data-width="1200" data-height="1200">Square (1:1)</button>
-                                        <button class="chatooly-ratio-btn" data-width="800" data-height="600">4:3</button>
-                                        <button class="chatooly-ratio-btn" data-width="1080" data-height="1920">Portrait (9:16)</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="chatooly-settings-section">
-                                    <button class="chatooly-btn-primary chatooly-apply-btn">Apply</button>
-                                </div>
-                            </div>
-                            
                             <!-- Export Tab Content -->
                             <div class="chatooly-tab-content" id="export-content" style="display: none;">
                                 <div class="chatooly-settings-section">
@@ -418,50 +375,7 @@
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
                 }
-                
-                /* Size Inputs */
-                #chatooly-export-btn .chatooly-size-inputs {
-                    display: flex;
-                    gap: var(--chatooly-spacing-4);
-                    align-items: center;
-                }
-                
-                #chatooly-export-btn .chatooly-input-group {
-                    display: flex;
-                    align-items: center;
-                    gap: var(--chatooly-spacing-2);
-                }
-                
-                #chatooly-export-btn .chatooly-input-group label {
-                    font-size: var(--chatooly-font-size-sm);
-                    color: var(--chatooly-color-text);
-                    font-weight: var(--chatooly-font-weight-medium);
-                    min-width: 20px;
-                }
-                
-                #chatooly-export-btn .chatooly-size-input {
-                    width: 80px;
-                    padding: var(--chatooly-spacing-2) var(--chatooly-spacing-3);
-                    background: var(--chatooly-color-surface-hover);
-                    border: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
-                    border-radius: var(--chatooly-border-radius);
-                    color: var(--chatooly-color-text);
-                    font-size: var(--chatooly-font-size-sm);
-                    text-align: center;
-                    transition: all var(--chatooly-transition-normal);
-                }
-                
-                #chatooly-export-btn .chatooly-size-input:focus {
-                    outline: none;
-                    border-color: var(--chatooly-color-primary);
-                    box-shadow: var(--chatooly-shadow-focus);
-                }
-                
-                #chatooly-export-btn .chatooly-unit {
-                    font-size: var(--chatooly-font-size-xs);
-                    color: var(--chatooly-color-text-muted);
-                }
-                
+
                 /* Scale Buttons */
                 #chatooly-export-btn .chatooly-scale-buttons {
                     display: flex;
@@ -528,37 +442,7 @@
                 #chatooly-export-btn .chatooly-tab-content.hidden {
                     display: none;
                 }
-                
-                /* Ratio Buttons */
-                #chatooly-export-btn .chatooly-ratio-buttons {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: var(--chatooly-spacing-2);
-                }
-                
-                #chatooly-export-btn .chatooly-ratio-btn {
-                    padding: var(--chatooly-spacing-2) var(--chatooly-spacing-3);
-                    background: transparent;
-                    border: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
-                    border-radius: var(--chatooly-border-radius);
-                    color: var(--chatooly-color-text-muted);
-                    font-size: var(--chatooly-font-size-xs);
-                    font-weight: var(--chatooly-font-weight-medium);
-                    cursor: pointer;
-                    transition: all var(--chatooly-transition-normal);
-                }
-                
-                #chatooly-export-btn .chatooly-ratio-btn:hover {
-                    color: var(--chatooly-color-text);
-                    background: var(--chatooly-color-surface-hover);
-                }
-                
-                #chatooly-export-btn .chatooly-ratio-btn.active {
-                    background: var(--chatooly-color-surface-active);
-                    color: var(--chatooly-color-text);
-                    border-color: var(--chatooly-color-primary);
-                }
-                
+
                 /* Export Type Buttons */
                 #chatooly-export-btn .chatooly-export-type-buttons {
                     display: flex;
@@ -817,12 +701,7 @@
                     #chatooly-export-btn .chatooly-settings-content {
                         padding: var(--chatooly-spacing-4);
                     }
-                    
-                    #chatooly-export-btn .chatooly-size-inputs {
-                        flex-direction: column;
-                        gap: var(--chatooly-spacing-3);
-                    }
-                    
+
                     #chatooly-export-btn .chatooly-scale-buttons,
                     #chatooly-export-btn .chatooly-format-buttons {
                         flex-wrap: wrap;
@@ -867,51 +746,7 @@
                     btn.classList.add('active');
                 });
             });
-            
-            
-            // Ratio buttons
-            const ratioButtons = button.querySelectorAll('.chatooly-ratio-btn');
-            ratioButtons.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const width = parseInt(btn.dataset.width);
-                    const height = parseInt(btn.dataset.height);
-                    this._setCanvasSize(width, height);
-                    this._showRatioFeedback(btn);
-                });
-            });
-            
-            // Apply button
-            const applyBtn = button.querySelector('.chatooly-apply-btn');
-            if (applyBtn) {
-                applyBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this._applyCanvasSize();
-                });
-            }
-            
-            // Enter key support for input fields
-            const widthInput = button.querySelector('#chatooly-canvas-width');
-            const heightInput = button.querySelector('#chatooly-canvas-height');
-            
-            if (widthInput) {
-                widthInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.stopPropagation();
-                        this._applyCanvasSize();
-                    }
-                });
-            }
-            
-            if (heightInput) {
-                heightInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.stopPropagation();
-                        this._applyCanvasSize();
-                    }
-                });
-            }
-            
+
             // Export type buttons
             const exportTypeButtons = button.querySelectorAll('.chatooly-export-type-btn');
             exportTypeButtons.forEach(btn => {
@@ -1000,40 +835,7 @@
                 selectedContent.style.display = 'block';
             }
         },
-        
-        // Set canvas size from ratio buttons
-        _setCanvasSize: function(width, height) {
-            const widthInput = document.getElementById('chatooly-canvas-width');
-            const heightInput = document.getElementById('chatooly-canvas-height');
-            
-            if (widthInput) widthInput.value = width;
-            if (heightInput) heightInput.value = height;
-        },
-        
-        // Show visual feedback when ratio button is clicked
-        _showRatioFeedback: function(button) {
-            // Remove active class from all ratio buttons
-            const allRatioButtons = document.querySelectorAll('.chatooly-ratio-btn');
-            allRatioButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked button
-            button.classList.add('active');
-            
-            // Remove active class after 2 seconds
-            setTimeout(() => {
-                button.classList.remove('active');
-            }, 2000);
-        },
-        
-        // Apply canvas size
-        _applyCanvasSize: function() {
-            if (Chatooly.canvasResizer && Chatooly.canvasResizer.applyExportSize) {
-                Chatooly.canvasResizer.applyExportSize();
-            } else {
-                console.warn('Chatooly: Canvas resizer not available');
-            }
-        },
-        
+
         // Reset canvas
         _resetCanvas: function() {
             if (Chatooly.canvasArea && Chatooly.canvasArea.resetZoomAndCenter) {

@@ -31,6 +31,64 @@
   border: 1px dashed var(--chatooly-color-border);
 }
 
+/* ========== Chatooly Buttons ========== */
+/* Standard Chatooly button style - SINGLE SOURCE OF TRUTH - matches Figma design */
+.chatooly-btn {
+  /* Layout - Figma specification */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+  /* Spacing - Figma specification */
+  padding: 8px 10px;
+
+  /* Border & Radius - Figma specification */
+  border: none;
+  border-radius: 5px;
+
+  /* Colors - Figma specification */
+  background: #6D736C;
+  color: var(--chatooly-color-button-primary-text);
+
+  /* Typography */
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: normal;
+  white-space: nowrap;
+
+  /* Sizing */
+  box-sizing: border-box;
+
+  /* Interaction */
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.chatooly-btn:hover {
+  background: var(--chatooly-color-button-hover);
+}
+
+.chatooly-btn.active {
+  background: var(--chatooly-color-button-active);
+  color: var(--chatooly-color-button-active-text);
+}
+
+.chatooly-btn:active:not(.active) {
+  transform: scale(0.98);
+}
+
+/* Button variants */
+.chatooly-btn-subtle {
+  background: var(--chatooly-color-button-subtle);
+  color: var(--chatooly-color-text-inverse);
+}
+
+.chatooly-btn-subtle:hover {
+  background: var(--chatooly-color-button-subtle-hover);
+}
+
 /* ========== Transparent Background Pattern ========== */
 /* Checkered pattern for transparent canvas backgrounds */
 #chatooly-canvas.chatooly-canvas-transparent,
@@ -272,21 +330,13 @@
   margin-top: 24px;
 }
 
-.chatooly-btn {
+/* Modal button variants - extend base .chatooly-btn */
+.chatooly-modal-actions .chatooly-btn {
   padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   min-width: 80px;
-  position: relative;
-  overflow: hidden;
+  border-radius: 8px;
 }
 
 .chatooly-btn-primary {
@@ -1064,7 +1114,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 6px;
-  margin-top: 12px;
 }
 
 .chatooly-preset-btn {

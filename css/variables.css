@@ -27,79 +27,88 @@
   --chatooly-line-height-relaxed: 1.75;
   
   /* ========== Colors ========== */
-  /* Primary Palette - Chatooly dark theme */
-  --chatooly-color-primary: #e5e5e5;
-  --chatooly-color-primary-hover: #fff;
-  --chatooly-color-primary-active: #888;
-  --chatooly-color-primary-light: rgba(229, 229, 229, 0.15);
-  --chatooly-color-primary-dark: #555;
-  
+  /* Primary Palette - Chatooly Accent Colors (Light Green/Beige) */
+  --chatooly-color-primary: #d9e5d7;
+  --chatooly-color-primary-hover: #e5f0e3;
+  --chatooly-color-primary-active: #aeb7ac;
+  --chatooly-color-primary-light: rgba(217, 229, 215, 0.15);
+  --chatooly-color-primary-dark: #6d736c;
+
   /* Semantic Colors */
-  --chatooly-color-success: #28a745;
-  --chatooly-color-success-hover: #218838;
-  --chatooly-color-success-light: #d4edda;
-  
+  --chatooly-color-success: #d9e5d7;
+  --chatooly-color-success-hover: #e5f0e3;
+  --chatooly-color-success-light: rgba(217, 229, 215, 0.2);
+
   --chatooly-color-danger: #dc3545;
   --chatooly-color-danger-hover: #c82333;
   --chatooly-color-danger-light: #f8d7da;
-  
+
   --chatooly-color-warning: #ffc107;
   --chatooly-color-warning-hover: #e0a800;
   --chatooly-color-warning-light: #fff3cd;
-  
-  --chatooly-color-info: #17a2b8;
-  --chatooly-color-info-hover: #138496;
-  --chatooly-color-info-light: #d1ecf1;
-  
+
+  --chatooly-color-info: #aeb7ac;
+  --chatooly-color-info-hover: #c0c9be;
+  --chatooly-color-info-light: rgba(174, 183, 172, 0.2);
+
   /* Neutral Colors - Chatooly Dark Palette */
   --chatooly-color-white: #ffffff;
-  --chatooly-color-gray-50: #2a2a2a;
-  --chatooly-color-gray-100: #1f1f1f;
+  --chatooly-color-gray-50: #343434;
+  --chatooly-color-gray-100: #232323;
   --chatooly-color-gray-200: #1a1a1a;
-  --chatooly-color-gray-300: #181818;
-  --chatooly-color-gray-400: #333333;
-  --chatooly-color-gray-500: #555555;
-  --chatooly-color-gray-600: #888888;
-  --chatooly-color-gray-700: #aaaaaa;
-  --chatooly-color-gray-800: #cccccc;
-  --chatooly-color-gray-900: #e5e5e5;
+  --chatooly-color-gray-300: #232323;
+  --chatooly-color-gray-400: #343434;
+  --chatooly-color-gray-500: #454545;
+  --chatooly-color-gray-600: #6d736c;
+  --chatooly-color-gray-700: #8f8f8f;
+  --chatooly-color-gray-800: #aeb7ac;
+  --chatooly-color-gray-900: #d9e5d7;
   --chatooly-color-black: #000000;
 
   /* Functional Colors - Chatooly Dark Theme */
-  --chatooly-color-text: #e5e5e5;
-  --chatooly-color-text-muted: #888888;
-  --chatooly-color-text-light: #555555;
-  --chatooly-color-text-subtle: #555555;
+  --chatooly-color-text: #d9e5d7;
+  --chatooly-color-text-muted: #8f8f8f;
+  --chatooly-color-text-light: #6d736c;
+  --chatooly-color-text-subtle: #454545;
   --chatooly-color-text-inverse: #000000;
   --chatooly-color-text-bright: #ffffff;
 
-  --chatooly-color-background: #121212;
-  --chatooly-color-surface: #0f0f0f;
-  --chatooly-color-surface-hover: #1a1a1a;
-  --chatooly-color-surface-active: #222222;
-  --chatooly-color-surface-secondary: #181818;
-  --chatooly-color-surface-tertiary: #1f1f1f;
+  --chatooly-color-background: #1a1a1a;
+  --chatooly-color-surface: #232323;
+  --chatooly-color-surface-hover: #343434;
+  --chatooly-color-surface-active: #454545;
+  --chatooly-color-surface-secondary: #232323;
+  --chatooly-color-surface-tertiary: #343434;
 
-  --chatooly-color-border: #2a2a2a;
-  --chatooly-color-border-light: #1f1f1f;
-  --chatooly-color-border-subtle: #1f1f1f;
-  --chatooly-color-border-dark: #333333;
+  --chatooly-color-border: #343434;
+  --chatooly-color-border-light: #232323;
+  --chatooly-color-border-subtle: #343434;
+  --chatooly-color-border-dark: #454545;
 
   /* Button Colors - Chatooly style */
-  --chatooly-color-button-primary: #1a1a1a;
-  --chatooly-color-button-primary-text: #e5e5e5;
-  --chatooly-color-button-hover: #222222;
-  --chatooly-color-button-subtle: #1a1a1a;
-  --chatooly-color-button-subtle-hover: #222222;
-  --chatooly-color-button-border: #2a2a2a;
+  --chatooly-color-button-primary: #6d736c;
+  --chatooly-color-button-primary-text: #d9e5d7;
+  --chatooly-color-button-hover: #7d837c;
+  --chatooly-color-button-active: #000000;
+  --chatooly-color-button-active-text: #ffffff;
+  --chatooly-color-button-subtle: #aeb7ac;
+  --chatooly-color-button-subtle-hover: #c0c9be;
+  --chatooly-color-button-border: #343434;
 
   /* Export/Action Colors */
-  --chatooly-color-export-primary: #333333;
-  --chatooly-color-export-hover: #444444;
+  --chatooly-color-export-primary: #6d736c;
+  --chatooly-color-export-hover: #7d837c;
+  --chatooly-color-export-active: #000000;
+
+  /* Accent Section Colors (Light Green Background) */
+  --chatooly-color-accent-bg: #d9e5d7;
+  --chatooly-color-accent-text: #000000;
+  --chatooly-color-accent-input: #aeb7ac;
+  --chatooly-color-accent-input-text: #454545;
 
   /* Focus States */
-  --chatooly-color-focus: #666666;
-  --chatooly-color-focus-shadow: rgba(102, 102, 102, 0.15);
+  --chatooly-color-focus: #d9e5d7;
+  --chatooly-color-focus-shadow: rgba(217, 229, 215, 0.25);
   
   /* ========== Spacing ========== */
   --chatooly-spacing-0: 0;

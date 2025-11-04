@@ -227,9 +227,9 @@ textarea {
 }
 
 /* ========== Buttons - Universal Styling ========== */
+/* Generic button and .btn styling - .chatooly-btn has its own specific styling in components.css */
 button,
-.btn,
-.chatooly-btn {
+.btn {
   display: inline-block;
   padding: 8px 16px;
   font-family: var(--chatooly-font-family);
