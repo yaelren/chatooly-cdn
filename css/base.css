@@ -226,90 +226,18 @@ textarea {
   resize: vertical;
 }
 
-/* ========== Buttons - Universal Styling ========== */
-/* Generic button and .btn styling - .chatooly-btn has its own specific styling in components.css */
-button,
-.btn {
-  display: inline-block;
-  padding: 8px 16px;
-  font-family: var(--chatooly-font-family);
-  font-size: var(--chatooly-font-size-xs);
-  font-weight: var(--chatooly-font-weight-normal);
-  line-height: var(--chatooly-line-height-normal);
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
+/* ========== Buttons - Minimal Base Styling ========== */
+/* Note: Use .chatooly-btn classes from components.css for Chatooly-styled buttons */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
   cursor: pointer;
   user-select: none;
-  background-color: var(--chatooly-color-button-primary);
-  color: var(--chatooly-color-button-primary-text);
-  border: 1px solid var(--chatooly-color-button-border);
-  border-radius: 2px;
-  transition: all 0.15s ease;
-  outline: none;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-button:hover,
-.btn:hover {
-  background-color: var(--chatooly-color-button-hover);
-}
-
-button:active,
-.btn:active {
-  background-color: var(--chatooly-color-button-hover);
-}
-
-button:focus,
-.btn:focus {
-  outline: none;
-  border-color: var(--chatooly-color-focus);
-  box-shadow: 0 0 0 2px var(--chatooly-color-focus-shadow);
-}
-
-button:disabled,
-.btn:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-/* Button variants */
-.btn-secondary {
-  background-color: var(--chatooly-color-gray-600);
-  color: var(--chatooly-color-white);
-}
-
-.btn-secondary:hover {
-  background-color: var(--chatooly-color-gray-700);
-}
-
-.btn-success {
-  background-color: var(--chatooly-color-success);
-}
-
-.btn-success:hover {
-  background-color: var(--chatooly-color-success-hover);
-}
-
-.btn-danger {
-  background-color: var(--chatooly-color-danger);
-}
-
-.btn-danger:hover {
-  background-color: var(--chatooly-color-danger-hover);
-}
-
-.btn-outline {
-  background-color: transparent;
-  color: var(--chatooly-color-primary);
-  border-color: var(--chatooly-color-primary);
-}
-
-.btn-outline:hover {
-  background-color: var(--chatooly-color-primary);
-  color: var(--chatooly-color-white);
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
 }
 
 /* ========== Utility Classes ========== */

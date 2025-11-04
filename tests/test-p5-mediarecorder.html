@@ -42,36 +42,62 @@
             
             <div class="chatooly-controls-content">
                 <!-- ========== EDIT BELOW: Add Your Tool Controls Here ========== -->
-                
-                <!-- Animation controls -->
-                <div class="chatooly-control-group">
-                    <label for="particle-count">Particle Count</label>
-                    <input type="range" id="particle-count" min="5" max="50" value="20">
-                    <span id="particle-count-value">20</span>
+
+                <!-- Animation Settings Section -->
+                <div class="chatooly-section-card">
+                    <span class="chatooly-section-header">ANIMATION SETTINGS</span>
+
+                    <!-- Particle Count Slider -->
+                    <div class="chatooly-slider-group">
+                        <div class="chatooly-slider-label">
+                            <span>Particle Count</span>
+                            <span class="chatooly-slider-value" id="particle-count-value">20</span>
+                        </div>
+                        <input type="range" class="chatooly-slider" id="particle-count" min="5" max="50" value="20">
+                    </div>
+
+                    <!-- Rotation Speed Slider -->
+                    <div class="chatooly-slider-group">
+                        <div class="chatooly-slider-label">
+                            <span>Rotation Speed</span>
+                            <span class="chatooly-slider-value" id="rotation-speed-value">0.05</span>
+                        </div>
+                        <input type="range" class="chatooly-slider" id="rotation-speed" min="0.01" max="0.1" step="0.01" value="0.05">
+                    </div>
+
+                    <!-- Trail Length Slider -->
+                    <div class="chatooly-slider-group">
+                        <div class="chatooly-slider-label">
+                            <span>Trail Length</span>
+                            <span class="chatooly-slider-value" id="trail-length-value">50</span>
+                        </div>
+                        <input type="range" class="chatooly-slider" id="trail-length" min="10" max="100" value="50">
+                    </div>
                 </div>
-                
-                <div class="chatooly-control-group">
-                    <label for="rotation-speed">Rotation Speed</label>
-                    <input type="range" id="rotation-speed" min="0.01" max="0.1" step="0.01" value="0.05">
-                    <span id="rotation-speed-value">0.05</span>
+
+                <!-- Background Section -->
+                <div class="chatooly-section-card">
+                    <span class="chatooly-section-header">BACKGROUND</span>
+
+                    <!-- Color Picker -->
+                    <div class="chatooly-color-group">
+                        <label class="chatooly-input-label">Background Color</label>
+                        <input type="color" class="chatooly-color-input" id="background-color" value="#1a1a1a">
+                    </div>
                 </div>
-                
-                <div class="chatooly-control-group">
-                    <label for="trail-length">Trail Length</label>
-                    <input type="range" id="trail-length" min="10" max="100" value="50">
-                    <span id="trail-length-value">50</span>
+
+                <!-- Controls Section -->
+                <div class="chatooly-section-card">
+                    <span class="chatooly-section-header">CONTROLS</span>
+
+                    <button class="chatooly-btn chatooly-btn-black" id="reset-animation" style="width: 100%; margin-bottom: 8px;">
+                        Reset Animation
+                    </button>
+                    <button class="chatooly-btn chatooly-btn-black" id="toggle-animation" style="width: 100%;">
+                        Toggle Animation
+                    </button>
                 </div>
-                
-                <div class="chatooly-control-group">
-                    <label for="background-color">Background Color</label>
-                    <input type="color" id="background-color" value="#1a1a1a">
-                </div>
-                
-                <div class="chatooly-control-group">
-                    <button id="reset-animation">🔄 Reset Animation</button>
-                    <button id="toggle-animation">⏯️ Toggle Animation</button>
-                </div>
-                
+
                 <!-- ========== END EDIT SECTION ========== -->
             </div>
         </div>
@@ -265,8 +291,8 @@
             // Toggle animation
             document.getElementById('toggle-animation').addEventListener('click', () => {
                 isAnimating = !isAnimating;
-                document.getElementById('toggle-animation').textContent = 
-                    isAnimating ? '⏸️ Pause Animation' : '▶️ Resume Animation';
+                document.getElementById('toggle-animation').textContent =
+                    isAnimating ? 'Pause Animation' : 'Resume Animation';
             });
         }
         

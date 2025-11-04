@@ -96,6 +96,9 @@
   --chatooly-color-button-border: #343434;
 
   /* Export/Action Colors */
+  --chatooly-color-export-button: #F4E4A3;
+  --chatooly-color-export-button-text: #000000;
+  --chatooly-color-export-button-hover: #FFF4C4;
   --chatooly-color-export-primary: #6d736c;
   --chatooly-color-export-hover: #7d837c;
   --chatooly-color-export-active: #000000;
@@ -132,18 +135,29 @@
   --chatooly-spacing-lg: var(--chatooly-spacing-6);
   --chatooly-spacing-xl: var(--chatooly-spacing-8);
   --chatooly-spacing-2xl: var(--chatooly-spacing-12);
+
+  /* Component-specific spacing */
+  --chatooly-card-padding: 15px;
+  --chatooly-card-gap: 10px;
+  --chatooly-control-gap: 10px;
   
   /* ========== Borders ========== */
   --chatooly-border-width-thin: 1px;
   --chatooly-border-width: 1px;
   --chatooly-border-width-thick: 2px;
-  
+
   --chatooly-border-radius-sm: 2px;
   --chatooly-border-radius: 4px;
-  --chatooly-border-radius-md: 4px;
+  --chatooly-border-radius-md: 5px;
   --chatooly-border-radius-lg: 6px;
   --chatooly-border-radius-xl: 8px;
+  --chatooly-border-radius-2xl: 10px;
   --chatooly-border-radius-full: 50%;
+
+  /* Component-specific border radius */
+  --chatooly-button-radius: 5px;
+  --chatooly-card-radius: 5px;
+  --chatooly-input-radius: 4px;
   
   /* ========== Shadows ========== */
   --chatooly-shadow-xs: none;
