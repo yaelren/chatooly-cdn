@@ -45,6 +45,7 @@
 }
 
 .chatooly-section-header {
+  font-family: var(--chatooly-font-family-section-header);
   font-size: 10px;
   font-weight: 500;
   color: var(--chatooly-color-text-light);
@@ -492,6 +493,23 @@
   background: var(--chatooly-color-border-subtle);
   margin: 15px 0;
   border: none;
+}
+
+/* ========== CANVAS RESIZE BAR ========== */
+/* Remove margins from elements inside canvas resize bar */
+#chatooly-resize-bar .chatooly-btn,
+#chatooly-resize-bar button,
+#chatooly-resize-bar h1,
+#chatooly-resize-bar h2,
+#chatooly-resize-bar h3,
+#chatooly-resize-bar h4,
+#chatooly-resize-bar h5,
+#chatooly-resize-bar h6,
+#chatooly-resize-bar p,
+#chatooly-resize-bar span,
+#chatooly-resize-bar div {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 /* ========== UTILITIES ========== */

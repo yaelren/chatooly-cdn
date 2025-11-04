@@ -3,10 +3,14 @@
  * Core design tokens that ensure visual consistency across all tools
  */
 
+/* ========== Font Imports ========== */
+@import url('https://fonts.googleapis.com/css2?family=TASA+Orbiter:wght@400;500;600;700&family=VT323&display=swap');
+
 :root {
   /* ========== Typography ========== */
-  --chatooly-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --chatooly-font-family: "TASA Orbiter", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --chatooly-font-family-mono: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+  --chatooly-font-family-section-header: "VT323", monospace;
 
   --chatooly-font-size-xs: 11px;
   --chatooly-font-size-sm: 12px;
@@ -66,7 +70,7 @@
   --chatooly-color-black: #000000;
 
   /* Functional Colors - Chatooly Dark Theme */
-  --chatooly-color-text: #d9e5d7;
+  --chatooly-color-text: #ffffff;
   --chatooly-color-text-muted: #8f8f8f;
   --chatooly-color-text-light: #6d736c;
   --chatooly-color-text-subtle: #454545;

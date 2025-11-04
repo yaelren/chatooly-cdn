@@ -15,18 +15,24 @@
   width: 100vw;
   overflow: hidden;
   background: var(--chatooly-color-background);
+  padding: 20px;
+  gap: 20px;
 }
 
-/* ========== Sidebar Panel ========== */
+/* ========== Sidebar Panel (Floating) ========== */
 .chatooly-controls-panel {
+  display: inline-flex;
   width: var(--chatooly-sidebar-width);
-  background: var(--chatooly-color-surface);
-  box-shadow: var(--chatooly-shadow-md);
-  display: flex;
+  padding: 5px;
   flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 1px solid var(--chatooly-color-border);
+  background: var(--chatooly-color-surface);
   z-index: var(--chatooly-z-sticky);
   transition: width var(--chatooly-transition-normal);
-  position: relative;
 }
 
 /* Sidebar header - Tool name at top (FIXED) */
@@ -36,11 +42,11 @@
   align-items: center;
   gap: 10px;
   align-self: stretch;
-  background: var(--chatooly-color-surface);
-  border-bottom: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  border-radius: 5px;
+  background: #454545;
+  border-bottom: none;
   flex-shrink: 0;
-  position: relative;
-  z-index: 2;
+  width: 100%;
 }
 
 .chatooly-controls-header h1 {
@@ -64,8 +70,8 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 15px;
-  padding-bottom: 20px;
+  padding: 0 15px;
+  width: 100%;
 }
 
 /* Smooth scrolling for controls */
@@ -89,11 +95,10 @@
 /* Sidebar footer - Fixed export button at bottom */
 .chatooly-controls-footer {
   padding: 15px;
-  background: var(--chatooly-color-surface);
-  border-top: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  background: transparent;
+  border-top: none;
   flex-shrink: 0;
-  position: relative;
-  z-index: 2;
+  width: 100%;
 }
 
 /* ========== Preview/Canvas Panel ========== */
