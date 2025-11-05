@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatooly Design System - Component Demo</title>
-    <link rel="stylesheet" href="css/unified.css?v=3">
+    <link rel="stylesheet" href="css/unified.css?v=4">
 </head>
 <body>
     <div class="chatooly-app-container">
@@ -17,8 +17,9 @@
             <div class="chatooly-controls-content">
                 <!-- SECTION CARD: Sliders -->
                 <div class="chatooly-section-card">
-                    <span class="chatooly-section-header">SLIDERS</span>
+                    <span class="chatooly-section-header" role="button" tabindex="0">SLIDERS</span>
 
+                    <div class="chatooly-section-content">
                     <div class="chatooly-slider-group">
                         <div class="chatooly-slider-label">
                             <span>Radius</span>
@@ -42,12 +43,14 @@
                         </div>
                         <input type="range" class="chatooly-slider" id="slider3" min="0" max="100" value="100">
                     </div>
+                    </div>
                 </div>
 
                 <!-- SECTION CARD: Dropdowns & Inputs -->
                 <div class="chatooly-section-card">
-                    <span class="chatooly-section-header">DROPDOWNS & INPUTS</span>
+                    <span class="chatooly-section-header" role="button" tabindex="0">DROPDOWNS & INPUTS</span>
 
+                    <div class="chatooly-section-content">
                     <div class="chatooly-input-group">
                         <label class="chatooly-input-label">Mode</label>
                         <select class="chatooly-select">
@@ -71,12 +74,14 @@
                         <label class="chatooly-input-label">Description</label>
                         <textarea class="chatooly-textarea" placeholder="Enter multi-line text..." rows="4"></textarea>
                     </div>
+                    </div>
                 </div>
 
                 <!-- SECTION CARD: Colors & Toggles -->
                 <div class="chatooly-section-card">
-                    <span class="chatooly-section-header">COLORS & TOGGLES</span>
+                    <span class="chatooly-section-header" role="button" tabindex="0">COLORS & TOGGLES</span>
 
+                    <div class="chatooly-section-content">
                     <div class="chatooly-color-group">
                         <label class="chatooly-color-label">Primary Color</label>
                         <input type="color" class="chatooly-color-input" value="#2196F3">
@@ -117,12 +122,14 @@
                         </button>
                         <span class="chatooly-toggle-label" id="toggle-rotate">Auto-Rotate</span>
                     </div>
+                    </div>
                 </div>
 
                 <!-- SECTION CARD: Upload Areas -->
                 <div class="chatooly-section-card">
-                    <span class="chatooly-section-header">UPLOAD AREAS</span>
+                    <span class="chatooly-section-header" role="button" tabindex="0">UPLOAD AREAS</span>
 
+                    <div class="chatooly-section-content">
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <div class="chatooly-upload-area" style="flex: 1; height: 80px;">
                             <div class="chatooly-upload-icon">📁</div>
@@ -141,12 +148,14 @@
                         <div class="chatooly-upload-text">Upload Image</div>
                         <input type="file" class="chatooly-upload-input">
                     </div>
+                    </div>
                 </div>
 
                 <!-- SECTION CARD: Buttons -->
                 <div class="chatooly-section-card">
-                    <span class="chatooly-section-header">BUTTONS</span>
+                    <span class="chatooly-section-header" role="button" tabindex="0">BUTTONS</span>
 
+                    <div class="chatooly-section-content">
                     <button class="chatooly-btn" style="width: 100%; margin-bottom: 8px;">
                         Regular Button
                     </button>
@@ -166,12 +175,14 @@
                     <button class="chatooly-btn" disabled style="width: 100%;">
                         Disabled Button
                     </button>
+                    </div>
                 </div>
 
                 <!-- SECTION CARD: Preset Grid -->
                 <div class="chatooly-section-card">
-                    <span class="chatooly-section-header">PRESET BUTTONS</span>
+                    <span class="chatooly-section-header" role="button" tabindex="0">PRESET BUTTONS</span>
 
+                    <div class="chatooly-section-content">
                     <div class="chatooly-preset-grid">
                         <button class="chatooly-btn">HD</button>
                         <button class="chatooly-btn active">SQUARE</button>
@@ -179,6 +190,7 @@
                         <button class="chatooly-btn">PORTRAIT</button>
                         <button class="chatooly-btn">16:9</button>
                         <button class="chatooly-btn">CUSTOM</button>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -238,6 +250,9 @@
 
     <!-- Chatooly CDN Core - Automatically injects canvas resize bar and export functionality -->
     <script src="js/core.min.js"></script>
+
+    <!-- Chatooly CDN Modules -->
+    <script src="js/modules/collapsible-sections.js"></script>
 
     <script>
         // Toggle switch functionality

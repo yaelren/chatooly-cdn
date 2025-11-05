@@ -564,7 +564,42 @@ button {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 12px;
-  display: block;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 20px;
+}
+
+.chatooly-section-header::after {
+  content: '▼';
+  position: absolute;
+  right: 0;
+  font-size: 10px;
+  transition: transform 0.2s ease;
+}
+
+.chatooly-section-header:hover {
+  color: #454545;
+}
+
+.chatooly-section-card.collapsed .chatooly-section-header::after {
+  transform: rotate(-90deg);
+}
+
+.chatooly-section-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  max-height: 2000px;
+  opacity: 1;
+}
+
+.chatooly-section-card.collapsed .chatooly-section-content {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
 }
 
 /* ========== BUTTONS ========== */
