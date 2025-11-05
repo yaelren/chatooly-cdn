@@ -947,6 +947,89 @@ input[type="color"].chatooly-color-input::-moz-color-swatch {
   box-shadow: none;
 }
 
+/* ========== NUMBER STEPPER ========== */
+.chatooly-stepper-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+  margin-bottom: var(--chatooly-control-gap);
+}
+
+.chatooly-stepper-label {
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
+  font-weight: 500;
+  color: #000000;
+  flex: 1;
+}
+
+.chatooly-stepper {
+  display: flex;
+  padding: 2px;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  border-radius: 5px;
+  background: #000000;
+  flex-shrink: 0;
+  height: 25px;
+  box-sizing: border-box;
+}
+
+.chatooly-stepper-input {
+  width: 25px;
+  height: 21px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-family: var(--chatooly-font-family);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+  line-height: 21px;
+}
+
+.chatooly-stepper-input::-webkit-outer-spin-button,
+.chatooly-stepper-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.chatooly-stepper-btn {
+  display: flex;
+  width: 21px;
+  height: 21px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  aspect-ratio: 1/1;
+  border-radius: 3px;
+  background: #FFFFFF;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  user-select: none;
+}
+
+.chatooly-stepper-btn svg {
+  width: 8px;
+  height: 8px;
+}
+
+.chatooly-stepper-btn:hover svg {
+  opacity: 0.7;
+}
+
+.chatooly-stepper-btn:active svg {
+  opacity: 0.5;
+}
+
 /* ========== TOGGLES / SWITCHES ========== */
 .chatooly-toggle-group {
   display: flex;

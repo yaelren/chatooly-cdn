@@ -87,6 +87,23 @@
                         <input type="color" class="chatooly-color-input" value="#1a1a1a">
                     </div>
 
+                    <div class="chatooly-stepper-group">
+                        <label class="chatooly-stepper-label">Opacity</label>
+                        <div class="chatooly-stepper">
+                            <button class="chatooly-stepper-btn" type="button" data-action="decrement">
+                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.5 2.5L4 5L6.5 2.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <input type="number" class="chatooly-stepper-input" value="3" min="0" max="10">
+                            <button class="chatooly-stepper-btn" type="button" data-action="increment">
+                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.5 5.5L4 3L6.5 5.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="chatooly-toggle-group">
                         <button class="chatooly-toggle" role="switch" aria-pressed="false" aria-labelledby="toggle-shadows">
                             <span class="chatooly-toggle-slider"></span>
@@ -228,6 +245,29 @@
             toggle.addEventListener('click', function() {
                 const isPressed = this.getAttribute('aria-pressed') === 'true';
                 this.setAttribute('aria-pressed', !isPressed);
+            });
+        });
+
+        // Number stepper functionality
+        document.querySelectorAll('.chatooly-stepper').forEach(stepper => {
+            const input = stepper.querySelector('.chatooly-stepper-input');
+            const decrementBtn = stepper.querySelector('[data-action="decrement"]');
+            const incrementBtn = stepper.querySelector('[data-action="increment"]');
+
+            decrementBtn.addEventListener('click', () => {
+                const min = parseInt(input.getAttribute('min')) || 0;
+                const current = parseInt(input.value) || 0;
+                if (current > min) {
+                    input.value = current - 1;
+                }
+            });
+
+            incrementBtn.addEventListener('click', () => {
+                const max = parseInt(input.getAttribute('max')) || 100;
+                const current = parseInt(input.value) || 0;
+                if (current < max) {
+                    input.value = current + 1;
+                }
             });
         });
 
