@@ -138,13 +138,20 @@
 
 /* ========== INPUTS ========== */
 /* Text and number inputs */
-.chatooly-input {
+input.chatooly-input,
+input[type="text"].chatooly-input,
+input[type="number"].chatooly-input,
+input[type="email"].chatooly-input,
+input[type="password"].chatooly-input,
+input[type="search"].chatooly-input,
+input[type="tel"].chatooly-input,
+input[type="url"].chatooly-input {
   width: 100%;
   padding: 8px 10px;
-  background: var(--chatooly-color-accent-input);
-  border: none;
+  background: var(--chatooly-color-accent-input) !important;
+  border: none !important;
   border-radius: var(--chatooly-input-radius);
-  color: var(--chatooly-color-accent-input-text);
+  color: var(--chatooly-color-accent-input-text) !important;
   font-family: var(--chatooly-font-family);
   font-size: 12px;
   font-weight: 400;
@@ -154,11 +161,20 @@
   box-sizing: border-box;
 }
 
-.chatooly-input:focus {
-  background: var(--chatooly-color-button-subtle-hover);
+input.chatooly-input:focus,
+input[type="text"].chatooly-input:focus,
+input[type="number"].chatooly-input:focus,
+input[type="email"].chatooly-input:focus,
+input[type="password"].chatooly-input:focus,
+input[type="search"].chatooly-input:focus,
+input[type="tel"].chatooly-input:focus,
+input[type="url"].chatooly-input:focus {
+  background: var(--chatooly-color-button-subtle-hover) !important;
 }
 
-.chatooly-input::placeholder {
+input.chatooly-input::placeholder,
+input[type="text"].chatooly-input::placeholder,
+input[type="number"].chatooly-input::placeholder {
   color: var(--chatooly-color-text-subtle);
   opacity: 0.6;
 }

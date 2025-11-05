@@ -106,31 +106,7 @@ button {
   line-height: inherit;
 }
 
-input[type="text"],
-input[type="number"],
-input[type="email"],
-input[type="password"],
-input[type="search"],
-input[type="tel"],
-input[type="url"],
-input[type="date"],
-input[type="time"],
-input[type="datetime-local"],
-select,
-textarea {
-  display: block;
-  width: 100%;
-  padding: 6px 8px;
-  font-size: var(--chatooly-font-size-sm);
-  font-weight: var(--chatooly-font-weight-normal);
-  line-height: var(--chatooly-line-height-normal);
-  color: var(--chatooly-color-text);
-  background-color: var(--chatooly-color-surface-tertiary);
-  background-clip: padding-box;
-  border: var(--chatooly-border-width) solid var(--chatooly-color-border);
-  border-radius: 2px;
-  transition: all 0.15s ease;
-}
+/* Base input styles removed - use component-specific classes instead (.chatooly-input, .chatooly-select, .chatooly-textarea) */
 
 input:focus,
 select:focus,
