@@ -66,6 +66,11 @@
                         <label class="chatooly-input-label">Value</label>
                         <input type="number" class="chatooly-input" value="42">
                     </div>
+
+                    <div class="chatooly-input-group">
+                        <label class="chatooly-input-label">Description</label>
+                        <textarea class="chatooly-textarea" placeholder="Enter multi-line text..." rows="4"></textarea>
+                    </div>
                 </div>
 
                 <!-- SECTION CARD: Colors & Toggles -->
@@ -83,19 +88,17 @@
                     </div>
 
                     <div class="chatooly-toggle-group">
-                        <label class="chatooly-toggle">
-                            <input type="checkbox">
+                        <button class="chatooly-toggle" role="switch" aria-pressed="false" aria-labelledby="toggle-shadows">
                             <span class="chatooly-toggle-slider"></span>
-                        </label>
-                        <span class="chatooly-toggle-label">Enable Shadows</span>
+                        </button>
+                        <span class="chatooly-toggle-label" id="toggle-shadows">Enable Shadows</span>
                     </div>
 
                     <div class="chatooly-toggle-group">
-                        <label class="chatooly-toggle">
-                            <input type="checkbox" checked>
+                        <button class="chatooly-toggle" role="switch" aria-pressed="true" aria-labelledby="toggle-rotate">
                             <span class="chatooly-toggle-slider"></span>
-                        </label>
-                        <span class="chatooly-toggle-label">Auto-Rotate</span>
+                        </button>
+                        <span class="chatooly-toggle-label" id="toggle-rotate">Auto-Rotate</span>
                     </div>
                 </div>
 
@@ -220,6 +223,14 @@
     <script src="js/core.min.js"></script>
 
     <script>
+        // Toggle switch functionality
+        document.querySelectorAll('.chatooly-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const isPressed = this.getAttribute('aria-pressed') === 'true';
+                this.setAttribute('aria-pressed', !isPressed);
+            });
+        });
+
         // Interactive slider value updates
         document.querySelectorAll('.chatooly-slider').forEach(slider => {
             const valueSpan = slider.parentElement.querySelector('.chatooly-slider-value');

@@ -923,6 +923,8 @@ input[type="range"].chatooly-slider::-moz-range-track {
 /* ========== TOGGLES / SWITCHES ========== */
 .chatooly-toggle-group {
   display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
   align-items: center;
   gap: 10px;
   margin-bottom: var(--chatooly-control-gap);
@@ -931,40 +933,59 @@ input[type="range"].chatooly-slider::-moz-range-track {
 .chatooly-toggle {
   position: relative;
   display: flex;
-  width: 25px;
-  padding: 2px;
+  width: 40px;
+  height: 20px;
+  padding: 3px;
   align-items: center;
   border-radius: 500px;
   flex-shrink: 0;
-  background: var(--chatooly-color-accent-input);
+  background: #AEB7AC;
   transition: background 0.15s ease;
   cursor: pointer;
   box-sizing: border-box;
+  border: none;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  overflow: hidden;
 }
 
-.chatooly-toggle input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  position: absolute;
+.chatooly-toggle:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 2px;
 }
 
 .chatooly-toggle-slider {
-  width: 10px;
-  height: 10px;
+  display: block;
+  position: relative;
+  width: 14px;
+  height: 14px;
   background: #000000;
   border-radius: 50%;
   transition: all 0.15s ease;
   pointer-events: none;
   flex-shrink: 0;
   aspect-ratio: 1/1;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  outline: none;
 }
 
-.chatooly-toggle input:checked ~ .chatooly-toggle-slider {
+.chatooly-toggle-slider::before,
+.chatooly-toggle-slider::after {
+  display: none !important;
+  content: none !important;
+}
+
+.chatooly-toggle[aria-pressed="true"] .chatooly-toggle-slider {
   background: #FFFFFF;
 }
 
-.chatooly-toggle:has(input:checked) {
+.chatooly-toggle[aria-pressed="true"] {
   background: #000000;
   justify-content: flex-end;
 }
