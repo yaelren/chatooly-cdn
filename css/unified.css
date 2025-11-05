@@ -890,34 +890,61 @@ input[type="range"].chatooly-slider::-moz-range-track {
 /* ========== COLOR PICKERS ========== */
 .chatooly-color-group {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
   margin-bottom: var(--chatooly-control-gap);
 }
 
-.chatooly-color-input {
-  width: 100%;
-  height: 36px;
-  padding: 4px;
-  background: var(--chatooly-color-accent-input);
-  border: none;
-  border-radius: var(--chatooly-input-radius);
+.chatooly-color-label {
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
+  font-weight: 500;
+  color: #000000;
+  flex: 1;
+}
+
+input[type="color"].chatooly-color-input {
+  display: flex;
+  width: 40px;
+  height: 25px !important;
+  min-height: 25px;
+  max-height: 25px;
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  border-radius: 5px;
+  border: 1px solid #98A197;
   cursor: pointer;
   outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  overflow: hidden;
 }
 
-.chatooly-color-input::-webkit-color-swatch-wrapper {
+input[type="color"].chatooly-color-input::-webkit-color-swatch-wrapper {
   padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
 }
 
-.chatooly-color-input::-webkit-color-swatch {
-  border: none;
-  border-radius: 2px;
+input[type="color"].chatooly-color-input::-webkit-color-swatch {
+  border: none !important;
+  border-radius: 3px;
+  outline: none;
+  box-shadow: none;
 }
 
-.chatooly-color-input::-moz-color-swatch {
-  border: none;
-  border-radius: 2px;
+input[type="color"].chatooly-color-input::-moz-color-swatch {
+  border: none !important;
+  border-radius: 3px;
+  outline: none;
+  box-shadow: none;
 }
 
 /* ========== TOGGLES / SWITCHES ========== */
