@@ -17,26 +17,37 @@
         // PNG export for p5.js canvas
         png: {
             export: function(canvas, options) {
-                const resolution = options.resolution || Chatooly.config.resolution || 2;
+                const scale = options.scale || options.resolution || Chatooly.config.resolution || 2;
                 const filename = options.filename || Chatooly.utils.generateFilename(Chatooly.config, 'png');
-                
+
                 try {
                     let dataURL;
-                    
-                    if (resolution > 1 && window.p5 && window.pixelDensity) {
-                        // Use p5.js native pixel density for true high-res
-                        const originalDensity = window.pixelDensity();
-                        window.pixelDensity(resolution);
-                        window.redraw();
-                        dataURL = canvas.toDataURL('image/png');
-                        window.pixelDensity(originalDensity);
+
+                    if (scale > 1) {
+                        // Create high-res canvas by scaling current canvas content
+                        const scaledCanvas = document.createElement('canvas');
+                        const ctx = scaledCanvas.getContext('2d');
+
+                        // Set scaled dimensions
+                        scaledCanvas.width = canvas.width * scale;
+                        scaledCanvas.height = canvas.height * scale;
+
+                        // Disable image smoothing for crisp scaling
+                        ctx.imageSmoothingEnabled = false;
+
+                        // Scale and draw current canvas content (preserves current visual state)
+                        ctx.scale(scale, scale);
+                        ctx.drawImage(canvas, 0, 0);
+
+                        dataURL = scaledCanvas.toDataURL('image/png');
                     } else {
+                        // Direct export at 1x scale
                         dataURL = canvas.toDataURL('image/png');
                     }
-                    
+
                     Chatooly.utils.downloadImage(dataURL, filename);
-                    console.log('Chatooly: p5.js Canvas PNG exported at ' + resolution + 'x resolution');
-                    
+                    console.log('Chatooly: p5.js Canvas PNG exported at ' + scale + 'x scale');
+
                 } catch (error) {
                     console.error('Chatooly: p5.js Canvas PNG export failed:', error);
                     alert('PNG export failed. This might be due to CORS restrictions.');

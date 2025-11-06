@@ -1,0 +1,326 @@
+/**
+ * Chatooly CDN v2.0 - Legacy Compatibility Layer
+ *
+ * Automatically applies new Chatooly design system to plain HTML elements
+ * within Chatooly containers, ensuring backward compatibility for existing tools.
+ *
+ * Strategy: button = .chatooly-btn, input = .chatooly-input, etc.
+ */
+
+/* ========== SCOPE: Only Apply Within Chatooly Containers ========== */
+/* This prevents global pollution - only affects elements inside Chatooly components */
+
+/* ========== BUTTONS - Universal Fallback ========== */
+/* Apply .chatooly-btn styles to all buttons without specific classes */
+
+.chatooly-app-container button:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-controls-panel button:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-control-group button:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-controls-content button:not([class*="chatooly-"]):not(.custom-styled) {
+  /* Copy all .chatooly-btn styles */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: var(--chatooly-button-radius, 5px);
+  background: var(--chatooly-color-button-primary, #6d736c);
+  color: var(--chatooly-color-button-primary-text, #d9e5d7);
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: normal;
+  white-space: nowrap;
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.chatooly-app-container button:not([class*="chatooly-"]):not(.custom-styled):hover,
+.chatooly-controls-panel button:not([class*="chatooly-"]):not(.custom-styled):hover,
+.chatooly-control-group button:not([class*="chatooly-"]):not(.custom-styled):hover,
+.chatooly-controls-content button:not([class*="chatooly-"]):not(.custom-styled):hover {
+  background: var(--chatooly-color-button-hover, #7d837c);
+}
+
+.chatooly-app-container button:not([class*="chatooly-"]):not(.custom-styled):active,
+.chatooly-controls-panel button:not([class*="chatooly-"]):not(.custom-styled):active,
+.chatooly-control-group button:not([class*="chatooly-"]):not(.custom-styled):active,
+.chatooly-controls-content button:not([class*="chatooly-"]):not(.custom-styled):active {
+  transform: scale(0.98);
+}
+
+.chatooly-app-container button:not([class*="chatooly-"]):not(.custom-styled):disabled,
+.chatooly-controls-panel button:not([class*="chatooly-"]):not(.custom-styled):disabled,
+.chatooly-control-group button:not([class*="chatooly-"]):not(.custom-styled):disabled,
+.chatooly-controls-content button:not([class*="chatooly-"]):not(.custom-styled):disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ========== TEXT INPUTS - Universal Fallback ========== */
+/* Apply .chatooly-input styles to all text inputs without specific classes */
+
+.chatooly-app-container input[type="text"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-app-container input[type="number"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-app-container input[type="email"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-app-container input[type="password"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-app-container input[type="search"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-app-container input[type="tel"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-app-container input[type="url"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-controls-panel input[type="text"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-controls-panel input[type="number"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-control-group input[type="text"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-control-group input[type="number"]:not([class*="chatooly-"]):not(.custom-styled) {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--chatooly-color-accent-input, #aeb7ac) !important;
+  border: none !important;
+  border-radius: var(--chatooly-input-radius, 4px);
+  color: var(--chatooly-color-accent-input-text, #454545) !important;
+  font-family: var(--chatooly-font-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  outline: none;
+  transition: background 0.15s ease;
+  box-sizing: border-box;
+}
+
+.chatooly-app-container input[type="text"]:not([class*="chatooly-"]):not(.custom-styled):focus,
+.chatooly-app-container input[type="number"]:not([class*="chatooly-"]):not(.custom-styled):focus,
+.chatooly-controls-panel input[type="text"]:not([class*="chatooly-"]):not(.custom-styled):focus,
+.chatooly-controls-panel input[type="number"]:not([class*="chatooly-"]):not(.custom-styled):focus,
+.chatooly-control-group input[type="text"]:not([class*="chatooly-"]):not(.custom-styled):focus,
+.chatooly-control-group input[type="number"]:not([class*="chatooly-"]):not(.custom-styled):focus {
+  background: var(--chatooly-color-button-subtle-hover, #c0c9be) !important;
+}
+
+/* Remove number input spinners */
+.chatooly-app-container input[type="number"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-controls-panel input[type="number"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-control-group input[type="number"]:not([class*="chatooly-"]):not(.custom-styled) {
+  -moz-appearance: textfield;
+}
+
+.chatooly-app-container input[type="number"]:not([class*="chatooly-"]):not(.custom-styled)::-webkit-outer-spin-button,
+.chatooly-app-container input[type="number"]:not([class*="chatooly-"]):not(.custom-styled)::-webkit-inner-spin-button,
+.chatooly-controls-panel input[type="number"]:not([class*="chatooly-"]):not(.custom-styled)::-webkit-outer-spin-button,
+.chatooly-controls-panel input[type="number"]:not([class*="chatooly-"]):not(.custom-styled)::-webkit-inner-spin-button,
+.chatooly-control-group input[type="number"]:not([class*="chatooly-"]):not(.custom-styled)::-webkit-outer-spin-button,
+.chatooly-control-group input[type="number"]:not([class*="chatooly-"]):not(.custom-styled)::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ========== SELECT DROPDOWNS - Universal Fallback ========== */
+
+.chatooly-app-container select:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-controls-panel select:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-control-group select:not([class*="chatooly-"]):not(.custom-styled) {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--chatooly-color-accent-input, #aeb7ac) !important;
+  border: none !important;
+  border-radius: var(--chatooly-input-radius, 4px);
+  color: var(--chatooly-color-accent-input-text, #454545) !important;
+  font-family: var(--chatooly-font-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  outline: none;
+  transition: background 0.15s ease;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.chatooly-app-container select:not([class*="chatooly-"]):not(.custom-styled):focus,
+.chatooly-controls-panel select:not([class*="chatooly-"]):not(.custom-styled):focus,
+.chatooly-control-group select:not([class*="chatooly-"]):not(.custom-styled):focus {
+  background: var(--chatooly-color-button-subtle-hover, #c0c9be) !important;
+}
+
+/* ========== TEXTAREA - Universal Fallback ========== */
+
+.chatooly-app-container textarea:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-controls-panel textarea:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-control-group textarea:not([class*="chatooly-"]):not(.custom-styled) {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--chatooly-color-accent-input, #aeb7ac) !important;
+  border: none !important;
+  border-radius: var(--chatooly-input-radius, 4px);
+  color: var(--chatooly-color-accent-input-text, #454545) !important;
+  font-family: var(--chatooly-font-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  outline: none;
+  transition: background 0.15s ease;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.chatooly-app-container textarea:not([class*="chatooly-"]):not(.custom-styled):focus,
+.chatooly-controls-panel textarea:not([class*="chatooly-"]):not(.custom-styled):focus,
+.chatooly-control-group textarea:not([class*="chatooly-"]):not(.custom-styled):focus {
+  background: var(--chatooly-color-button-subtle-hover, #c0c9be) !important;
+}
+
+/* ========== RANGE SLIDERS - Universal Fallback ========== */
+
+.chatooly-app-container input[type="range"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-controls-panel input[type="range"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-control-group input[type="range"]:not([class*="chatooly-"]):not(.custom-styled) {
+  width: 100%;
+  height: 20px;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Range slider track */
+.chatooly-app-container input[type="range"]:not([class*="chatooly-"]):not(.custom-styled)::-webkit-slider-runnable-track,
+.chatooly-controls-panel input[type="range"]:not([class*="chatooly-"]):not(.custom-styled)::-webkit-slider-runnable-track,
+.chatooly-control-group input[type="range"]:not([class*="chatooly-"]):not(.custom-styled)::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  background: var(--chatooly-color-accent-input, #aeb7ac);
+  border-radius: 2px;
+}
+
+.chatooly-app-container input[type="range"]:not([class*="chatooly-"]):not(.custom-styled)::-moz-range-track,
+.chatooly-controls-panel input[type="range"]:not([class*="chatooly-"]):not(.custom-styled)::-moz-range-track,
+.chatooly-control-group input[type="range"]:not([class*="chatooly-"]):not(.custom-styled)::-moz-range-track {
+  width: 100%;
+  height: 4px;
+  background: var(--chatooly-color-accent-input, #aeb7ac);
+  border-radius: 2px;
+}
+
+/* Range slider thumb */
+.chatooly-app-container input[type="range"]:not([class*="chatooly-"]):not(.custom-styled)::-webkit-slider-thumb,
+.chatooly-controls-panel input[type="range"]:not([class*="chatooly-"]):not(.custom-styled)::-webkit-slider-thumb,
+.chatooly-control-group input[type="range"]:not([class*="chatooly-"]):not(.custom-styled)::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--chatooly-color-button-primary, #6d736c);
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -5px;
+}
+
+.chatooly-app-container input[type="range"]:not([class*="chatooly-"]):not(.custom-styled)::-moz-range-thumb,
+.chatooly-controls-panel input[type="range"]:not([class*="chatooly-"]):not(.custom-styled)::-moz-range-thumb,
+.chatooly-control-group input[type="range"]:not([class*="chatooly-"]):not(.custom-styled)::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--chatooly-color-button-primary, #6d736c);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* ========== CHECKBOXES - Universal Fallback ========== */
+
+.chatooly-app-container input[type="checkbox"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-controls-panel input[type="checkbox"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-control-group input[type="checkbox"]:not([class*="chatooly-"]):not(.custom-styled) {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--chatooly-color-button-primary, #6d736c);
+  cursor: pointer;
+}
+
+/* ========== COLOR INPUTS - Universal Fallback ========== */
+
+.chatooly-app-container input[type="color"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-controls-panel input[type="color"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-control-group input[type="color"]:not([class*="chatooly-"]):not(.custom-styled) {
+  width: 50px;
+  height: 32px;
+  border: 2px solid var(--chatooly-color-border, #343434);
+  border-radius: var(--chatooly-input-radius, 4px);
+  cursor: pointer;
+  background: transparent;
+}
+
+/* ========== FILE INPUTS - Universal Fallback ========== */
+
+.chatooly-app-container input[type="file"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-controls-panel input[type="file"]:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-control-group input[type="file"]:not([class*="chatooly-"]):not(.custom-styled) {
+  font-family: var(--chatooly-font-family);
+  font-size: 12px;
+  color: var(--chatooly-color-text);
+  cursor: pointer;
+}
+
+.chatooly-app-container input[type="file"]:not([class*="chatooly-"]):not(.custom-styled)::file-selector-button,
+.chatooly-controls-panel input[type="file"]:not([class*="chatooly-"]):not(.custom-styled)::file-selector-button,
+.chatooly-control-group input[type="file"]:not([class*="chatooly-"]):not(.custom-styled)::file-selector-button {
+  padding: 6px 10px;
+  background: var(--chatooly-color-button-primary, #6d736c);
+  color: var(--chatooly-color-button-primary-text, #d9e5d7);
+  border: none;
+  border-radius: var(--chatooly-button-radius, 5px);
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  margin-right: 8px;
+}
+
+.chatooly-app-container input[type="file"]:not([class*="chatooly-"]):not(.custom-styled)::file-selector-button:hover,
+.chatooly-controls-panel input[type="file"]:not([class*="chatooly-"]):not(.custom-styled)::file-selector-button:hover,
+.chatooly-control-group input[type="file"]:not([class*="chatooly-"]):not(.custom-styled)::file-selector-button:hover {
+  background: var(--chatooly-color-button-hover, #7d837c);
+}
+
+/* ========== LABELS - Universal Fallback ========== */
+
+.chatooly-app-container label:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-controls-panel label:not([class*="chatooly-"]):not(.custom-styled),
+.chatooly-control-group label:not([class*="chatooly-"]):not(.custom-styled) {
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
+  font-weight: 500;
+  color: #000;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* ========== OPT-OUT MECHANISM ========== */
+/* If a tool wants to use completely custom styling, add .custom-styled class */
+/* Or wrap in .no-chatooly-fallback container */
+
+.no-chatooly-fallback button,
+.no-chatooly-fallback input,
+.no-chatooly-fallback select,
+.no-chatooly-fallback textarea,
+.no-chatooly-fallback label {
+  all: revert;
+}
+
+/* ========== COMPATIBILITY NOTES ========== */
+/*
+ * This file ensures backward compatibility by:
+ * 1. Applying new Chatooly styles to plain HTML elements
+ * 2. Scoping only to Chatooly containers (no global pollution)
+ * 3. Excluding elements that already have chatooly-* classes
+ * 4. Providing opt-out via .custom-styled or .no-chatooly-fallback
+ *
+ * Tools can now use either:
+ *   <button>Click</button>              ← Gets new design automatically
+ *   <button class="chatooly-btn">       ← Explicitly uses new design
+ *   <button class="custom-styled">      ← Opts out of automatic styling
+ */

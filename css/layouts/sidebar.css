@@ -3,6 +3,11 @@
  * Standard sidebar + canvas layout for design tools
  */
 
+/* ========== Header (Hidden in new design) ========== */
+.chatooly-header {
+  display: none;
+}
+
 /* ========== Layout Container ========== */
 .chatooly-app-container {
   display: flex;
@@ -10,45 +15,63 @@
   width: 100vw;
   overflow: hidden;
   background: var(--chatooly-color-background);
+  padding: 20px;
+  gap: 20px;
 }
 
-/* ========== Sidebar Panel ========== */
+/* ========== Sidebar Panel (Floating) ========== */
 .chatooly-controls-panel {
+  display: inline-flex;
   width: var(--chatooly-sidebar-width);
-  background: var(--chatooly-color-surface);
-  box-shadow: var(--chatooly-shadow-md);
-  display: flex;
+  padding: 5px;
   flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 1px solid var(--chatooly-color-border);
+  background: var(--chatooly-color-surface);
   z-index: var(--chatooly-z-sticky);
   transition: width var(--chatooly-transition-normal);
 }
 
-/* Sidebar header */
+/* Sidebar header - Tool name at top (FIXED) */
 .chatooly-controls-header {
-  padding: var(--chatooly-spacing-4);
-  background: var(--chatooly-color-surface);
-  border-bottom: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  display: flex;
+  padding: 15px;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+  border-radius: 5px;
+  background: #454545;
+  border-bottom: none;
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .chatooly-controls-header h1 {
-  font-size: var(--chatooly-font-size-xl);
-  font-weight: var(--chatooly-font-weight-bold);
+  font-size: var(--chatooly-font-size-md);
+  font-weight: var(--chatooly-font-weight-medium);
   color: var(--chatooly-color-text);
   margin: 0;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .chatooly-controls-header p {
-  font-size: var(--chatooly-font-size-sm);
+  font-size: var(--chatooly-font-size-xs);
   color: var(--chatooly-color-text-muted);
-  margin: var(--chatooly-spacing-1) 0 0 0;
+  margin: 0;
+  letter-spacing: 0;
 }
 
-/* Sidebar controls container */
+/* Sidebar controls container (SCROLLABLE) */
 .chatooly-controls-content {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--chatooly-spacing-4);
+  padding: 0 15px;
+  width: 100%;
 }
 
 /* Smooth scrolling for controls */
@@ -69,11 +92,13 @@
   background: var(--chatooly-color-gray-400);
 }
 
-/* Sidebar footer (optional) */
+/* Sidebar footer - Fixed export button at bottom */
 .chatooly-controls-footer {
-  padding: var(--chatooly-spacing-3);
-  background: var(--chatooly-color-surface);
-  border-top: var(--chatooly-border-width-thin) solid var(--chatooly-color-border);
+  padding: 15px;
+  background: transparent;
+  border-top: none;
+  flex-shrink: 0;
+  width: 100%;
 }
 
 /* ========== Preview/Canvas Panel ========== */

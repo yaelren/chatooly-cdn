@@ -206,20 +206,26 @@ Frame naming: frame_0001.png, frame_0002.png, etc.
 
             const indicator = document.createElement('div');
             indicator.className = 'chatooly-export-indicator';
-            indicator.innerHTML = `○ ${message}`;
+            indicator.innerHTML = `
+                <div style="font-family: 'VT323', monospace; font-size: 14px; color: #6D736C; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+                    PNG SEQUENCE
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="chatooly-record-dot"></div>
+                    <span style="font-family: 'TASA Orbiter', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; font-weight: 500; color: #000000;" id="chatooly-progress-text">
+                        ${message}
+                    </span>
+                </div>
+            `;
             indicator.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: #000000;
-                border: 2px solid #ffffff;
-                color: white;
-                padding: 16px 24px;
-                border-radius: 12px;
-                font-size: 14px;
-                font-weight: 600;
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                background: var(--chatooly-color-primary, #d9e5d7);
+                border-radius: 5px;
+                padding: 15px;
+                min-width: 200px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
                 z-index: 100000;
                 animation: chatoolySlideIn 0.3s ease-out;
             `;
@@ -239,12 +245,16 @@ Frame naming: frame_0001.png, frame_0002.png, etc.
                             transform: translateX(0);
                         }
                     }
-                    @keyframes chatoolyPulse {
-                        0%, 100% { opacity: 1; transform: scale(1); }
-                        50% { opacity: 0.8; transform: scale(1.02); }
+                    @keyframes chatoolyRecordPulse {
+                        0%, 100% { opacity: 1; }
+                        50% { opacity: 0.4; }
                     }
-                    .chatooly-export-indicator {
-                        animation: chatoolyPulse 2s ease-in-out infinite !important;
+                    .chatooly-record-dot {
+                        width: 8px;
+                        height: 8px;
+                        background: #dc3545;
+                        border-radius: 50%;
+                        animation: chatoolyRecordPulse 1.5s ease-in-out infinite;
                     }
                 `;
                 document.head.appendChild(style);
@@ -257,9 +267,9 @@ Frame naming: frame_0001.png, frame_0002.png, etc.
          * Update export indicator text
          */
         _updateExportIndicator: function(message) {
-            const indicator = document.querySelector('.chatooly-export-indicator');
-            if (indicator) {
-                indicator.innerHTML = `○ ${message}`;
+            const progressText = document.getElementById('chatooly-progress-text');
+            if (progressText) {
+                progressText.textContent = message;
             }
         },
 

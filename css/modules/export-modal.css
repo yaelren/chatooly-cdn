@@ -1,0 +1,194 @@
+/**
+ * Chatooly CDN - Export Modal Styles
+ * Standalone CSS for the export modal module
+ */
+
+/* ========== EXPORT MODAL ========== */
+.chatooly-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--chatooly-z-modal);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.chatooly-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.chatooly-modal-container {
+  width: 350px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.95);
+  transition: transform 0.2s ease;
+}
+
+.chatooly-modal-overlay.active .chatooly-modal-container {
+  transform: scale(1);
+}
+
+.chatooly-modal-content {
+  background: var(--chatooly-color-surface);
+  border: 1px solid var(--chatooly-color-border);
+  border-radius: 10px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.chatooly-modal-header {
+  background: #454545;
+  padding: 15px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.chatooly-modal-header span {
+  font-family: var(--chatooly-font-family);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--chatooly-color-text);
+  flex: 1;
+}
+
+.chatooly-modal-close {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+
+.chatooly-modal-close:hover {
+  opacity: 1;
+}
+
+.chatooly-modal-body {
+  padding: 0 10px;
+}
+
+.chatooly-export-section {
+  background: var(--chatooly-color-accent-bg);
+  border-radius: 5px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.chatooly-export-toggle {
+  display: flex;
+  gap: 5px;
+  width: 100%;
+}
+
+.chatooly-toggle-btn {
+  flex: 1;
+  padding: 5px 6px;
+  background: var(--chatooly-color-button-primary);
+  color: var(--chatooly-color-primary);
+  border: none;
+  border-radius: 3px;
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: center;
+}
+
+.chatooly-toggle-btn:hover {
+  background: var(--chatooly-color-button-hover);
+}
+
+.chatooly-toggle-btn.active {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+.chatooly-export-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chatooly-export-row {
+  display: flex;
+  gap: 5px;
+}
+
+.chatooly-export-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chatooly-export-field label {
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
+  font-weight: 500;
+  color: #000000;
+}
+
+.chatooly-export-input,
+.chatooly-export-select {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--chatooly-color-accent-input);
+  border: none;
+  border-radius: 5px;
+  color: var(--chatooly-color-accent-input-text);
+  font-family: var(--chatooly-font-family);
+  font-size: 10px;
+  font-weight: 500;
+  outline: none;
+  transition: background 0.15s ease;
+}
+
+.chatooly-export-input:focus,
+.chatooly-export-select:focus {
+  background: var(--chatooly-color-button-subtle-hover);
+}
+
+.chatooly-export-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath fill='%23454545' d='M4 5L0 0h8z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 8px 5px;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+.chatooly-modal-footer {
+  display: flex;
+  justify-content: center;
+  padding: 0 10px;
+}
+
+.chatooly-modal-footer .chatooly-btn-export {
+  width: 100%;
+}

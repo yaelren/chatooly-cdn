@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatooly Design System - Component Demo</title>
+    <link rel="stylesheet" href="css/unified.css?v=6">
+</head>
+<body>
+    <div class="chatooly-app-container">
+        <!-- Left Sidebar: Component Examples -->
+        <div class="chatooly-controls-panel">
+            <div class="chatooly-controls-header">
+                <h1>Generative Gallery V1.0</h1>
+            </div>
+
+            <div class="chatooly-controls-content">
+                <!-- SECTION CARD: Sliders -->
+                <div class="chatooly-section-card">
+                    <span class="chatooly-section-header" role="button" tabindex="0">SLIDERS</span>
+
+                    <div class="chatooly-section-content">
+                    <div class="chatooly-slider-group">
+                        <div class="chatooly-slider-label">
+                            <span>Radius</span>
+                            <span class="chatooly-slider-value" id="slider1-value">50</span>
+                        </div>
+                        <input type="range" class="chatooly-slider" id="slider1" min="0" max="100" value="50">
+                    </div>
+
+                    <div class="chatooly-slider-group">
+                        <div class="chatooly-slider-label">
+                            <span>Speed</span>
+                            <span class="chatooly-slider-value" id="slider2-value">75</span>
+                        </div>
+                        <input type="range" class="chatooly-slider" id="slider2" min="0" max="100" value="75">
+                    </div>
+
+                    <div class="chatooly-slider-group">
+                        <div class="chatooly-slider-label">
+                            <span>Opacity</span>
+                            <span class="chatooly-slider-value" id="slider3-value">100</span>
+                        </div>
+                        <input type="range" class="chatooly-slider" id="slider3" min="0" max="100" value="100">
+                    </div>
+                    </div>
+                </div>
+
+                <!-- SECTION CARD: Dropdowns & Inputs -->
+                <div class="chatooly-section-card">
+                    <span class="chatooly-section-header" role="button" tabindex="0">DROPDOWNS & INPUTS</span>
+
+                    <div class="chatooly-section-content">
+                    <div class="chatooly-input-group">
+                        <label class="chatooly-input-label">Mode</label>
+                        <select class="chatooly-select">
+                            <option>Circle</option>
+                            <option>Square</option>
+                            <option>Triangle</option>
+                        </select>
+                    </div>
+
+                    <div class="chatooly-input-group">
+                        <label class="chatooly-input-label">Name</label>
+                        <input type="text" class="chatooly-input" placeholder="Enter text...">
+                    </div>
+
+                    <div class="chatooly-input-group">
+                        <label class="chatooly-input-label">Value</label>
+                        <input type="number" class="chatooly-input" value="42">
+                    </div>
+
+                    <div class="chatooly-input-group">
+                        <label class="chatooly-input-label">Description</label>
+                        <textarea class="chatooly-textarea" placeholder="Enter multi-line text..." rows="4"></textarea>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- SECTION CARD: Colors & Toggles -->
+                <div class="chatooly-section-card">
+                    <span class="chatooly-section-header" role="button" tabindex="0">COLORS & TOGGLES</span>
+
+                    <div class="chatooly-section-content">
+                    <div class="chatooly-color-group">
+                        <label class="chatooly-color-label">Primary Color</label>
+                        <input type="color" class="chatooly-color-input" value="#2196F3">
+                    </div>
+
+                    <div class="chatooly-color-group">
+                        <label class="chatooly-color-label">Background Color</label>
+                        <input type="color" class="chatooly-color-input" value="#1a1a1a">
+                    </div>
+
+                    <div class="chatooly-stepper-group">
+                        <label class="chatooly-stepper-label">Opacity</label>
+                        <div class="chatooly-stepper">
+                            <button class="chatooly-stepper-btn" type="button" data-action="decrement">
+                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.5 2.5L4 5L6.5 2.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <input type="number" class="chatooly-stepper-input" value="3" min="0" max="10">
+                            <button class="chatooly-stepper-btn" type="button" data-action="increment">
+                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1.5 5.5L4 3L6.5 5.5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="chatooly-toggle-group">
+                        <button class="chatooly-toggle" role="switch" aria-pressed="false" aria-labelledby="toggle-shadows">
+                            <span class="chatooly-toggle-slider"></span>
+                        </button>
+                        <span class="chatooly-toggle-label" id="toggle-shadows">Enable Shadows</span>
+                    </div>
+
+                    <div class="chatooly-toggle-group">
+                        <button class="chatooly-toggle" role="switch" aria-pressed="true" aria-labelledby="toggle-rotate">
+                            <span class="chatooly-toggle-slider"></span>
+                        </button>
+                        <span class="chatooly-toggle-label" id="toggle-rotate">Auto-Rotate</span>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- SECTION CARD: Upload Areas -->
+                <div class="chatooly-section-card">
+                    <span class="chatooly-section-header" role="button" tabindex="0">UPLOAD AREAS</span>
+
+                    <div class="chatooly-section-content">
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <div class="chatooly-upload-area" style="flex: 1; height: 80px;">
+                            <div class="chatooly-upload-icon">
+                                <svg viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7.94444 0L11 3V11.4048C10.9998 11.5627 10.9358 11.7141 10.822 11.8257C10.7083 11.9373 10.554 12 10.3932 12H0.606833C0.446342 11.9989 0.292733 11.9359 0.179189 11.8245C0.0656443 11.7131 0.00128006 11.5624 0 11.4048V0.5952C0 0.2664 0.271944 0 0.606833 0H7.94444ZM6.11111 6H7.94444L5.5 3.6L3.05556 6H4.88889V8.4H6.11111V6Z" fill="var(--fill-0, #454545)"/>
+                                </svg>
+                            </div>
+                            <div class="chatooly-upload-text">Background</div>
+                            <input type="file" class="chatooly-upload-input">
+                        </div>
+                        <div class="chatooly-upload-area" style="flex: 1; height: 80px;">
+                            <div class="chatooly-upload-icon">
+                                <svg viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7.94444 0L11 3V11.4048C10.9998 11.5627 10.9358 11.7141 10.822 11.8257C10.7083 11.9373 10.554 12 10.3932 12H0.606833C0.446342 11.9989 0.292733 11.9359 0.179189 11.8245C0.0656443 11.7131 0.00128006 11.5624 0 11.4048V0.5952C0 0.2664 0.271944 0 0.606833 0H7.94444ZM6.11111 6H7.94444L5.5 3.6L3.05556 6H4.88889V8.4H6.11111V6Z" fill="var(--fill-0, #454545)"/>
+                                </svg>
+                            </div>
+                            <div class="chatooly-upload-text">Foreground</div>
+                            <input type="file" class="chatooly-upload-input">
+                        </div>
+                    </div>
+
+                    <div class="chatooly-upload-area" style="height: 100px;">
+                        <div class="chatooly-upload-icon">
+                            <svg viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7.94444 0L11 3V11.4048C10.9998 11.5627 10.9358 11.7141 10.822 11.8257C10.7083 11.9373 10.554 12 10.3932 12H0.606833C0.446342 11.9989 0.292733 11.9359 0.179189 11.8245C0.0656443 11.7131 0.00128006 11.5624 0 11.4048V0.5952C0 0.2664 0.271944 0 0.606833 0H7.94444ZM6.11111 6H7.94444L5.5 3.6L3.05556 6H4.88889V8.4H6.11111V6Z" fill="var(--fill-0, #454545)"/>
+                            </svg>
+                        </div>
+                        <div class="chatooly-upload-text">Upload Image</div>
+                        <input type="file" class="chatooly-upload-input">
+                    </div>
+                    </div>
+                </div>
+
+                <!-- SECTION CARD: Buttons -->
+                <div class="chatooly-section-card">
+                    <span class="chatooly-section-header" role="button" tabindex="0">BUTTONS</span>
+
+                    <div class="chatooly-section-content">
+                    <button class="chatooly-btn" style="width: 100%; margin-bottom: 8px;">
+                        Regular Button
+                    </button>
+
+                    <button class="chatooly-btn chatooly-btn-subtle" style="width: 100%; margin-bottom: 8px;">
+                        Subtle Button
+                    </button>
+
+                    <button class="chatooly-btn chatooly-btn-black" style="width: 100%; margin-bottom: 8px;">
+                        Black Button
+                    </button>
+
+                    <button class="chatooly-btn active" style="width: 100%; margin-bottom: 8px;">
+                        Active Button
+                    </button>
+
+                    <button class="chatooly-btn" disabled style="width: 100%;">
+                        Disabled Button
+                    </button>
+                    </div>
+                </div>
+
+                <!-- SECTION CARD: Preset Grid -->
+                <div class="chatooly-section-card">
+                    <span class="chatooly-section-header" role="button" tabindex="0">PRESET BUTTONS</span>
+
+                    <div class="chatooly-section-content">
+                    <div class="chatooly-preset-grid">
+                        <button class="chatooly-btn">HD</button>
+                        <button class="chatooly-btn active">SQUARE</button>
+                        <button class="chatooly-btn">4:3</button>
+                        <button class="chatooly-btn">PORTRAIT</button>
+                        <button class="chatooly-btn">16:9</button>
+                        <button class="chatooly-btn">CUSTOM</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer with Export Button -->
+            <div class="chatooly-controls-footer">
+                <button class="chatooly-btn chatooly-btn-export">
+                    Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Panel: Preview Area with Demo Content -->
+        <div class="chatooly-preview-panel">
+            <div id="chatooly-container" style="width: 800px; height: 800px; background: white; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;">
+                <div style="text-align: center;">
+                    <h2 style="color: #1a1a1a; font-size: 32px; margin: 0;">Chatooly</h2>
+                    <p style="color: #666; font-size: 16px; margin: 10px 0;">Design System Components</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px;">
+                    <div style="background: #d9e5d7; padding: 20px; border-radius: 5px; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">🎨</div>
+                        <div style="color: #000; font-size: 12px; font-weight: 600;">Sections</div>
+                    </div>
+                    <div style="background: #d9e5d7; padding: 20px; border-radius: 5px; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">🎯</div>
+                        <div style="color: #000; font-size: 12px; font-weight: 600;">Buttons</div>
+                    </div>
+                    <div style="background: #d9e5d7; padding: 20px; border-radius: 5px; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">📊</div>
+                        <div style="color: #000; font-size: 12px; font-weight: 600;">Sliders</div>
+                    </div>
+                    <div style="background: #d9e5d7; padding: 20px; border-radius: 5px; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">📝</div>
+                        <div style="color: #000; font-size: 12px; font-weight: 600;">Inputs</div>
+                    </div>
+                    <div style="background: #d9e5d7; padding: 20px; border-radius: 5px; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">🎨</div>
+                        <div style="color: #000; font-size: 12px; font-weight: 600;">Colors</div>
+                    </div>
+                    <div style="background: #d9e5d7; padding: 20px; border-radius: 5px; text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">📁</div>
+                        <div style="color: #000; font-size: 12px; font-weight: 600;">Uploads</div>
+                    </div>
+                </div>
+
+                <div style="padding: 20px; background: #f5f5f5; border-radius: 4px; max-width: 500px;">
+                    <p style="color: #666; font-size: 14px; line-height: 1.6; margin: 0; text-align: center;">
+                        All components use the Chatooly design system with light green accent sections,
+                        consistent spacing, and proper typography.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatooly CDN Core - Automatically injects canvas resize bar and export functionality -->
+    <script src="js/core.min.js"></script>
+
+    <!-- Chatooly CDN Modules -->
+    <script src="js/modules/collapsible-sections.js"></script>
+
+    <script>
+        // Toggle switch functionality
+        document.querySelectorAll('.chatooly-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const isPressed = this.getAttribute('aria-pressed') === 'true';
+                this.setAttribute('aria-pressed', !isPressed);
+            });
+        });
+
+        // Number stepper functionality
+        document.querySelectorAll('.chatooly-stepper').forEach(stepper => {
+            const input = stepper.querySelector('.chatooly-stepper-input');
+            const decrementBtn = stepper.querySelector('[data-action="decrement"]');
+            const incrementBtn = stepper.querySelector('[data-action="increment"]');
+
+            decrementBtn.addEventListener('click', () => {
+                const min = parseInt(input.getAttribute('min')) || 0;
+                const current = parseInt(input.value) || 0;
+                if (current > min) {
+                    input.value = current - 1;
+                }
+            });
+
+            incrementBtn.addEventListener('click', () => {
+                const max = parseInt(input.getAttribute('max')) || 100;
+                const current = parseInt(input.value) || 0;
+                if (current < max) {
+                    input.value = current + 1;
+                }
+            });
+        });
+
+        // Interactive slider value updates
+        document.querySelectorAll('.chatooly-slider').forEach(slider => {
+            const valueSpan = slider.parentElement.querySelector('.chatooly-slider-value');
+            if (valueSpan) {
+                slider.addEventListener('input', (e) => {
+                    valueSpan.textContent = e.target.value;
+                });
+            }
+        });
+
+        // Preset button toggle
+        document.querySelectorAll('.chatooly-preset-grid .chatooly-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.chatooly-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
+        // Listen for export events
+        document.addEventListener('chatooly-export', function(e) {
+            console.log('Export requested:', e.detail);
+            // Here you would implement actual export logic
+            alert(`Export ${e.detail.type} with format: ${e.detail.format}`);
+        });
+    </script>
+</body>
+</html>

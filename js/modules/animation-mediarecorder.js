@@ -92,30 +92,36 @@
         
         // Start recording
         startRecording: function() {
+            // Initialize toolInfo if not already set
+            if (!this.toolInfo) {
+                this.toolInfo = this.detectToolType();
+                console.log('🎬 Tool type detected:', this.toolInfo);
+            }
+
             const duration = parseFloat(document.getElementById('anim-duration').value);
             const fps = parseInt(document.getElementById('anim-fps').value);
             const format = document.getElementById('anim-format').value;
-            
+
             // Get quality settings with fallbacks
             const qualityElement = document.getElementById('anim-quality');
             const quality = qualityElement ? qualityElement.value : 'medium';
-            
+
             const bitrateElement = document.getElementById('anim-bitrate');
             const customBitrate = bitrateElement ? parseFloat(bitrateElement.value) : 8;
-            
+
             console.log(`🎬 Starting ${duration}s recording at ${fps} FPS in ${format} format with ${quality} quality`);
-            
+
             try {
-                this.initializeMediaRecorder(fps, format, quality, customBitrate);
+                this.initializeMediaRecorder(duration, fps, format, quality, customBitrate);
                 this.beginRecording(duration);
             } catch (error) {
                 console.error('Failed to start MediaRecorder:', error);
                 alert('Failed to start recording. Please try again.');
             }
         },
-        
+
         // Initialize MediaRecorder with settings
-        initializeMediaRecorder: function(fps, format, quality, customBitrate) {
+        initializeMediaRecorder: function(duration, fps, format, quality, customBitrate) {
             const canvas = this.toolInfo.canvas;
             if (!canvas) {
                 throw new Error('No canvas found for recording');
@@ -259,7 +265,7 @@
                     'video/x-matroska;codecs=avc1',
                     'video/x-matroska'
                 ];
-                
+
                 for (const codec of mkvCodecs) {
                     if (MediaRecorder.isTypeSupported(codec)) {
                         mimeType = codec;
@@ -268,10 +274,44 @@
                         break;
                     }
                 }
-                
+
                 if (!mimeType) {
                     throw new Error('MKV format not supported in this browser');
                 }
+
+            } else if (format === 'webm') {
+                // Simple webm - use best available WebM codec
+                const webmCodecs = [
+                    'video/webm;codecs=vp9,opus',
+                    'video/webm;codecs=vp9',
+                    'video/webm;codecs=vp8,opus',
+                    'video/webm;codecs=vp8',
+                    'video/webm'
+                ];
+
+                for (const codec of webmCodecs) {
+                    if (MediaRecorder.isTypeSupported(codec)) {
+                        mimeType = codec;
+                        fileExtension = 'webm';
+                        console.log(`Using WebM codec: ${codec}`);
+                        break;
+                    }
+                }
+
+                if (!mimeType) {
+                    throw new Error('WebM format not supported in this browser');
+                }
+
+            } else if (format === 'png-sequence') {
+                // PNG Sequence export - delegate to sequence export module
+                console.log('PNG Sequence export selected - delegating to animationSequenceExport');
+                if (Chatooly.animationSequenceExport) {
+                    Chatooly.animationSequenceExport.exportSequence(duration, fps);
+                } else {
+                    console.error('PNG sequence export module not available');
+                    alert('PNG sequence export is not available. Please ensure all modules are loaded.');
+                }
+                return; // Exit early, PNG sequence uses different export path
             }
             
             this.currentFileExtension = fileExtension;
@@ -559,35 +599,58 @@
         
         // Update UI during recording
         updateRecordingUI: function() {
-            // Add recording indicator with Chatooly styling
+            // Add recording indicator matching Chatooly section card design
             const indicator = document.createElement('div');
             indicator.className = 'chatooly-export-indicator';
-            indicator.innerHTML = '○ Recording...';
+            indicator.innerHTML = `
+                <div style="font-family: 'VT323', monospace; font-size: 14px; color: #6D736C; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+                    RECORDING
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="chatooly-record-dot"></div>
+                    <span style="font-family: 'TASA Orbiter', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; font-weight: 500; color: #000000;">
+                        Capturing frames...
+                    </span>
+                </div>
+            `;
             indicator.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: #000000;
-                border: 2px solid #ffffff;
-                color: white;
-                padding: 16px 24px;
-                border-radius: 12px;
-                font-size: 14px;
-                font-weight: 600;
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                background: var(--chatooly-color-primary, #d9e5d7);
+                border-radius: 5px;
+                padding: 15px;
+                min-width: 200px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
                 z-index: 100000;
-                animation: chatoolyPulse 2s ease-in-out infinite;
+                animation: chatoolySlideIn 0.3s ease-out;
             `;
 
-            // Add pulse animation keyframes if not already added
+            // Add animations if not already added
             if (!document.querySelector('#chatooly-export-animation')) {
                 const style = document.createElement('style');
                 style.id = 'chatooly-export-animation';
                 style.textContent = `
-                    @keyframes chatoolyPulse {
-                        0%, 100% { opacity: 1; transform: scale(1); }
-                        50% { opacity: 0.8; transform: scale(1.02); }
+                    @keyframes chatoolySlideIn {
+                        from {
+                            opacity: 0;
+                            transform: translateX(100%);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateX(0);
+                        }
+                    }
+                    @keyframes chatoolyRecordPulse {
+                        0%, 100% { opacity: 1; }
+                        50% { opacity: 0.4; }
+                    }
+                    .chatooly-record-dot {
+                        width: 8px;
+                        height: 8px;
+                        background: #dc3545;
+                        border-radius: 50%;
+                        animation: chatoolyRecordPulse 1.5s ease-in-out infinite;
                     }
                 `;
                 document.head.appendChild(style);

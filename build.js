@@ -24,6 +24,7 @@ const config = {
         'animation-sequence-export.js', // PNG sequence export - depends on animation-mediarecorder
         'canvas-area.js',     // Canvas area container - depends on utils
         'canvas-resizer.js',  // Canvas resizing - depends on utils, canvas-area
+        'canvas-resize-bar.js', // Canvas resize bar UI - depends on canvas-resizer, canvas-area
         'canvas-zoom.js',     // Canvas zoom functionality - depends on utils, canvas-area
         'publish.js',         // Publishing - depends on utils
         'ui.js',              // UI components - depends on utils, canvas-resizer, publish
@@ -36,7 +37,8 @@ const config = {
         'base.css',
         'components.css',
         'layouts/sidebar.css',
-        'responsive.css'
+        'responsive.css',
+        'legacy-compat.css'  // Universal fallback: plain HTML elements = Chatooly styles
     ],
     
     // Build outputs
@@ -152,10 +154,10 @@ ${coreInit}
         
         let moduleContent = fs.readFileSync(modulePath, 'utf8');
         
-        // Remove IIFE wrapper
+        // Remove IIFE wrapper - handles both })(window.Chatooly); and })(window.Chatooly = window.Chatooly || {});
         moduleContent = moduleContent
             .replace(/^\(function\(Chatooly\)\s*{\s*['"]use strict['"];?\s*/m, '')
-            .replace(/}\)\(window\.Chatooly\);?\s*$/, '');
+            .replace(/}\)\(window\.Chatooly(?:\s*=\s*window\.Chatooly\s*\|\|\s*{})?\);?\s*$/m, '');
         
         combinedContent += `
     // ===== ${moduleFile.toUpperCase().replace('.JS', '')} MODULE =====
@@ -253,6 +255,13 @@ function buildCoreJS() {
                     this.ui.injectBackgroundControls();
                 }, 300);
             }
+
+            // Initialize canvas resize bar (bottom control bar)
+            if (this.canvasResizeBar && this.canvasResizeBar.init) {
+                setTimeout(() => {
+                    this.canvasResizeBar.init();
+                }, 400);
+            }
         },
         
         export: function(format, options) {
@@ -280,10 +289,10 @@ function buildCoreJS() {
         
         let moduleContent = fs.readFileSync(modulePath, 'utf8');
         
-        // Remove IIFE wrapper
+        // Remove IIFE wrapper - handles both })(window.Chatooly); and })(window.Chatooly = window.Chatooly || {});
         moduleContent = moduleContent
             .replace(/^\(function\(Chatooly\)\s*{\s*['"]use strict['"];?\s*/m, '')
-            .replace(/}\)\(window\.Chatooly\);?\s*$/, '');
+            .replace(/}\)\(window\.Chatooly(?:\s*=\s*window\.Chatooly\s*\|\|\s*{})?\);?\s*$/m, '');
         
         content += `
     // ===== ${moduleFile.toUpperCase().replace('.JS', '')} MODULE =====
