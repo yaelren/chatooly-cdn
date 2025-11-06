@@ -1,4 +1,12 @@
 /**
+ * Chatooly CDN v2.0.0 - Unified Design System
+ * Built: 2025-11-05T14:42:48.166Z
+ */
+
+
+/* ===== VARIABLES ===== */
+
+/**
  * Chatooly Design System - CSS Variables
  * Core design tokens that ensure visual consistency across all tools
  */
@@ -222,7 +230,12 @@
   --chatooly-color-surface: #27272a;
   --chatooly-color-border: #3f3f46;
   /* ... more dark mode overrides ... */
-}/**
+}
+
+
+/* ===== BASE ===== */
+
+/**
  * Chatooly Design System - Base Styles
  * Universal styles that apply to all tools regardless of layout
  */
@@ -508,7 +521,12 @@ button {
   50% {
     opacity: 0.7;
   }
-}/**
+}
+
+
+/* ===== COMPONENTS ===== */
+
+/**
  * Chatooly Design System - Component Styles
  * Pre-built UI components for consistent tool interfaces
  * Organized by component type for easy maintenance
@@ -1263,6 +1281,12 @@ input[type="color"].chatooly-color-input::-moz-color-swatch {
 .chatooly-mb-large {
   margin-bottom: 16px;
 }
+
+
+
+
+/* ===== LAYOUTS/SIDEBAR ===== */
+
 /**
  * Chatooly Design System - Sidebar Layout
  * Standard sidebar + canvas layout for design tools
@@ -1518,3 +1542,291 @@ input[type="color"].chatooly-color-input::-moz-color-swatch {
     border-radius: 0;
   }
 }
+
+
+/* ===== RESPONSIVE ===== */
+
+/**
+ * Chatooly Design System - Responsive Styles
+ * Mobile-first responsive design utilities
+ */
+
+/* ========== Mobile First Breakpoints ========== */
+/* Default styles are mobile-first (< 640px) */
+
+/* ========== Small Devices (640px+) ========== */
+@media (min-width: 640px) {
+  .chatooly-container {
+    max-width: 640px;
+  }
+  
+  .chatooly-hide-sm {
+    display: none !important;
+  }
+  
+  .chatooly-show-sm {
+    display: block !important;
+  }
+}
+
+/* ========== Medium Devices (768px+) ========== */
+@media (min-width: 768px) {
+  .chatooly-container {
+    max-width: 768px;
+  }
+  
+  .chatooly-hide-md {
+    display: none !important;
+  }
+  
+  .chatooly-show-md {
+    display: block !important;
+  }
+  
+  /* Two column layout for controls on tablets */
+  .chatooly-controls-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--chatooly-spacing-3);
+  }
+}
+
+/* ========== Large Devices (1024px+) ========== */
+@media (min-width: 1024px) {
+  .chatooly-container {
+    max-width: 1024px;
+  }
+  
+  .chatooly-hide-lg {
+    display: none !important;
+  }
+  
+  .chatooly-show-lg {
+    display: block !important;
+  }
+}
+
+/* ========== Extra Large Devices (1280px+) ========== */
+@media (min-width: 1280px) {
+  .chatooly-container {
+    max-width: 1280px;
+  }
+  
+  .chatooly-hide-xl {
+    display: none !important;
+  }
+  
+  .chatooly-show-xl {
+    display: block !important;
+  }
+}
+
+/* ========== 2XL Devices (1536px+) ========== */
+@media (min-width: 1536px) {
+  .chatooly-container {
+    max-width: 1536px;
+  }
+  
+  .chatooly-hide-2xl {
+    display: none !important;
+  }
+  
+  .chatooly-show-2xl {
+    display: block !important;
+  }
+}
+
+/* ========== Responsive Typography ========== */
+@media (max-width: 640px) {
+  h1 {
+    font-size: calc(var(--chatooly-font-size-2xl) * 0.85);
+  }
+  
+  h2 {
+    font-size: calc(var(--chatooly-font-size-xl) * 0.85);
+  }
+  
+  h3 {
+    font-size: calc(var(--chatooly-font-size-lg) * 0.9);
+  }
+}
+
+/* ========== Responsive Spacing ========== */
+@media (max-width: 640px) {
+  .chatooly-p-responsive {
+    padding: var(--chatooly-spacing-2);
+  }
+  
+  .chatooly-m-responsive {
+    margin: var(--chatooly-spacing-2);
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .chatooly-p-responsive {
+    padding: var(--chatooly-spacing-3);
+  }
+  
+  .chatooly-m-responsive {
+    margin: var(--chatooly-spacing-3);
+  }
+}
+
+@media (min-width: 1025px) {
+  .chatooly-p-responsive {
+    padding: var(--chatooly-spacing-4);
+  }
+  
+  .chatooly-m-responsive {
+    margin: var(--chatooly-spacing-4);
+  }
+}
+
+/* ========== Responsive Grid ========== */
+.chatooly-grid {
+  display: grid;
+  gap: var(--chatooly-spacing-3);
+}
+
+/* Mobile: 1 column */
+.chatooly-grid-cols-1 {
+  grid-template-columns: repeat(1, 1fr);
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 768px) {
+  .chatooly-grid-cols-md-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop: 3 columns */
+@media (min-width: 1024px) {
+  .chatooly-grid-cols-lg-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Large Desktop: 4 columns */
+@media (min-width: 1280px) {
+  .chatooly-grid-cols-xl-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ========== Responsive Flexbox ========== */
+.chatooly-flex {
+  display: flex;
+}
+
+.chatooly-flex-wrap {
+  flex-wrap: wrap;
+}
+
+/* Mobile: Stack vertically */
+.chatooly-flex-col {
+  flex-direction: column;
+}
+
+/* Tablet+: Horizontal layout */
+@media (min-width: 768px) {
+  .chatooly-flex-row-md {
+    flex-direction: row;
+  }
+}
+
+/* ========== Touch-Friendly Adjustments ========== */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger tap targets for touch devices */
+  button,
+  .btn,
+  input[type="checkbox"],
+  input[type="radio"],
+  select {
+    min-height: 44px;
+  }
+  
+  /* Larger clickable areas */
+  .chatooly-control-group label {
+    padding: var(--chatooly-spacing-2) 0;
+  }
+  
+  /* Disable hover effects on touch */
+  .chatooly-card:hover {
+    transform: none;
+    box-shadow: var(--chatooly-shadow-xs);
+  }
+}
+
+/* ========== Orientation-Based Styles ========== */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Compact mode for landscape mobile */
+  .chatooly-controls-panel {
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+  
+  .chatooly-controls-header {
+    padding: var(--chatooly-spacing-2);
+  }
+  
+  .chatooly-control-group {
+    margin-bottom: var(--chatooly-spacing-2);
+    padding: var(--chatooly-spacing-2);
+  }
+}
+
+/* ========== High DPI Displays ========== */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Thinner borders for retina displays */
+  .chatooly-border-retina {
+    border-width: 0.5px;
+  }
+}
+
+/* ========== Reduced Motion ========== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ========== Dark Mode Support (Future) ========== */
+@media (prefers-color-scheme: dark) {
+  /* Dark mode styles will be activated when enabled */
+  body[data-theme="auto"] {
+    --chatooly-color-text: #e4e4e7;
+    --chatooly-color-background: #18181b;
+    --chatooly-color-surface: #27272a;
+    --chatooly-color-border: #3f3f46;
+  }
+}
+
+/* ========== Print Optimization ========== */
+@media print {
+  /* Hide non-essential elements */
+  .chatooly-no-print,
+  .chatooly-controls-panel,
+  .chatooly-sidebar-toggle,
+  #chatooly-export-btn {
+    display: none !important;
+  }
+  
+  /* Optimize for print */
+  body {
+    background: white;
+    color: black;
+  }
+  
+  #chatooly-canvas {
+    box-shadow: none;
+    border: 1px solid #000;
+    page-break-inside: avoid;
+  }
+}
+

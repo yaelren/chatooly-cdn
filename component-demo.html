@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatooly Design System - Component Demo</title>
-    <link rel="stylesheet" href="css/unified.css?v=4">
+    <link rel="stylesheet" href="css/unified.css?v=6">
 </head>
 <body>
     <div class="chatooly-app-container">
@@ -304,6 +304,13 @@
                 });
                 this.classList.add('active');
             });
+        });
+
+        // Listen for export events
+        document.addEventListener('chatooly-export', function(e) {
+            console.log('Export requested:', e.detail);
+            // Here you would implement actual export logic
+            alert(`Export ${e.detail.type} with format: ${e.detail.format}`);
         });
     </script>
 </body>
