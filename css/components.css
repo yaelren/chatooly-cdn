@@ -632,38 +632,49 @@ input[type="color"].chatooly-color-input::-moz-color-swatch {
 .chatooly-upload-area {
   width: 100%;
   min-height: 100px;
-  background: var(--chatooly-color-accent-input);
-  border: 2px dashed var(--chatooly-color-border-dark);
-  border-radius: var(--chatooly-input-radius);
+  background: var(--chatooly-color-primary-active);
+  border-radius: var(--chatooly-card-radius);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 5px;
+  padding: 10px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--chatooly-transition-fast);
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .chatooly-upload-area:hover {
   background: var(--chatooly-color-button-subtle-hover);
-  border-color: var(--chatooly-color-text-light);
 }
 
 .chatooly-upload-icon {
-  font-size: 24px;
-  color: var(--chatooly-color-text-subtle);
+  width: 11px;
+  height: 12px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.chatooly-upload-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  --fill-0: var(--chatooly-color-accent-input-text);
 }
 
 .chatooly-upload-text {
   font-family: var(--chatooly-font-family);
   font-size: 10px;
-  font-weight: 500;
+  font-weight: var(--chatooly-font-weight-medium);
   font-style: normal;
   line-height: normal;
-  color: #000;
+  color: var(--chatooly-color-accent-input-text);
   text-align: center;
+  min-width: 100%;
+  width: min-content;
 }
 
 .chatooly-upload-input {
