@@ -495,7 +495,42 @@
             } else {
                 console.warn(`Chatooly: Preset '${presetName}' not found`);
             }
+        },
+
+        // Initialize canvas resizer with default size
+        init: function() {
+            // Check if canvas already has dimensions set (tool may have set them)
+            const target = Chatooly.utils ? Chatooly.utils.detectExportTarget() : null;
+            let width = 1000;
+            let height = 1000;
+
+            if (target && target.element && target.type === 'canvas') {
+                // If canvas already has non-default dimensions, respect them
+                if (target.element.width && target.element.width !== 300 &&
+                    target.element.height && target.element.height !== 150) {
+                    width = target.element.width;
+                    height = target.element.height;
+                    console.log(`Chatooly: Detected existing canvas size ${width}x${height}, using it`);
+                }
+            }
+
+            // Set export size (either detected or default 1000x1000)
+            this.setExportSize(width, height);
+
+            // Dispatch chatooly:ready event for tools waiting on initialization
+            const event = new CustomEvent('chatooly:ready', {
+                detail: {
+                    version: Chatooly.version,
+                    canvasResizer: true,
+                    width: width,
+                    height: height
+                },
+                bubbles: true
+            });
+            document.dispatchEvent(event);
+
+            console.log(`Chatooly: Canvas resizer initialized (${width}x${height})`);
         }
     };
-    
+
 })(window.Chatooly);
