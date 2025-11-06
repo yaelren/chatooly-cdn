@@ -57,8 +57,20 @@
             // Inject CSS
             this._injectCSS();
 
-            // Append to body
-            document.body.appendChild(bar);
+            // Find the preview panel to append to (for proper centering)
+            const previewPanel = document.querySelector('.chatooly-preview-panel');
+            if (previewPanel) {
+                // Ensure preview panel has position relative for absolute positioning
+                if (getComputedStyle(previewPanel).position === 'static') {
+                    previewPanel.style.position = 'relative';
+                }
+                previewPanel.appendChild(bar);
+            } else {
+                // Fallback to body if preview panel doesn't exist
+                document.body.appendChild(bar);
+                // In this case, use fixed positioning
+                bar.style.position = 'fixed';
+            }
         },
 
         // Generate HTML for the resize bar
@@ -354,7 +366,7 @@
             style.id = 'chatooly-resize-bar-styles';
             style.textContent = `
                 .chatooly-resize-bar {
-                    position: fixed;
+                    position: absolute;
                     bottom: 20px;
                     left: 50%;
                     transform: translateX(-50%);
@@ -477,10 +489,11 @@
                 @media (max-width: 768px) {
                     .chatooly-resize-bar {
                         bottom: 10px;
-                        left: 10px;
-                        right: 10px;
-                        transform: none;
+                        left: 50%;
+                        right: auto;
+                        transform: translateX(-50%);
                         flex-wrap: wrap;
+                        max-width: calc(100% - 20px);
                     }
 
                     .chatooly-resize-bar-label {
