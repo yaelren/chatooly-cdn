@@ -76,6 +76,14 @@
                                 hostname.endsWith('.pages.dev') ||
                                 hostname.endsWith('.surge.sh');
 
+            // Debug logging
+            console.log('Chatooly.utils.isDevelopment() check:');
+            console.log('  - hostname:', hostname);
+            console.log('  - protocol:', protocol);
+            console.log('  - isDev (localhost/file):', isDev);
+            console.log('  - isProduction (.github.io etc):', isProduction);
+            console.log('  - Result:', isProduction ? false : isDev);
+
             // If explicitly production, return false (not development)
             if (isProduction) return false;
 

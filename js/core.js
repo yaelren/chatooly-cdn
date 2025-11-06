@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-11-06T14:45:49.047Z
+ * Built: 2025-11-06T14:59:29.304Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -156,6 +156,14 @@
                                 hostname.endsWith('.netlify.app') ||
                                 hostname.endsWith('.pages.dev') ||
                                 hostname.endsWith('.surge.sh');
+
+            // Debug logging
+            console.log('Chatooly.utils.isDevelopment() check:');
+            console.log('  - hostname:', hostname);
+            console.log('  - protocol:', protocol);
+            console.log('  - isDev (localhost/file):', isDev);
+            console.log('  - isProduction (.github.io etc):', isProduction);
+            console.log('  - Result:', isProduction ? false : isDev);
 
             // If explicitly production, return false (not development)
             if (isProduction) return false;
@@ -5225,13 +5233,29 @@ Chatooly.canvasZoom = {
 
         // Inject publish button (floating, top-right, dev mode only)
         _injectPublishButton: function() {
+            // Debug logging for publish button injection
+            console.log('Chatooly: Checking publish button injection conditions:');
+            console.log('  - Chatooly.utils exists:', !!Chatooly.utils);
+            console.log('  - isDevelopment function exists:', !!(Chatooly.utils && Chatooly.utils.isDevelopment));
+            console.log('  - hostname:', location.hostname);
+            console.log('  - protocol:', location.protocol);
+
             // Only inject in development mode
             if (!Chatooly.utils || !Chatooly.utils.isDevelopment || !Chatooly.utils.isDevelopment()) {
+                const reason = !Chatooly.utils ? 'utils not loaded' :
+                              !Chatooly.utils.isDevelopment ? 'isDevelopment not found' :
+                              'isDevelopment returned false';
+                console.log('Chatooly: Publish button NOT injected -', reason);
                 return;
             }
 
+            console.log('Chatooly: Publish button WILL BE injected (development mode detected)');
+
             // Check if button already exists
-            if (document.getElementById('chatooly-publish-button')) return;
+            if (document.getElementById('chatooly-publish-button')) {
+                console.log('Chatooly: Publish button already exists, skipping');
+                return;
+            }
 
             // Inject CSS first
             this._injectPublishButtonCSS();
