@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-11-06T09:45:25.327Z
+ * Built: 2025-11-06T09:51:49.325Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -3470,10 +3470,10 @@ Chatooly.canvasResizeBar = {
 
         // Preset configurations
         presets: {
-            'HD (16:9)': { width: 1920, height: 1080 },
-            'SQUARE (1:1)': { width: 1000, height: 1000 },
-            '4:3': { width: 1024, height: 768 },
-            'PORTRAIT (9:16)': { width: 1080, height: 1920 }
+            'HD (16:9)': { width: 1920, height: 1080, abbr: 'HD' },
+            'SQUARE (1:1)': { width: 1000, height: 1000, abbr: 'SQ' },
+            '4:3': { width: 1024, height: 768, abbr: '4:3' },
+            'PORTRAIT (9:16)': { width: 1080, height: 1920, abbr: 'PT' }
         },
 
         // Current active preset
@@ -3536,10 +3536,13 @@ Chatooly.canvasResizeBar = {
         _getBarHTML: function(dimensions) {
             const presetsHTML = Object.keys(this.presets).map(presetName => {
                 const isActive = presetName === this.activePreset;
+                const preset = this.presets[presetName];
                 return `
                     <button class="chatooly-btn ${isActive ? 'active' : ''}"
-                            data-preset="${presetName}">
-                        ${presetName}
+                            data-preset="${presetName}"
+                            data-abbr="${preset.abbr}">
+                        <span class="chatooly-btn-full">${presetName}</span>
+                        <span class="chatooly-btn-abbr">${preset.abbr}</span>
                     </button>
                 `;
             }).join('');
@@ -3921,11 +3924,20 @@ Chatooly.canvasResizeBar = {
                 .chatooly-preset-buttons {
                     display: flex;
                     gap: 5px;
-                    flex-wrap: wrap;
+                    flex-wrap: nowrap;
                     align-items: center;
                 }
 
                 /* Buttons inherit from base .chatooly-btn in components.css */
+
+                /* Button text visibility - show full text by default */
+                .chatooly-btn-full {
+                    display: inline;
+                }
+
+                .chatooly-btn-abbr {
+                    display: none;
+                }
 
                 /* Responsive adjustments */
                 @media (max-width: 1024px) {
@@ -3940,8 +3952,28 @@ Chatooly.canvasResizeBar = {
                         gap: 10px;
                     }
 
+                    /* Keep buttons in single line, no wrapping */
                     .chatooly-preset-buttons {
-                        flex-wrap: wrap;
+                        flex-wrap: nowrap;
+                        gap: 3px;
+                    }
+
+                    /* Switch to abbreviated text on tablet and below */
+                    .chatooly-btn-full {
+                        display: none;
+                    }
+
+                    .chatooly-btn-abbr {
+                        display: inline;
+                    }
+
+                    /* Scale down preset buttons to fit in single line */
+                    .chatooly-preset-buttons .chatooly-btn {
+                        min-width: 28px;
+                        padding: 6px 4px;
+                        font-size: 8px;
+                        text-align: center;
+                        white-space: nowrap;
                     }
                 }
 
@@ -3967,6 +3999,17 @@ Chatooly.canvasResizeBar = {
 
                     .chatooly-resize-inputs {
                         flex-wrap: wrap;
+                    }
+
+                    /* Further scale down buttons on mobile */
+                    .chatooly-preset-buttons {
+                        gap: 2px;
+                    }
+
+                    .chatooly-preset-buttons .chatooly-btn {
+                        min-width: 24px;
+                        padding: 5px 3px;
+                        font-size: 7px;
                     }
                 }
             `;
