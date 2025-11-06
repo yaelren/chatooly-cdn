@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-11-06T09:51:49.325Z
+ * Built: 2025-11-06T09:54:48.563Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -3603,7 +3603,8 @@ Chatooly.canvasResizeBar = {
             const presetButtons = document.querySelectorAll('.chatooly-btn[data-preset]');
             presetButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
-                    const presetName = e.target.dataset.preset;
+                    // Use currentTarget (the button) instead of target (could be span)
+                    const presetName = e.currentTarget.dataset.preset;
                     this._applyPreset(presetName);
                 });
             });

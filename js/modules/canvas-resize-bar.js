@@ -144,7 +144,8 @@
             const presetButtons = document.querySelectorAll('.chatooly-btn[data-preset]');
             presetButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
-                    const presetName = e.target.dataset.preset;
+                    // Use currentTarget (the button) instead of target (could be span)
+                    const presetName = e.currentTarget.dataset.preset;
                     this._applyPreset(presetName);
                 });
             });
