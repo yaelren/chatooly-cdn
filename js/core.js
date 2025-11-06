@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-11-06T11:20:29.697Z
+ * Built: 2025-11-06T13:10:47.795Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -140,11 +140,28 @@
         
         // Check if in development mode
         isDevelopment: function() {
-            return location.hostname === 'localhost' || 
-                   location.hostname === '127.0.0.1' || 
-                   location.hostname === '::' ||
-                   location.hostname === '[::1]' ||
-                   location.protocol === 'file:';
+            const hostname = location.hostname;
+            const protocol = location.protocol;
+
+            // Development environments
+            const isDev = hostname === 'localhost' ||
+                         hostname === '127.0.0.1' ||
+                         hostname === '::' ||
+                         hostname === '[::1]' ||
+                         protocol === 'file:';
+
+            // Production hosting platforms (should NOT show dev buttons)
+            const isProduction = hostname.endsWith('.github.io') ||
+                                hostname.endsWith('.vercel.app') ||
+                                hostname.endsWith('.netlify.app') ||
+                                hostname.endsWith('.pages.dev') ||
+                                hostname.endsWith('.surge.sh');
+
+            // If explicitly production, return false (not development)
+            if (isProduction) return false;
+
+            // Otherwise use development detection
+            return isDev;
         },
         
         // Generate filename for exports
