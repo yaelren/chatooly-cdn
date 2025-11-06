@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-11-06T13:10:47.795Z
+ * Built: 2025-11-06T14:45:49.047Z
  * Includes all modules for canvas management, export, and UI
  */
 
