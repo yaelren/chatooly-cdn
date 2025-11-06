@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-11-06T09:54:48.563Z
+ * Built: 2025-11-06T10:08:47.083Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -5140,6 +5140,9 @@ Chatooly.canvasZoom = {
 
             // Auto-attach to any existing export buttons
             this._attachToExportButtons();
+
+            // Inject publish button (dev mode only)
+            this._injectPublishButton();
         },
 
         // Inject export button into sidebar footer
@@ -5166,6 +5169,115 @@ Chatooly.canvasZoom = {
             exportBtn.className = 'chatooly-btn chatooly-btn-export';
             exportBtn.textContent = 'Export';
             footer.appendChild(exportBtn);
+        },
+
+        // Inject publish button (floating, top-right, dev mode only)
+        _injectPublishButton: function() {
+            // Only inject in development mode
+            if (!Chatooly.utils || !Chatooly.utils.isDevelopment || !Chatooly.utils.isDevelopment()) {
+                return;
+            }
+
+            // Check if button already exists
+            if (document.getElementById('chatooly-publish-button')) return;
+
+            // Inject CSS first
+            this._injectPublishButtonCSS();
+
+            // Create publish button
+            const publishBtn = document.createElement('button');
+            publishBtn.id = 'chatooly-publish-button';
+            publishBtn.className = 'chatooly-publish-button';
+            publishBtn.innerHTML = `
+                Publish to Hub
+                <span class="chatooly-publish-badge">DEV</span>
+            `;
+
+            // Add click handler
+            publishBtn.addEventListener('click', () => {
+                if (Chatooly.publish && Chatooly.publish.publish) {
+                    Chatooly.publish.publish();
+                } else {
+                    console.error('Chatooly: Publish module not loaded');
+                }
+            });
+
+            // Append to body
+            document.body.appendChild(publishBtn);
+        },
+
+        // Inject publish button CSS
+        _injectPublishButtonCSS: function() {
+            // Check if already injected
+            if (document.getElementById('chatooly-publish-button-styles')) return;
+
+            const style = document.createElement('style');
+            style.id = 'chatooly-publish-button-styles';
+            style.textContent = `
+/* ========== PUBLISH BUTTON (DEV MODE) ========== */
+.chatooly-publish-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+
+    background: var(--chatooly-color-button-primary);
+    color: var(--chatooly-color-button-primary-text);
+    border: 1px solid var(--chatooly-color-border);
+    border-radius: var(--chatooly-button-radius);
+
+    font-family: var(--chatooly-font-family);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    cursor: pointer;
+    transition: all var(--chatooly-transition-fast);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.chatooly-publish-button:hover {
+    background: var(--chatooly-color-button-hover);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+.chatooly-publish-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Dev badge */
+.chatooly-publish-badge {
+    padding: 2px 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    font-size: 8px;
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .chatooly-publish-button {
+        top: 10px;
+        right: 10px;
+        padding: 6px 12px;
+        font-size: 9px;
+    }
+
+    .chatooly-publish-badge {
+        padding: 2px 4px;
+        font-size: 7px;
+    }
+}
+            `;
+            document.head.appendChild(style);
         },
 
         // Inject modal CSS

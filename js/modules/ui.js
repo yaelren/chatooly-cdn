@@ -20,8 +20,149 @@
             // Setup event listeners
             this._setupModalEvents();
 
+            // Inject export button in sidebar footer
+            this._injectExportButton();
+
             // Auto-attach to any existing export buttons
             this._attachToExportButtons();
+
+            // Inject publish button (dev mode only)
+            this._injectPublishButton();
+        },
+
+        // Inject export button into sidebar footer
+        _injectExportButton: function() {
+            // Look for Chatooly controls panel (sidebar)
+            const controlsPanel = document.querySelector('.chatooly-controls-panel');
+            if (!controlsPanel) return;
+
+            // Check if footer already exists
+            let footer = controlsPanel.querySelector('.chatooly-controls-footer');
+
+            if (!footer) {
+                // Create footer if it doesn't exist
+                footer = document.createElement('div');
+                footer.className = 'chatooly-controls-footer';
+                controlsPanel.appendChild(footer);
+            }
+
+            // Check if export button already exists
+            if (footer.querySelector('.chatooly-btn-export')) return;
+
+            // Create and inject export button
+            const exportBtn = document.createElement('button');
+            exportBtn.className = 'chatooly-btn chatooly-btn-export';
+            exportBtn.textContent = 'Export';
+            footer.appendChild(exportBtn);
+        },
+
+        // Inject publish button (floating, top-right, dev mode only)
+        _injectPublishButton: function() {
+            // Only inject in development mode
+            if (!Chatooly.utils || !Chatooly.utils.isDevelopment || !Chatooly.utils.isDevelopment()) {
+                return;
+            }
+
+            // Check if button already exists
+            if (document.getElementById('chatooly-publish-button')) return;
+
+            // Inject CSS first
+            this._injectPublishButtonCSS();
+
+            // Create publish button
+            const publishBtn = document.createElement('button');
+            publishBtn.id = 'chatooly-publish-button';
+            publishBtn.className = 'chatooly-publish-button';
+            publishBtn.innerHTML = `
+                Publish to Hub
+                <span class="chatooly-publish-badge">DEV</span>
+            `;
+
+            // Add click handler
+            publishBtn.addEventListener('click', () => {
+                if (Chatooly.publish && Chatooly.publish.publish) {
+                    Chatooly.publish.publish();
+                } else {
+                    console.error('Chatooly: Publish module not loaded');
+                }
+            });
+
+            // Append to body
+            document.body.appendChild(publishBtn);
+        },
+
+        // Inject publish button CSS
+        _injectPublishButtonCSS: function() {
+            // Check if already injected
+            if (document.getElementById('chatooly-publish-button-styles')) return;
+
+            const style = document.createElement('style');
+            style.id = 'chatooly-publish-button-styles';
+            style.textContent = `
+/* ========== PUBLISH BUTTON (DEV MODE) ========== */
+.chatooly-publish-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+
+    background: var(--chatooly-color-button-primary);
+    color: var(--chatooly-color-button-primary-text);
+    border: 1px solid var(--chatooly-color-border);
+    border-radius: var(--chatooly-button-radius);
+
+    font-family: var(--chatooly-font-family);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    cursor: pointer;
+    transition: all var(--chatooly-transition-fast);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.chatooly-publish-button:hover {
+    background: var(--chatooly-color-button-hover);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+.chatooly-publish-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Dev badge */
+.chatooly-publish-badge {
+    padding: 2px 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    font-size: 8px;
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .chatooly-publish-button {
+        top: 10px;
+        right: 10px;
+        padding: 6px 12px;
+        font-size: 9px;
+    }
+
+    .chatooly-publish-badge {
+        padding: 2px 4px;
+        font-size: 7px;
+    }
+}
+            `;
+            document.head.appendChild(style);
         },
 
         // Inject modal CSS
@@ -180,36 +321,34 @@
   color: #000000;
 }
 
-.chatooly-export-input,
-.chatooly-export-select {
+.chatooly-multiplier-buttons {
+  display: flex;
+  gap: 5px;
   width: 100%;
+}
+
+.chatooly-multiplier-btn {
+  flex: 1;
   padding: 8px 10px;
-  background: #aeb7ac;
+  background: #6d736c;
+  color: #d9e5d7;
   border: none;
   border-radius: 5px;
-  color: #454545;
   font-family: 'TASA Orbiter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 10px;
   font-weight: 500;
-  outline: none;
-  transition: background 0.15s ease;
-}
-
-.chatooly-export-input:focus,
-.chatooly-export-select:focus {
-  background: #c0c9be;
-}
-
-.chatooly-export-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath fill='%23454545' d='M4 5L0 0h8z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 8px 5px;
-  padding-right: 30px;
   cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: center;
+}
+
+.chatooly-multiplier-btn:hover {
+  opacity: 0.85;
+}
+
+.chatooly-multiplier-btn.active {
+  background: #000000;
+  color: #FFFFFF;
 }
 
 .chatooly-modal-footer {
@@ -272,46 +411,37 @@
 
                                 <!-- Image Options -->
                                 <div class="chatooly-export-options" data-type="image">
-                                    <div class="chatooly-export-row">
-                                        <div class="chatooly-export-field">
-                                            <label>Width</label>
-                                            <input type="number" class="chatooly-export-input" value="1920" id="chatooly-export-width">
-                                        </div>
-                                        <div class="chatooly-export-field">
-                                            <label>Height</label>
-                                            <input type="number" class="chatooly-export-input" value="1080" id="chatooly-export-height">
-                                        </div>
-                                    </div>
-
                                     <div class="chatooly-export-field">
-                                        <label>Format</label>
-                                        <select class="chatooly-export-select" id="chatooly-export-image-format">
-                                            <option value="png">PNG</option>
-                                            <option value="jpg">JPG</option>
-                                            <option value="webp">WebP</option>
-                                        </select>
+                                        <label>Size</label>
+                                        <div class="chatooly-multiplier-buttons">
+                                            <button class="chatooly-multiplier-btn" data-multiplier="0.5">0.5X</button>
+                                            <button class="chatooly-multiplier-btn" data-multiplier="1">1X</button>
+                                            <button class="chatooly-multiplier-btn active" data-multiplier="2">2X</button>
+                                            <button class="chatooly-multiplier-btn" data-multiplier="3">3X</button>
+                                            <button class="chatooly-multiplier-btn" data-multiplier="4">4X</button>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Video Options -->
                                 <div class="chatooly-export-options" data-type="video" style="display: none;">
                                     <div class="chatooly-export-row">
-                                        <div class="chatooly-export-field">
-                                            <label>Duration</label>
-                                            <input type="number" class="chatooly-export-input" value="5" id="chatooly-export-duration">
+                                        <div class="chatooly-input-group">
+                                            <label class="chatooly-input-label">Duration</label>
+                                            <input type="number" class="chatooly-input" value="5" id="anim-duration">
                                         </div>
-                                        <div class="chatooly-export-field">
-                                            <label>FPS</label>
-                                            <input type="number" class="chatooly-export-input" value="30" id="chatooly-export-fps">
+                                        <div class="chatooly-input-group">
+                                            <label class="chatooly-input-label">FPS</label>
+                                            <input type="number" class="chatooly-input" value="30" id="anim-fps">
                                         </div>
                                     </div>
 
-                                    <div class="chatooly-export-field">
-                                        <label>Format</label>
-                                        <select class="chatooly-export-select" id="chatooly-export-video-format">
+                                    <div class="chatooly-input-group">
+                                        <label class="chatooly-input-label">Format</label>
+                                        <select class="chatooly-select" id="anim-format">
                                             <option value="webm">WebM</option>
                                             <option value="mp4">MP4</option>
-                                            <option value="gif">GIF</option>
+                                            <option value="png-sequence">PNG Sequence</option>
                                         </select>
                                     </div>
                                 </div>
@@ -373,8 +503,20 @@
                     } else {
                         imageOptions.style.display = 'none';
                         videoOptions.style.display = 'block';
-                        exportBtn.textContent = 'Export Video';
+                        exportBtn.textContent = 'Start Recording';
                     }
+                });
+            });
+
+            // Multiplier button handlers
+            const multiplierBtns = modal.querySelectorAll('.chatooly-multiplier-btn');
+            multiplierBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active from siblings
+                    const container = this.parentElement;
+                    container.querySelectorAll('.chatooly-multiplier-btn').forEach(b => b.classList.remove('active'));
+                    // Add active to clicked
+                    this.classList.add('active');
                 });
             });
 
@@ -411,18 +553,21 @@
             const modal = document.getElementById('chatooly-export-modal');
 
             if (format === 'image') {
+                const imageOptions = modal.querySelector('[data-type="image"]');
+                const activeBtn = imageOptions.querySelector('.chatooly-multiplier-btn.active');
+                const multiplier = parseFloat(activeBtn.dataset.multiplier);
+
                 return {
                     type: 'image',
-                    width: parseInt(modal.querySelector('#chatooly-export-width').value),
-                    height: parseInt(modal.querySelector('#chatooly-export-height').value),
-                    format: modal.querySelector('#chatooly-export-image-format').value
+                    multiplier: multiplier,
+                    scale: multiplier
                 };
             } else {
                 return {
                     type: 'video',
-                    duration: parseInt(modal.querySelector('#chatooly-export-duration').value),
-                    fps: parseInt(modal.querySelector('#chatooly-export-fps').value),
-                    format: modal.querySelector('#chatooly-export-video-format').value
+                    duration: parseInt(modal.querySelector('#anim-duration').value),
+                    fps: parseInt(modal.querySelector('#anim-fps').value),
+                    format: modal.querySelector('#anim-format').value
                 };
             }
         },
@@ -445,14 +590,12 @@
 
         // Export image - calls existing Chatooly export
         exportImage: function(options) {
-            console.log('Exporting image:', options);
+            console.log('Exporting image with multiplier:', options.multiplier);
 
-            // Call the existing Chatooly export function
+            // Call the existing Chatooly export function with scale multiplier
             if (Chatooly.export) {
-                Chatooly.export(options.format || 'png', {
-                    width: options.width,
-                    height: options.height,
-                    scale: options.scale || 1
+                Chatooly.export('png', {
+                    scale: options.scale
                 });
             }
         },
@@ -461,13 +604,9 @@
         exportVideo: function(options) {
             console.log('Exporting video:', options);
 
-            // Call the existing video export if available
+            // Call the existing video export (it reads from DOM elements with IDs: anim-duration, anim-fps, anim-format)
             if (Chatooly.animationMediaRecorder && Chatooly.animationMediaRecorder.startRecording) {
-                Chatooly.animationMediaRecorder.startRecording({
-                    duration: options.duration * 1000,
-                    fps: options.fps,
-                    format: options.format
-                });
+                Chatooly.animationMediaRecorder.startRecording();
             } else {
                 console.warn('Video export not available. Make sure animation modules are loaded.');
             }
