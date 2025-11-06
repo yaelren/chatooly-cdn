@@ -37,7 +37,8 @@ const config = {
         'base.css',
         'components.css',
         'layouts/sidebar.css',
-        'responsive.css'
+        'responsive.css',
+        'legacy-compat.css'  // Universal fallback: plain HTML elements = Chatooly styles
     ],
     
     // Build outputs
@@ -153,10 +154,10 @@ ${coreInit}
         
         let moduleContent = fs.readFileSync(modulePath, 'utf8');
         
-        // Remove IIFE wrapper
+        // Remove IIFE wrapper - handles both })(window.Chatooly); and })(window.Chatooly = window.Chatooly || {});
         moduleContent = moduleContent
             .replace(/^\(function\(Chatooly\)\s*{\s*['"]use strict['"];?\s*/m, '')
-            .replace(/}\)\(window\.Chatooly\);?\s*$/, '');
+            .replace(/}\)\(window\.Chatooly(?:\s*=\s*window\.Chatooly\s*\|\|\s*{})?\);?\s*$/m, '');
         
         combinedContent += `
     // ===== ${moduleFile.toUpperCase().replace('.JS', '')} MODULE =====
@@ -288,10 +289,10 @@ function buildCoreJS() {
         
         let moduleContent = fs.readFileSync(modulePath, 'utf8');
         
-        // Remove IIFE wrapper
+        // Remove IIFE wrapper - handles both })(window.Chatooly); and })(window.Chatooly = window.Chatooly || {});
         moduleContent = moduleContent
             .replace(/^\(function\(Chatooly\)\s*{\s*['"]use strict['"];?\s*/m, '')
-            .replace(/}\)\(window\.Chatooly\);?\s*$/, '');
+            .replace(/}\)\(window\.Chatooly(?:\s*=\s*window\.Chatooly\s*\|\|\s*{})?\);?\s*$/m, '');
         
         content += `
     // ===== ${moduleFile.toUpperCase().replace('.JS', '')} MODULE =====
