@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Unified Design System
- * Built: 2025-11-06T10:32:02.949Z
+ * Built: 2025-11-06T10:52:26.053Z
  */
 
 
@@ -2155,6 +2155,17 @@ input[type="color"].chatooly-color-input::-moz-color-swatch {
 .no-chatooly-fallback textarea,
 .no-chatooly-fallback label {
   all: revert;
+}
+
+/* ========== CDN MODULE EXCLUSIONS ========== */
+/* Exclude CDN-injected modules with their own styling from universal fallback */
+
+/* Canvas Resize Bar - has custom input sizing logic */
+#chatooly-resize-bar input[type="number"] {
+  width: auto !important; /* Override fallback width: 100% */
+  padding: 0 !important; /* Module handles padding via .chatooly-input-box */
+  background: transparent !important; /* Module uses container background */
+  border: none !important;
 }
 
 /* ========== COMPATIBILITY NOTES ========== */

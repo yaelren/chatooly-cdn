@@ -311,6 +311,17 @@
   all: revert;
 }
 
+/* ========== CDN MODULE EXCLUSIONS ========== */
+/* Exclude CDN-injected modules with their own styling from universal fallback */
+
+/* Canvas Resize Bar - has custom input sizing logic */
+#chatooly-resize-bar input[type="number"] {
+  width: auto !important; /* Override fallback width: 100% */
+  padding: 0 !important; /* Module handles padding via .chatooly-input-box */
+  background: transparent !important; /* Module uses container background */
+  border: none !important;
+}
+
 /* ========== COMPATIBILITY NOTES ========== */
 /*
  * This file ensures backward compatibility by:
