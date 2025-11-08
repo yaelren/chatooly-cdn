@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-11-08T14:03:29.496Z
+ * Built: 2025-11-08T14:13:26.022Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -20,24 +20,47 @@
                 buttonPosition: 'bottom-right',
                 enableZoom: true,
                 enableCanvasArea: true,
-                canvasAreaPosition: 'full'
+                canvasAreaPosition: 'full',
+                // Feature opt-in/opt-out system
+                features: {
+                    exportButton: true,      // Export button in sidebar footer
+                    exportModal: true,       // Export modal UI
+                    publishButton: true,     // Publish to Hub button (dev mode only)
+                    canvasResizeBar: true,   // Canvas resize bar UI
+                    backgroundControls: true // Background color/gradient controls
+                }
             }, userConfig);
+
+            // Merge features separately to allow partial overrides
+            if (userConfig && userConfig.features) {
+                this.config.features = Object.assign({
+                    exportButton: true,
+                    exportModal: true,
+                    publishButton: true,
+                    canvasResizeBar: true,
+                    backgroundControls: true
+                }, userConfig.features);
+            }
             
             // Inject CDN styles first
             if (this.styleLoader) {
                 this.styleLoader.inject();
             }
-            
+
             // Initialize canvas area if enabled
             if (this.config.enableCanvasArea && this.canvasArea) {
                 this.canvasArea.init({
                     position: this.config.canvasAreaPosition
                 });
             }
-            
-            this.ui.createExportButton();
+
+            // Initialize UI based on feature flags
+            if (this.ui && this.ui.createExportButton) {
+                this.ui.createExportButton();
+            }
+
             this.utils.logDevelopmentMode();
-            
+
             // Initialize zoom if enabled
             if (this.config.enableZoom && this.canvasZoom) {
                 setTimeout(() => {
@@ -50,15 +73,15 @@
                 this.canvasResizer.init();
             }
 
-            // Auto-inject background controls
-            if (this.ui && this.ui.injectBackgroundControls) {
+            // Auto-inject background controls (respects features.backgroundControls)
+            if (this.config.features.backgroundControls && this.ui && this.ui.injectBackgroundControls) {
                 setTimeout(() => {
                     this.ui.injectBackgroundControls();
                 }, 300);
             }
 
-            // Initialize canvas resize bar (bottom control bar)
-            if (this.canvasResizeBar && this.canvasResizeBar.init) {
+            // Initialize canvas resize bar (bottom control bar) (respects features.canvasResizeBar)
+            if (this.config.features.canvasResizeBar && this.canvasResizeBar && this.canvasResizeBar.init) {
                 setTimeout(() => {
                     this.canvasResizeBar.init();
                 }, 400);
@@ -5224,23 +5247,35 @@ Chatooly.canvasZoom = {
 
         // Create and inject export modal - called automatically by core
         createExportButton: function() {
-            // Inject CSS first
-            this._injectModalCSS();
+            // Check feature flags
+            const features = Chatooly.config.features || {};
 
-            // Inject modal HTML
-            this._injectModalHTML();
+            // Only inject modal if exportModal feature is enabled
+            if (features.exportModal !== false) {
+                // Inject CSS first
+                this._injectModalCSS();
 
-            // Setup event listeners
-            this._setupModalEvents();
+                // Inject modal HTML
+                this._injectModalHTML();
 
-            // Inject export button in sidebar footer
-            this._injectExportButton();
+                // Setup event listeners
+                this._setupModalEvents();
+            }
 
-            // Auto-attach to any existing export buttons
-            this._attachToExportButtons();
+            // Only inject export button if exportButton feature is enabled
+            if (features.exportButton !== false) {
+                // Inject export button in sidebar footer
+                this._injectExportButton();
 
-            // Inject publish button (dev mode only)
-            this._injectPublishButton();
+                // Auto-attach to any existing export buttons
+                this._attachToExportButtons();
+            }
+
+            // Only inject publish button if publishButton feature is enabled
+            if (features.publishButton !== false) {
+                // Inject publish button (dev mode only)
+                this._injectPublishButton();
+            }
         },
 
         // Inject export button into sidebar footer

@@ -11,23 +11,35 @@
 
         // Create and inject export modal - called automatically by core
         createExportButton: function() {
-            // Inject CSS first
-            this._injectModalCSS();
+            // Check feature flags
+            const features = Chatooly.config.features || {};
 
-            // Inject modal HTML
-            this._injectModalHTML();
+            // Only inject modal if exportModal feature is enabled
+            if (features.exportModal !== false) {
+                // Inject CSS first
+                this._injectModalCSS();
 
-            // Setup event listeners
-            this._setupModalEvents();
+                // Inject modal HTML
+                this._injectModalHTML();
 
-            // Inject export button in sidebar footer
-            this._injectExportButton();
+                // Setup event listeners
+                this._setupModalEvents();
+            }
 
-            // Auto-attach to any existing export buttons
-            this._attachToExportButtons();
+            // Only inject export button if exportButton feature is enabled
+            if (features.exportButton !== false) {
+                // Inject export button in sidebar footer
+                this._injectExportButton();
 
-            // Inject publish button (dev mode only)
-            this._injectPublishButton();
+                // Auto-attach to any existing export buttons
+                this._attachToExportButtons();
+            }
+
+            // Only inject publish button if publishButton feature is enabled
+            if (features.publishButton !== false) {
+                // Inject publish button (dev mode only)
+                this._injectPublishButton();
+            }
         },
 
         // Inject export button into sidebar footer
