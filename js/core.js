@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-11-08T13:51:38.298Z
+ * Built: 2025-11-08T13:55:28.999Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -2745,6 +2745,12 @@ Chatooly.canvasArea = {
             // Update original dimensions for aspect ratio calculations
             this.originalWidth = width;
             this.originalHeight = height;
+            
+            // NEW: Update canvas resize bar UI inputs if they exist
+            const widthInput = document.getElementById('chatooly-canvas-width');
+            const heightInput = document.getElementById('chatooly-canvas-height');
+            if (widthInput) widthInput.value = width;
+            if (heightInput) heightInput.value = height;
             
             // Refit to area with new aspect ratio
             this.fitCanvasToArea();
