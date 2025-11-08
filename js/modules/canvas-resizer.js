@@ -503,6 +503,7 @@
             const target = Chatooly.utils ? Chatooly.utils.detectExportTarget() : null;
             let width = 1000;
             let height = 1000;
+            let shouldSetSize = true; // Only auto-set size if needed
 
             if (target && target.element && target.type === 'canvas') {
                 // If canvas already has non-default dimensions, respect them
@@ -512,10 +513,23 @@
                     height = target.element.height;
                     console.log(`Chatooly: Detected existing canvas size ${width}x${height}, using it`);
                 }
+                
+                // NEW: If canvas-area is active, don't force resize on init
+                // The tool will set dimensions via chatooly:ready event handler
+                if (Chatooly.canvasArea && Chatooly.canvasArea.canvasElement) {
+                    shouldSetSize = false;
+                    console.log(`Chatooly: Canvas-area active, deferring size to tool's chatooly:ready handler`);
+                }
             }
 
-            // Set export size (either detected or default 1000x1000)
-            this.setExportSize(width, height);
+            // Only auto-set export size if we should (no canvas-area active)
+            if (shouldSetSize) {
+                this.setExportSize(width, height);
+            } else {
+                // Just store the values without applying (tool will apply via setExportSize)
+                this.exportWidth = width;
+                this.exportHeight = height;
+            }
 
             // Dispatch chatooly:ready event for tools waiting on initialization
             const event = new CustomEvent('chatooly:ready', {
@@ -523,13 +537,14 @@
                     version: Chatooly.version,
                     canvasResizer: true,
                     width: width,
-                    height: height
+                    height: height,
+                    autoSized: shouldSetSize
                 },
                 bubbles: true
             });
             document.dispatchEvent(event);
 
-            console.log(`Chatooly: Canvas resizer initialized (${width}x${height})`);
+            console.log(`Chatooly: Canvas resizer initialized (${width}x${height}, autoSized: ${shouldSetSize})`);
         }
     };
 
