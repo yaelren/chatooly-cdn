@@ -399,11 +399,21 @@
             this.originalWidth = width;
             this.originalHeight = height;
             
-            // NEW: Update canvas resize bar UI inputs if they exist
-            const widthInput = document.getElementById('chatooly-canvas-width');
-            const heightInput = document.getElementById('chatooly-canvas-height');
-            if (widthInput) widthInput.value = width;
-            if (heightInput) heightInput.value = height;
+            // Update canvas resize bar UI inputs (with retry for async UI creation)
+            const updateInputs = () => {
+                const widthInput = document.getElementById('chatooly-canvas-width');
+                const heightInput = document.getElementById('chatooly-canvas-height');
+                if (widthInput) widthInput.value = width;
+                if (heightInput) heightInput.value = height;
+                
+                // If inputs still don't exist, retry after a short delay
+                if (!widthInput || !heightInput) {
+                    setTimeout(updateInputs, 100);
+                }
+            };
+            
+            // Try immediately and retry if needed
+            updateInputs();
             
             // Refit to area with new aspect ratio
             this.fitCanvasToArea();
