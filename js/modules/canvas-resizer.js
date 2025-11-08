@@ -13,21 +13,31 @@
         
         // Set export resolution
         setExportSize: function(width, height) {
+            // Store dimensions
+            this.exportWidth = width;
+            this.exportHeight = height;
+            Chatooly.config.canvasWidth = width;
+            Chatooly.config.canvasHeight = height;
+            
+            // Update UI inputs (may not exist yet, that's ok)
             const widthInput = document.getElementById('chatooly-canvas-width');
             const heightInput = document.getElementById('chatooly-canvas-height');
-            
             if (widthInput) widthInput.value = width;
             if (heightInput) heightInput.value = height;
             
-            // NEW: If canvas-area is active, directly set export resolution
-            // This bypasses the need for UI inputs to exist
+            // If canvas-area is active, directly set export resolution
             if (Chatooly.canvasArea && Chatooly.canvasArea.setExportResolution) {
                 console.log(`Chatooly: Setting canvas-area export resolution to ${width}x${height}`);
-                this.exportWidth = width;
-                this.exportHeight = height;
-                Chatooly.config.canvasWidth = width;
-                Chatooly.config.canvasHeight = height;
                 Chatooly.canvasArea.setExportResolution(width, height);
+                
+                // Update UI inputs again after setExportResolution (in case they were just created)
+                setTimeout(() => {
+                    const w = document.getElementById('chatooly-canvas-width');
+                    const h = document.getElementById('chatooly-canvas-height');
+                    if (w) w.value = width;
+                    if (h) h.value = height;
+                }, 100);
+                
                 return; // Done - canvas-area handles it
             }
             
