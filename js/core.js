@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-11-08T13:43:58.207Z
+ * Built: 2025-11-08T13:51:38.298Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -3001,6 +3001,19 @@ Chatooly.canvasResizer = {
             if (widthInput) widthInput.value = width;
             if (heightInput) heightInput.value = height;
             
+            // NEW: If canvas-area is active, directly set export resolution
+            // This bypasses the need for UI inputs to exist
+            if (Chatooly.canvasArea && Chatooly.canvasArea.setExportResolution) {
+                console.log(`Chatooly: Setting canvas-area export resolution to ${width}x${height}`);
+                this.exportWidth = width;
+                this.exportHeight = height;
+                Chatooly.config.canvasWidth = width;
+                Chatooly.config.canvasHeight = height;
+                Chatooly.canvasArea.setExportResolution(width, height);
+                return; // Done - canvas-area handles it
+            }
+            
+            // Legacy: Apply through applyExportSize (requires UI inputs)
             this.applyExportSize();
         },
         
