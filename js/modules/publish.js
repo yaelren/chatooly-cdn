@@ -111,14 +111,22 @@
             const htmlClone = document.documentElement.cloneNode(true);
             const exportBtn = htmlClone.querySelector('#chatooly-export-btn');
             if (exportBtn) exportBtn.remove();
-            
+
+            // Remove publish button (should only exist in dev mode)
+            const publishBtn = htmlClone.querySelector('#chatooly-publish-button');
+            if (publishBtn) publishBtn.remove();
+
+            // Remove publish button styles
+            const publishBtnStyles = htmlClone.querySelector('#chatooly-publish-button-styles');
+            if (publishBtnStyles) publishBtnStyles.remove();
+
             // Remove any publishing popups that might be stuck
             const publishProgress = htmlClone.querySelector('#chatooly-publish-progress');
             if (publishProgress) publishProgress.remove();
-            
+
             const publishSuccess = htmlClone.querySelector('div[style*="Published Successfully"]');
             if (publishSuccess) publishSuccess.remove();
-            
+
             const publishError = htmlClone.querySelector('div[style*="Publishing Failed"]');
             if (publishError) publishError.remove();
             
