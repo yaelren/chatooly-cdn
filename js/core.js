@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-11-25T15:42:23.360Z
+ * Built: 2025-12-17T16:34:40.076Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -4610,8 +4610,42 @@ Chatooly.canvasZoom = {
  * Handles tool publishing functionality for development mode
  */
 
-// Publishing functionality
+// Publishing target endpoints configuration
+    var PUBLISH_TARGETS = {
+        'chatooly': {
+            name: 'Studio Video Tool Hub',
+            endpoint: 'https://studiovideotoolhub.vercel.app/api/publish',
+            hubUrl: 'https://studiovideotoolhub.vercel.app'
+        },
+        'designers': {
+            name: 'Designers Tool Hub',
+            endpoint: 'https://designers-tool-hub.vercel.app/api/publish',
+            hubUrl: 'https://designers-tool-hub.vercel.app'
+        }
+    };
+    var DEFAULT_TARGET = 'chatooly';
+
+    // Publishing functionality
     Chatooly.publish = {
+
+        // Get the current publishing target from ChatoolyConfig
+        _getPublishTarget: function() {
+            var configTarget = (Chatooly.config && Chatooly.config.publishTarget) || DEFAULT_TARGET;
+            var target = PUBLISH_TARGETS[configTarget];
+
+            if (!target) {
+                console.warn('Chatooly: Unknown publish target "' + configTarget + '", falling back to "' + DEFAULT_TARGET + '"');
+                return PUBLISH_TARGETS[DEFAULT_TARGET];
+            }
+
+            return target;
+        },
+
+        // Get target key from config
+        _getPublishTargetKey: function() {
+            var configTarget = (Chatooly.config && Chatooly.config.publishTarget) || DEFAULT_TARGET;
+            return PUBLISH_TARGETS[configTarget] ? configTarget : DEFAULT_TARGET;
+        },
         
         // Main publish function (development mode only)
         publish: async function(options) {
@@ -4936,18 +4970,21 @@ Chatooly.canvasZoom = {
         
         // Upload tool to Chatooly Hub
         _uploadToStaging: async function(toolSlug, files, metadata) {
+            // Get the publishing target
+            var target = this._getPublishTarget();
+
             try {
-                console.log('Chatooly: Uploading to Chatooly Hub...');
-                
-                // Prepare payload for Chatooly Hub API
+                console.log('Chatooly: Uploading to ' + target.name + '...');
+
+                // Prepare payload for Hub API
                 const payload = {
                     toolName: toolSlug,
                     metadata: metadata,
                     files: files
                 };
-                
-                // Send to Chatooly Hub API
-                const response = await fetch('https://studiovideotoolhub.vercel.app/api/publish', {
+
+                // Send to Hub API (using target endpoint)
+                const response = await fetch(target.endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -4955,42 +4992,43 @@ Chatooly.canvasZoom = {
                     },
                     body: JSON.stringify(payload)
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 const result = await response.json();
-                
+
                 if (!result.success) {
                     throw new Error(result.message || 'Publishing failed');
                 }
-                
+
                 return result;
-                
+
             } catch (error) {
                 // If API fails, fall back to POC localStorage simulation
                 console.warn('Chatooly: Hub API unavailable, using local simulation:', error);
-                
+
                 const result = {
                     success: true,
-                    url: `https://tools.chatooly.com/${toolSlug}`,
+                    url: target.hubUrl + '/tools/' + toolSlug,
                     actualName: toolSlug,
                     requestedName: metadata.name,
                     publishedAt: new Date().toISOString(),
                     metadata: metadata,
-                    message: 'Tool published successfully! (Simulated - Hub not available)'
+                    message: 'Tool published successfully! (Simulated - ' + target.name + ' not available)'
                 };
-                
+
                 // Store in localStorage for POC
                 localStorage.setItem(`chatooly-published-${toolSlug}`, JSON.stringify(result));
-                
+
                 return result;
             }
         },
         
         // Show publishing progress UI
         _showPublishingProgress: function() {
+            var target = this._getPublishTarget();
             const progressDiv = document.createElement('div');
             progressDiv.id = 'chatooly-publish-progress';
             progressDiv.innerHTML = `
@@ -5016,8 +5054,8 @@ Chatooly.canvasZoom = {
                         margin: 0 auto 20px;
                         animation: chatooly-spin 1s linear infinite;
                     "></div>
-                    <h3 style="margin: 0 0 10px;">Publishing to Chatooly...</h3>
-                    <p style="margin: 0; color: #666;">Uploading tool files to staging server</p>
+                    <h3 style="margin: 0 0 10px;">Publishing to ${target.name}...</h3>
+                    <p style="margin: 0; color: #666;">Uploading tool files to hub</p>
                 </div>
                 <style>
                     @keyframes chatooly-spin {
@@ -5039,11 +5077,12 @@ Chatooly.canvasZoom = {
         
         // Show success message
         _showPublishSuccess: function(result) {
+            var target = this._getPublishTarget();
             const successDiv = document.createElement('div');
-            const nameMessage = result.actualName !== result.requestedName 
+            const nameMessage = result.actualName !== result.requestedName
                 ? `<p style="margin: 10px 0; color: #666;">Tool published as "${result.actualName}" (name was adjusted)</p>`
                 : '';
-            
+
             successDiv.innerHTML = `
                 <div style="
                     position: fixed;
@@ -5073,7 +5112,7 @@ Chatooly.canvasZoom = {
                     ">✓</div>
                     <h3 style="margin: 0 0 10px; color: #28a745;">Published Successfully!</h3>
                     <p style="margin: 10px 0; color: #666;">
-                        ${result.message || 'Your tool has been published to Chatooly.'}
+                        ${result.message || 'Your tool has been published to ' + target.name + '.'}
                     </p>
                     ${nameMessage}
                     <div style="
