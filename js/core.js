@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2025-12-17T16:34:40.076Z
+ * Built: 2026-01-08T19:55:27.643Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -4656,6 +4656,41 @@ Chatooly.canvasZoom = {
             
             options = options || {};
 
+            // Check if this is a fresh reload for publishing (to capture default UI state)
+            var pendingPublish = sessionStorage.getItem('chatooly_pending_publish');
+            if (!pendingPublish) {
+                // First click - ask user and trigger reload to get default state
+                var shouldReload = confirm(
+                    'Publishing will reload the page to capture the default state.\n\n' +
+                    'This ensures your tool publishes with all controls in their default positions.\n\n' +
+                    'Continue?'
+                );
+                if (!shouldReload) {
+                    console.log('Chatooly: Publishing cancelled');
+                    return;
+                }
+
+                sessionStorage.setItem('chatooly_pending_publish', JSON.stringify({
+                    options: options,
+                    timestamp: Date.now()
+                }));
+                console.log('Chatooly: Reloading to capture default state...');
+                location.reload();
+                return;
+            }
+
+            // After reload - clear pending and merge options
+            sessionStorage.removeItem('chatooly_pending_publish');
+            var publishData = JSON.parse(pendingPublish);
+
+            // Check for stale pending publish (older than 30 seconds)
+            if (Date.now() - publishData.timestamp > 30000) {
+                console.log('Chatooly: Stale publish request cleared');
+                return;
+            }
+
+            options = Object.assign({}, publishData.options, options);
+
             // Try to get tool name from multiple sources (in order of priority)
             // 1. Explicit option passed to publish()
             // 2. Chatooly config name
@@ -5278,6 +5313,19 @@ Chatooly.canvasZoom = {
             return 'poc-auth-token';
         }
     };
+
+    // Check for pending publish on page load (after reload to capture default state)
+    if (typeof window !== 'undefined') {
+        window.addEventListener('load', function() {
+            var pending = sessionStorage.getItem('chatooly_pending_publish');
+            if (pending && Chatooly.utils && Chatooly.utils.isDevelopment()) {
+                // Small delay to ensure page fully initialized
+                setTimeout(function() {
+                    Chatooly.publish.publish();
+                }, 500);
+            }
+        });
+    }
     
 
 
