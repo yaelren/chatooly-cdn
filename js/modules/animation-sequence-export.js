@@ -44,7 +44,6 @@
                 // Calculate frames
                 const totalFrames = Math.ceil(duration * fps);
                 const frameInterval = 1000 / fps; // ms between frames
-                const frames = [];
 
                 // Create export canvas for alpha preservation
                 this.exportCanvas = document.createElement('canvas');
@@ -55,23 +54,12 @@
                 // Show export indicator
                 this._showExportIndicator('Capturing frames...');
 
-                // Capture frames
-                for (let frame = 0; frame < totalFrames; frame++) {
-                    this._updateExportIndicator(`Frame ${frame + 1}/${totalFrames}`);
-
-                    // Clear with transparency
-                    this.exportCtx.clearRect(0, 0, this.exportCanvas.width, this.exportCanvas.height);
-
-                    // Copy current frame from source canvas
-                    this.exportCtx.drawImage(sourceCanvas, 0, 0);
-
-                    // Capture as PNG with alpha
-                    const dataURL = this.exportCanvas.toDataURL('image/png');
-                    frames.push(dataURL);
-
-                    // Small delay for browser processing
-                    await this._delay(frameInterval);
-                }
+                // Capture frames using requestAnimationFrame for non-blocking capture
+                const frames = await this._captureFramesNonBlocking(
+                    sourceCanvas,
+                    totalFrames,
+                    frameInterval
+                );
 
                 // Create ZIP file
                 this._updateExportIndicator('Creating ZIP...');
@@ -96,6 +84,57 @@
                 this.exportCtx = null;
                 this.isExporting = false;
             }
+        },
+
+        /**
+         * Capture frames using requestAnimationFrame for non-blocking operation
+         * This allows mouse events and animations to continue smoothly during export
+         */
+        _captureFramesNonBlocking: function(sourceCanvas, totalFrames, frameInterval) {
+            const self = this;
+            const frames = [];
+            let frameCount = 0;
+            let lastCaptureTime = 0;
+            const startTime = performance.now();
+
+            return new Promise((resolve) => {
+                function captureFrame(currentTime) {
+                    // Check if we've captured enough frames
+                    if (frameCount >= totalFrames) {
+                        resolve(frames);
+                        return;
+                    }
+
+                    // Calculate if it's time to capture based on elapsed time
+                    const elapsedTime = currentTime - startTime;
+                    const expectedFrame = Math.floor(elapsedTime / frameInterval);
+
+                    // Capture frame if we're at or past the expected frame time
+                    if (expectedFrame > frameCount || frameCount === 0) {
+                        // Update progress indicator
+                        self._updateExportIndicator(`Frame ${frameCount + 1}/${totalFrames}`);
+
+                        // Clear with transparency
+                        self.exportCtx.clearRect(0, 0, self.exportCanvas.width, self.exportCanvas.height);
+
+                        // Copy current frame from source canvas
+                        self.exportCtx.drawImage(sourceCanvas, 0, 0);
+
+                        // Capture as PNG with alpha
+                        const dataURL = self.exportCanvas.toDataURL('image/png');
+                        frames.push(dataURL);
+
+                        frameCount++;
+                        lastCaptureTime = currentTime;
+                    }
+
+                    // Continue capturing on next animation frame
+                    requestAnimationFrame(captureFrame);
+                }
+
+                // Start the capture loop
+                requestAnimationFrame(captureFrame);
+            });
         },
 
         /**
