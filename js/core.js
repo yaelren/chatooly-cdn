@@ -1,6 +1,6 @@
 /**
  * Chatooly CDN v2.0.0 - Complete Library
- * Built: 2026-01-09T17:09:53.070Z
+ * Built: 2026-01-15T11:01:48.029Z
  * Includes all modules for canvas management, export, and UI
  */
 
@@ -1530,7 +1530,7 @@ Chatooly.backgroundManager = {
             
             // Create recording canvas
             this.recordingCanvas = document.createElement('canvas');
-            this.recordingCtx = this.recordingCanvas.getContext('2d');
+            this.recordingCtx = this.recordingCanvas.getContext('2d', { alpha: true });
             
             // Set canvas size to match source canvas exactly (1:1 ratio for best quality)
             this.recordingCanvas.width = canvas.width;
@@ -1899,9 +1899,8 @@ Chatooly.backgroundManager = {
                 // Reset any transformations to ensure clean capture
                 this.recordingCtx.setTransform(1, 0, 0, 1, 0, 0); // 1:1 pixel mapping
                 
-                // Clear recording canvas with exact background color
-                this.recordingCtx.fillStyle = '#1a1a1a';
-                this.recordingCtx.fillRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+                // Clear recording canvas (preserves transparency)
+                this.recordingCtx.clearRect(0, 0, this.recordingCanvas.width, this.recordingCanvas.height);
                 
                 // Configure for pixel-perfect capture
                 this.recordingCtx.imageSmoothingEnabled = false;
